@@ -42,7 +42,12 @@ public class LocationsService : ILocationsService
             timezone,
             address);
 
-        var locationId = await _locationRepository.AddLocationAsync(location, cancellationToken);
+        var addLocationResult = await _locationRepository.AddLocationAsync(location, cancellationToken);
+
+        if (addLocationResult.IsFailure)
+            return Result.Failure<Guid>(addLocationResult.Error);
+
+        var locationId = addLocationResult.Value;
 
         return Result.Success(locationId);
     }

@@ -1,4 +1,5 @@
-﻿using DirectoryService.Domain.Locations;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.Locations;
 
 namespace DirectoryService.Application.Locations;
 
@@ -13,5 +14,5 @@ public interface ILocationRepository
     /// <param name="location">Сущность локация.</param>
     /// <param name="cancellationToken">Токен отмены.</param>
     /// <returns>Идентификатор созданной локации.</returns>
-    public Task<Guid> AddLocationAsync(Location location, CancellationToken cancellationToken);
+    public Task<Result<Guid>> AddLocationAsync(Location location, CancellationToken cancellationToken);
 }

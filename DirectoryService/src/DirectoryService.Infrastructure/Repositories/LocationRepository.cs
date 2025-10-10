@@ -1,4 +1,5 @@
-﻿using DirectoryService.Application.Locations;
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
 
 namespace DirectoryService.Infrastructure.Repositories;
@@ -9,10 +10,19 @@ public class LocationRepository : ILocationRepository
 
     public LocationRepository(AppDbContext dbContext) => _dbContext = dbContext;
 
-    public async Task<Guid> AddLocationAsync(Location location, CancellationToken cancellationToken)
+    public async Task<Result<Guid>> AddLocationAsync(Location location, CancellationToken cancellationToken)
     {
         await _dbContext.Locations.AddAsync(location, cancellationToken);
-        await _dbContext.SaveChangesAsync(cancellationToken);
-        return location.Id.Value;
+
+        try
+        {
+            await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return Result.Failure<Guid>(ex.Message);
+        }
+
+        return Result.Success(location.Id.Value);
     }
 }
