@@ -6,7 +6,7 @@
 /// <typeparam name="T">Идентификатор сущности.</typeparam>
 public class BaseEntity<T>
 {
-    public required T Id { get; set; }
+    public T Id { get; init; } = default!;
 
     /// <summary>
     /// Дата создания

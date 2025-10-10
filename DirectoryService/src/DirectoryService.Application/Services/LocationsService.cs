@@ -1,0 +1,50 @@
+﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Abstractions.Locations;
+using DirectoryService.Contracts.Dtos;
+using DirectoryService.Domain.Locations;
+using DirectoryService.Domain.Locations.ValueObjects;
+
+namespace DirectoryService.Application.Services;
+
+
+public class LocationsService : ILocationsService
+{
+    private readonly ILocationRepository _locationRepository;
+
+    public LocationsService(ILocationRepository locationRepository) => _locationRepository = locationRepository;
+
+    public async Task<Result<Guid>> AddAsync(LocationDto locationDto)
+    {
+        var nameResult = LocationName.Of(locationDto.Name);
+
+        if (nameResult.IsFailure)
+            return Result.Failure<Guid>(nameResult.Error);
+
+        var name = nameResult.Value;
+
+
+        var timezoneResult = Timezone.Of(locationDto.Timezone);
+
+        if (timezoneResult.IsFailure)
+            return Result.Failure<Guid>(timezoneResult.Error);
+
+        var timezone = timezoneResult.Value;
+
+        var addressResult = Address.Of(locationDto.Address);
+
+        if (addressResult.IsFailure)
+            return Result.Failure<Guid>(addressResult.Error);
+
+        var address = addressResult.Value;
+
+        var location = new Location(
+            LocationId.Create(),
+            name,
+            timezone,
+            address);
+
+        var locationId = await _locationRepository.AddLocationAsync(location);
+
+        return Result.Success(locationId);
+    }
+}

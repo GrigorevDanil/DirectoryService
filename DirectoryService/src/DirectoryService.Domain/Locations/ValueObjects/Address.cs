@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Contracts.Dtos;
 
 namespace DirectoryService.Domain.Locations.ValueObjects;
 
@@ -83,25 +84,42 @@ public record Address
         string street,
         string houseNumber)
     {
-        if (string.IsNullOrWhiteSpace(country) || country.Length < MAX_LENGTH_COUNTRY)
+        if (string.IsNullOrWhiteSpace(country) || country.Length > MAX_LENGTH_COUNTRY)
             return Result.Failure<Address>("Country is empty or does not match the allowed length");
 
-        if (string.IsNullOrWhiteSpace(postalCode) || postalCode.Length < MAX_LENGTH_POSTAL_CODE || int.TryParse(postalCode, out _))
+        if (string.IsNullOrWhiteSpace(postalCode) || postalCode.Length < MAX_LENGTH_POSTAL_CODE || !int.TryParse(postalCode, out _))
             return Result.Failure<Address>("Postal code may be empty, invalid in length, or not a number");
 
-        if (string.IsNullOrWhiteSpace(region) || region.Length < MAX_LENGTH_REGION)
+        if (string.IsNullOrWhiteSpace(region) || region.Length > MAX_LENGTH_REGION)
             return Result.Failure<Address>("Region is empty or does not match the allowed length");
 
-        if (string.IsNullOrWhiteSpace(city) || city.Length < MAX_LENGTH_CITY)
+        if (string.IsNullOrWhiteSpace(city) || city.Length > MAX_LENGTH_CITY)
             return Result.Failure<Address>("City is empty or does not match the allowed length");
 
-        if (string.IsNullOrWhiteSpace(street) || street.Length < MAX_LENGTH_STREET)
+        if (string.IsNullOrWhiteSpace(street) || street.Length > MAX_LENGTH_STREET)
             return Result.Failure<Address>("Street is empty or does not match the allowed length");
 
-        if (string.IsNullOrWhiteSpace(houseNumber) || houseNumber.Length < MAX_LENGTH_HOUSE_NUMBER ||
-            int.TryParse(houseNumber, out int parsedHouseNumber) || parsedHouseNumber < 1)
+        if (string.IsNullOrWhiteSpace(houseNumber) || houseNumber.Length > MAX_LENGTH_HOUSE_NUMBER ||
+            !int.TryParse(houseNumber, out int parsedHouseNumber) || parsedHouseNumber < 1)
             return Result.Failure<Address>("House number may be empty, longer than allowed, not a number, or less than 1");
 
         return new Address(country, postalCode, region, city, street, houseNumber);
+    }
+
+    /// <summary>
+    /// Создает новый объект "Адрес"
+    /// </summary>
+    /// <param name="addressDto">Входящие данные об адресе.</param>
+    /// <returns>Новый объект или ошибка.</returns>
+    public static Result<Address> Of(
+        AddressDto addressDto)
+    {
+        return Of(
+            addressDto.Country,
+            addressDto.PostalCode,
+            addressDto.Region,
+            addressDto.City,
+            addressDto.Street,
+            addressDto.HouseNumber);
     }
 }
