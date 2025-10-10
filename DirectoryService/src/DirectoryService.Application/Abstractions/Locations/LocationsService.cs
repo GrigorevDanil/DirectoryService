@@ -1,10 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
-using DirectoryService.Application.Abstractions.Locations;
 using DirectoryService.Contracts.Dtos;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
 
-namespace DirectoryService.Application.Services;
+namespace DirectoryService.Application.Abstractions.Locations;
 
 
 public class LocationsService : ILocationsService
