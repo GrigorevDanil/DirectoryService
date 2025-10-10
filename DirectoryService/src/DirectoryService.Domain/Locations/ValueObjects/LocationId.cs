@@ -18,7 +18,7 @@ public record LocationId
     /// <summary>
     /// Создание идентификатора локации из входящего идентификатора
     /// </summary>
-    /// <param name="departmentId">Входящий идентификатор.</param>
+    /// <param name="locationId">Входящий идентификатор.</param>
     /// <returns>Идентификатор локации.</returns>
-    public static LocationId Of(Guid departmentId) => new(departmentId);
+    public static LocationId Of(Guid locationId) => new(locationId);
 };

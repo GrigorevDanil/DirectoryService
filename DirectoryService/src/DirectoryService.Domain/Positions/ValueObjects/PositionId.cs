@@ -18,7 +18,7 @@ public record PositionId
     /// <summary>
     /// Создание идентификатора позиции(должности сотрудника) из входящего идентификатора
     /// </summary>
-    /// <param name="departmentId">Входящий идентификатор.</param>
+    /// <param name="positionId">Входящий идентификатор.</param>
     /// <returns>Идентификатор позиции(должности сотрудника).</returns>
-    public static PositionId Of(Guid departmentId) => new(departmentId);
+    public static PositionId Of(Guid positionId) => new(positionId);
 };

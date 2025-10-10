@@ -16,9 +16,9 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
 {
     private readonly List<Department> _children = [];
 
-    private readonly List<DepartmentLocation> _locations;
+    private readonly List<DepartmentLocation> _locations = [];
 
-    private readonly List<DepartmentPosition> _positions;
+    private readonly List<DepartmentPosition> _positions = [];
 
     public Department(
         DepartmentId id,
@@ -36,9 +36,14 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
         _positions = positions.ToList();
     }
 
-    public DepartmentName Name { get; private set; }
+    /// <summary>
+    /// Конструктор для работы EF
+    /// </summary>
+    private Department() { }
 
-    public Identifier Identifier { get; private set; }
+    public DepartmentName Name { get; private set; } = null!;
+
+    public Identifier Identifier { get; private set; } = null!;
 
     public DepartmentId? ParentId { get; private set; }
 
