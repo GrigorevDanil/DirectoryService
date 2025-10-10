@@ -1,5 +1,4 @@
-﻿using DirectoryService.Application.Abstractions;
-using DirectoryService.Application.Abstractions.Locations;
+﻿using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
 
 namespace DirectoryService.Infrastructure.Repositories;

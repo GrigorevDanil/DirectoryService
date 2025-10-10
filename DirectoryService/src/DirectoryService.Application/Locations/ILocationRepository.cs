@@ -1,6 +1,6 @@
 ﻿using DirectoryService.Domain.Locations;
 
-namespace DirectoryService.Application.Abstractions.Locations;
+namespace DirectoryService.Application.Locations;
 
 /// <summary>
 /// Интерфейс репозиторий для сущности локации

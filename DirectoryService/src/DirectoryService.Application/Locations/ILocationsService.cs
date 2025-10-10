@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Dtos;
 
-namespace DirectoryService.Application.Abstractions.Locations;
+namespace DirectoryService.Application.Locations;
 
 /// <summary>
 /// Интерфейс сервиса для сущности локации

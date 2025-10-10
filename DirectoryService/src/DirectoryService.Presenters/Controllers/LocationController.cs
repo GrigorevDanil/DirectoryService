@@ -1,4 +1,4 @@
-﻿using DirectoryService.Application.Abstractions.Locations;
+﻿using DirectoryService.Application.Locations;
 using DirectoryService.Contracts.Dtos;
 using Microsoft.AspNetCore.Mvc;
 

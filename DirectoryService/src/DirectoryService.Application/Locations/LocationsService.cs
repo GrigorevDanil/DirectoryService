@@ -3,7 +3,7 @@ using DirectoryService.Contracts.Dtos;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
 
-namespace DirectoryService.Application.Abstractions.Locations;
+namespace DirectoryService.Application.Locations;
 
 
 public class LocationsService : ILocationsService

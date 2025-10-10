@@ -1,4 +1,4 @@
-﻿using DirectoryService.Application.Abstractions.Locations;
+﻿using DirectoryService.Application.Locations;
 using DirectoryService.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
