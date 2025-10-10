@@ -13,9 +13,9 @@ public class LocationController : ControllerBase
     public LocationController(ILocationsService locationsService) => _locationsService = locationsService;
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> Create([FromBody] LocationDto locationDto)
+    public async Task<ActionResult<Guid>> Create([FromBody] LocationDto locationDto, CancellationToken cancellationToken)
     {
-        var result = await _locationsService.AddAsync(locationDto);
+        var result = await _locationsService.AddAsync(locationDto, cancellationToken);
 
         if (result.IsFailure) 
             return BadRequest(result.Error);

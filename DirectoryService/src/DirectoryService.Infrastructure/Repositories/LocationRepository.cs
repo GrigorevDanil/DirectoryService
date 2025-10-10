@@ -10,10 +10,10 @@ public class LocationRepository : ILocationRepository
 
     public LocationRepository(AppDbContext dbContext) => _dbContext = dbContext;
 
-    public async Task<Guid> AddLocationAsync(Location location)
+    public async Task<Guid> AddLocationAsync(Location location, CancellationToken cancellationToken)
     {
-        await _dbContext.Locations.AddAsync(location);
-        await _dbContext.SaveChangesAsync();
+        await _dbContext.Locations.AddAsync(location, cancellationToken);
+        await _dbContext.SaveChangesAsync(cancellationToken);
         return location.Id.Value;
     }
 }

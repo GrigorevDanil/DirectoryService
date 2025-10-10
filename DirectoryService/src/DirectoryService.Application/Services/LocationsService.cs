@@ -13,7 +13,7 @@ public class LocationsService : ILocationsService
 
     public LocationsService(ILocationRepository locationRepository) => _locationRepository = locationRepository;
 
-    public async Task<Result<Guid>> AddAsync(LocationDto locationDto)
+    public async Task<Result<Guid>> AddAsync(LocationDto locationDto, CancellationToken cancellationToken)
     {
         var nameResult = LocationName.Of(locationDto.Name);
 
@@ -43,7 +43,7 @@ public class LocationsService : ILocationsService
             timezone,
             address);
 
-        var locationId = await _locationRepository.AddLocationAsync(location);
+        var locationId = await _locationRepository.AddLocationAsync(location, cancellationToken);
 
         return Result.Success(locationId);
     }

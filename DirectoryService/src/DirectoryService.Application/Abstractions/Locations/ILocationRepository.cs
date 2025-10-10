@@ -11,6 +11,7 @@ public interface ILocationRepository
     /// Создать локацию ассинхронно
     /// </summary>
     /// <param name="location">Сущность локация.</param>
+    /// <param name="cancellationToken">Токен отмены.</param>
     /// <returns>Идентификатор созданной локации.</returns>
-    public Task<Guid> AddLocationAsync(Location location);
+    public Task<Guid> AddLocationAsync(Location location, CancellationToken cancellationToken);
 }
