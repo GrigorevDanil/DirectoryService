@@ -21,11 +21,16 @@ public class Location: BaseEntity<LocationId>, ISoftDeletable
         Address = address;
     }
 
-    public LocationName Name { get; private set; }
+    /// <summary>
+    /// Конструктор для работы EF
+    /// </summary>
+    private Location() { }
 
-    public Timezone Timezone { get; private set; }
+    public LocationName Name { get; private set; } = null!;
 
-    public Address Address { get; private set; }
+    public Timezone Timezone { get; private set; } = null!;
+
+    public Address Address { get; private set; } = null!;
 
     public bool IsActive { get; private set; } = true;
 
@@ -79,7 +84,7 @@ public class Location: BaseEntity<LocationId>, ISoftDeletable
         string region,
         string city,
         string street,
-        int houseNumber)
+        string houseNumber)
     {
         var addressResult = Address.Of(
             country,

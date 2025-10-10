@@ -17,9 +17,9 @@ public record Path
         Depth = depth;
     }
 
-    public static string Value { get; private set; } = string.Empty;
+    public string Value { get; private set; } = string.Empty;
 
-    public static short Depth { get; private set; }
+    public short Depth { get; private set; }
 
     /// <summary>
     /// Создает новый объект "Путь подразделения" для родителя

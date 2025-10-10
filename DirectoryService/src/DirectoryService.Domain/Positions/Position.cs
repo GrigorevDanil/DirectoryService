@@ -19,9 +19,14 @@ public class Position : BaseEntity<PositionId>, ISoftDeletable
         Description = description;
     }
 
-    public PositionName Name { get; private set; }
+    /// <summary>
+    /// Конструктор для работы EF
+    /// </summary>
+    private Position() { }
 
-    public Description Description { get; private set; }
+    public PositionName Name { get; private set; } = null!;
+
+    public Description Description { get; private set; } = null!;
 
     public bool IsActive { get; private set; } = true;
 

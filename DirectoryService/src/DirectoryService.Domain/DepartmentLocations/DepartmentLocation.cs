@@ -1,4 +1,5 @@
-﻿using DirectoryService.Domain.Departments.ValueObjects;
+﻿using DirectoryService.Domain.DepartmentLocations.ValueObjects;
+using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 
 namespace DirectoryService.Domain.DepartmentLocations;
@@ -9,14 +10,23 @@ namespace DirectoryService.Domain.DepartmentLocations;
 public class DepartmentLocation
 {
     public DepartmentLocation(
+        DepartmentLocationId departmentLocationId,
         DepartmentId departmentId,
         LocationId locationId)
     {
+        Id = departmentLocationId;
         DepartmentId = departmentId;
         LocationId = locationId;
     }
 
-    public DepartmentId DepartmentId { get; private set; }
+    /// <summary>
+    /// Конструктор для работы EF
+    /// </summary>
+    private DepartmentLocation() { }
 
-    public LocationId LocationId { get; private set; }
+    public DepartmentLocationId Id { get; private set; } = null!;
+
+    public DepartmentId DepartmentId { get; private set; } = null!;
+
+    public LocationId LocationId { get; private set; } = null!;
 }

@@ -7,7 +7,17 @@ namespace DirectoryService.Domain.Locations.ValueObjects;
 /// </summary>
 public record Address
 {
-    public const int POSTAL_CODE_LENGTH = 6;
+    public const int MAX_LENGTH_COUNTRY = 100;
+
+    public const int MAX_LENGTH_POSTAL_CODE = 6;
+
+    public const int MAX_LENGTH_REGION = 100;
+
+    public const int MAX_LENGTH_CITY = 100;
+
+    public const int MAX_LENGTH_STREET = 150;
+
+    public const int MAX_LENGTH_HOUSE_NUMBER = 3;
 
     /// <summary>
     /// Страна
@@ -37,7 +47,7 @@ public record Address
     /// <summary>
     /// Номер дома
     /// </summary>
-    public int HouseNumber { get; }
+    public string HouseNumber { get; }
 
     private Address(
         string country,
@@ -45,7 +55,7 @@ public record Address
         string region,
         string city,
         string street,
-        int houseNumber)
+        string houseNumber)
     {
         Country = country;
         PostalCode = postalCode;
@@ -71,25 +81,26 @@ public record Address
         string region,
         string city,
         string street,
-        int houseNumber)
+        string houseNumber)
     {
-        if (string.IsNullOrWhiteSpace(country))
-            return Result.Failure<Address>("Country cannot be empty.");
+        if (string.IsNullOrWhiteSpace(country) || country.Length < MAX_LENGTH_COUNTRY)
+            return Result.Failure<Address>("Country is empty or does not match the allowed length");
 
-        if (string.IsNullOrWhiteSpace(postalCode) || postalCode.Length < POSTAL_CODE_LENGTH)
-            return Result.Failure<Address>("Postal code cannot be empty or less than 6.");
+        if (string.IsNullOrWhiteSpace(postalCode) || postalCode.Length < MAX_LENGTH_POSTAL_CODE || int.TryParse(postalCode, out _))
+            return Result.Failure<Address>("Postal code may be empty, invalid in length, or not a number");
 
-        if (string.IsNullOrWhiteSpace(region))
-            return Result.Failure<Address>("Region cannot be empty.");
+        if (string.IsNullOrWhiteSpace(region) || region.Length < MAX_LENGTH_REGION)
+            return Result.Failure<Address>("Region is empty or does not match the allowed length");
 
-        if (string.IsNullOrWhiteSpace(city))
-            return Result.Failure<Address>("City cannot be empty.");
+        if (string.IsNullOrWhiteSpace(city) || city.Length < MAX_LENGTH_CITY)
+            return Result.Failure<Address>("City is empty or does not match the allowed length");
 
-        if (string.IsNullOrWhiteSpace(street))
-            return Result.Failure<Address>("Street cannot be empty.");
+        if (string.IsNullOrWhiteSpace(street) || street.Length < MAX_LENGTH_STREET)
+            return Result.Failure<Address>("Street is empty or does not match the allowed length");
 
-        if (houseNumber < 1)
-            return Result.Failure<Address>("House number cannot be less than 1.");
+        if (string.IsNullOrWhiteSpace(houseNumber) || houseNumber.Length < MAX_LENGTH_HOUSE_NUMBER ||
+            int.TryParse(houseNumber, out int parsedHouseNumber) || parsedHouseNumber < 1)
+            return Result.Failure<Address>("House number may be empty, longer than allowed, not a number, or less than 1");
 
         return new Address(country, postalCode, region, city, street, houseNumber);
     }
