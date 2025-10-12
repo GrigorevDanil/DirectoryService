@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Locations.ValueObjects;
 using DirectoryService.Domain.Shared;
+using Shared;
 
 namespace DirectoryService.Domain.Locations;
 
@@ -39,16 +40,16 @@ public class Location: BaseEntity<LocationId>, ISoftDeletable
     /// </summary>
     /// <param name="name">Новое название локации.</param>
     /// <returns>Результат выполнения переименования.</returns>
-    public Result Rename(string name)
+    public UnitResult<Error> Rename(string name)
     {
         var nameResult = LocationName.Of(name);
 
         if (nameResult.IsFailure)
-            return Result.Failure(nameResult.Error);
+            return nameResult.Error;
 
         Name = nameResult.Value;
 
-        return Result.Success();
+        return Result.Success<Error>();
     }
 
     /// <summary>
@@ -56,16 +57,16 @@ public class Location: BaseEntity<LocationId>, ISoftDeletable
     /// </summary>
     /// <param name="timezone">Новый IANA-код часового пояса.</param>
     /// <returns>Результат выполнения изменения часового пояса.</returns>
-    public Result ChangeTimezone(string timezone)
+    public UnitResult<Error> ChangeTimezone(string timezone)
     {
         var timezoneResult = Timezone.Of(timezone);
 
         if (timezoneResult.IsFailure)
-            return Result.Failure(timezoneResult.Error);
+            return timezoneResult.Error;
 
         Timezone = timezoneResult.Value;
 
-        return Result.Success();
+        return Result.Success<Error>();
     }
 
     /// <summary>
@@ -78,7 +79,7 @@ public class Location: BaseEntity<LocationId>, ISoftDeletable
     /// <param name="street">Улица.</param>
     /// <param name="houseNumber">Номер дома.</param>
     /// <returns>Результат выполнения изменения адреса.</returns>
-    public Result ChangeAddress(
+    public UnitResult<Errors> ChangeAddress(
         string country,
         string postalCode,
         string region,
@@ -95,11 +96,11 @@ public class Location: BaseEntity<LocationId>, ISoftDeletable
             houseNumber);
 
         if (addressResult.IsFailure)
-            return Result.Failure(addressResult.Error);
+            return addressResult.Error;
 
         Address = addressResult.Value;
 
-        return Result.Success();
+        return Result.Success<Errors>();
     }
 
     /// <summary>

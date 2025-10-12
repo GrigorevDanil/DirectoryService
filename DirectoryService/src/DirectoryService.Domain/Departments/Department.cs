@@ -5,6 +5,7 @@ using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 using DirectoryService.Domain.Positions.ValueObjects;
 using DirectoryService.Domain.Shared;
+using Shared;
 using Path = DirectoryService.Domain.Departments.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Departments;
@@ -63,7 +64,7 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
     /// <param name="identifier">Короткое название подразделения.</param>
     /// <param name="path">Путь родителя.</param>
     /// <returns>Результат установки пути.</returns>
-    public Result SetPath(Identifier identifier, Path? path = null)
+    public UnitResult<Error> SetPath(Identifier identifier, Path? path = null)
     {
         // Подраздел является родительским
         if (path == null)
@@ -71,22 +72,22 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
             var resultPath = Path.Of(identifier.Value);
 
             if (resultPath.IsFailure)
-                return Result.Failure(resultPath.Error);
+                return resultPath.Error;
 
             Path = resultPath.Value;
 
-            return Result.Success();
+            return Result.Success<Error>();
         }
 
         // Подраздел является дочерним
         var resultDescendingPath = Path.Descending(identifier.Value);
 
         if (resultDescendingPath.IsFailure)
-            return Result.Failure(resultDescendingPath.Error);
+            return resultDescendingPath.Error;
 
         Path = resultDescendingPath.Value;
 
-        return Result.Success();
+        return Result.Success<Error>();
     }
 
     /// <summary>
@@ -94,16 +95,16 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
     /// </summary>
     /// <param name="name">Новое название подразделения.</param>
     /// <returns>Результат выполнения переименования.</returns>
-    public Result Rename(string name)
+    public UnitResult<Error> Rename(string name)
     {
         var nameResult = DepartmentName.Of(name);
 
         if (nameResult.IsFailure)
-            return Result.Failure(nameResult.Error);
+            return nameResult.Error;
 
         Name = nameResult.Value;
 
-        return Result.Success();
+        return Result.Success<Error>();
     }
 
     /// <summary>
@@ -111,26 +112,26 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
     /// </summary>
     /// <param name="identifier">Новое короткое название подразделения.</param>
     /// <returns>Результат выполнения переименования.</returns>
-    public Result ChangeIdentifier(string identifier)
+    public UnitResult<Error> ChangeIdentifier(string identifier)
     {
         var identifierResult = Identifier.Of(identifier);
 
         if (identifierResult.IsFailure)
-            return Result.Failure(identifierResult.Error);
+            return identifierResult.Error;
 
         var newIdentifier = identifierResult.Value;
 
         var changeSegmentResult = Path.ChangeSegment(Identifier.Value, newIdentifier.Value);
 
         if (changeSegmentResult.IsFailure)
-            return Result.Failure(changeSegmentResult.Error);
+            return changeSegmentResult.Error;
 
         foreach (var child in _children)
         {
             var childChangeSegmentResult = child.Path.ChangeSegment(Identifier.Value, newIdentifier.Value);
 
             if (childChangeSegmentResult.IsFailure)
-                return Result.Failure(childChangeSegmentResult.Error);
+                return childChangeSegmentResult.Error;
 
             child.Path = childChangeSegmentResult.Value;
         }
@@ -139,7 +140,7 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
 
         Path = changeSegmentResult.Value;
 
-        return Result.Success();
+        return Result.Success<Error>();
     }
 
     /// <summary>
@@ -182,13 +183,13 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
     /// Ищет локацию в подразделении по идентификатору
     /// </summary>
     /// <param name="locationId">Идентификатор локации.</param>
-    /// <returns>Связанная сущность локации и подразделения или ошибку.</returns>
-    public Result<DepartmentLocation> GetLocationById(LocationId locationId)
+    /// <returns>Объект <see cref="DepartmentLocation"/> или ошибку <see cref="Error"/>.</returns>
+    public Result<DepartmentLocation, Error> GetLocationById(LocationId locationId)
     {
         var location = _locations.FirstOrDefault(x => x.LocationId == locationId);
 
         if (location is null)
-            return Result.Failure<DepartmentLocation>("Location not found by id " + locationId.Value);
+            return GeneralErrors.NotFound(locationId.Value);
 
         return location;
     }
@@ -215,13 +216,13 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
     /// Ищет позицию(должность сотрудника) в подразделении по идентификатору
     /// </summary>
     /// <param name="positionId">Идентификатор позиции(должность сотрудника).</param>
-    /// <returns>Связанная сущность позиции(должность сотрудника) и подразделения или ошибку.</returns>
-    public Result<DepartmentPosition> GetPositionById(PositionId positionId)
+    /// <returns>Объект <see cref="DepartmentPosition"/> или ошибку <see cref="Error"/>.</returns>
+    public Result<DepartmentPosition, Error> GetPositionById(PositionId positionId)
     {
         var position = _positions.FirstOrDefault(x => x.PositionId == positionId);
 
         if (position is null)
-            return Result.Failure<DepartmentPosition>("Position not found by id " + positionId.Value);
+            return GeneralErrors.NotFound(positionId.Value);
 
         return position;
     }

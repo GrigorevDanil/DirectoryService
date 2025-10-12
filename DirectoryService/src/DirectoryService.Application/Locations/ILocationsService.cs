@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Dtos;
+using Shared;
 
 namespace DirectoryService.Application.Locations;
 
@@ -13,6 +14,6 @@ public interface ILocationsService
     /// </summary>
     /// <param name="locationDto">Входящие данные о локации.</param>
     /// <param name="cancellationToken">Токен отмены.</param>
-    /// <returns>Идентификатор созданной локации.</returns>
-    public Task<Result<Guid>> AddAsync(LocationDto locationDto, CancellationToken cancellationToken);
+    /// <returns>Идентификатор созданной локации или список ошибок <see cref="Errors"/>.</returns>
+    public Task<Result<Guid, Errors>> AddAsync(LocationDto locationDto, CancellationToken cancellationToken);
 }

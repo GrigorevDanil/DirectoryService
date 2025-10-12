@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Shared;
 
 namespace DirectoryService.Domain.Locations.ValueObjects;
 
@@ -13,17 +14,17 @@ public record Timezone
     public string Value { get; private set; }
 
     /// <summary>
-    /// Создает новый объект "Название локации"
+    /// Создает новый объект <see cref="Timezone"/>
     /// </summary>
     /// <param name="value">Входящее значение.</param>
-    /// <returns>Новый объект или ошибка.</returns>
-    public static Result<Timezone> Of(string value)
+    /// <returns>Новый объект <see cref="Timezone"/> или ошибка <see cref="Error"/>.</returns>
+    public static Result<Timezone, Error> Of(string value)
     {
         if (string.IsNullOrWhiteSpace(value) || value.Length > MAX_LENGHT || value.Length < 3)
-            return Result.Failure<Timezone>("Value is empty or does not match the allowed length");
+            return GeneralErrors.ValueIsEmptyOrInvalidLength("timezone");
 
         if (!TimeZoneInfo.TryFindSystemTimeZoneById(value, out _))
-            return Result.Failure<Timezone>("Value is not IANA");
+            return GeneralErrors.ValueIsInvalid("Value is not IANA", "timezone");
 
         return new Timezone(value);
     }

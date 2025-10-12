@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Positions.ValueObjects;
 using DirectoryService.Domain.Shared;
+using Shared;
 
 namespace DirectoryService.Domain.Positions;
 
@@ -35,16 +36,16 @@ public class Position : BaseEntity<PositionId>, ISoftDeletable
     /// </summary>
     /// <param name="name">Новое название позиции(должности сотрудника).</param>
     /// <returns>Результат выполнения переименования.</returns>
-    public Result Rename(string name)
+    public UnitResult<Error> Rename(string name)
     {
         var nameResult = PositionName.Of(name);
 
         if (nameResult.IsFailure)
-            return Result.Failure(nameResult.Error);
+            return nameResult.Error;
 
         Name = nameResult.Value;
 
-        return Result.Success();
+        return Result.Success<Error>();
     }
 
     /// <summary>
@@ -52,16 +53,16 @@ public class Position : BaseEntity<PositionId>, ISoftDeletable
     /// </summary>
     /// <param name="description">Новое описание позиции(должности сотрудника).</param>
     /// <returns>Результат выполнения изменения описания.</returns>
-    public Result ChangeDescription(string description)
+    public UnitResult<Error> ChangeDescription(string description)
     {
         var descriptionResult = Description.Of(description);
 
         if (descriptionResult.IsFailure)
-            return Result.Failure(descriptionResult.Error);
+            return descriptionResult.Error;
 
         Description = descriptionResult.Value;
 
-        return Result.Success();
+        return Result.Success<Error>();
     }
 
     /// <summary>

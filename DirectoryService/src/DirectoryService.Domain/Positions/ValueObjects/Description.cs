@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using Shared;
 
 namespace DirectoryService.Domain.Positions.ValueObjects;
 
@@ -14,16 +15,16 @@ public record Description
     public string? Value { get; private set; }
 
     /// <summary>
-    /// Создает новый объект "Название позиции(должности сотрудника)"
+    /// Создает новый объект <see cref="Description"/>
     /// </summary>
     /// <param name="value">Входящее значение.</param>
-    /// <returns>Новый объект или ошибка.</returns>
-    public static Result<Description> Of(string? value)
+    /// <returns>Новый объект <see cref="Description"/> или ошибка <see cref="Error"/>.</returns>
+    public static Result<Description, Error> Of(string? value)
     {
         if (value != null)
         {
             if (string.IsNullOrWhiteSpace(value) || value.Length > MAX_LENGHT)
-                return Result.Failure<Description>("Value is empty or does not match the allowed length");
+                return GeneralErrors.ValueIsEmptyOrInvalidLength("description");
         }
 
         return new Description(value);

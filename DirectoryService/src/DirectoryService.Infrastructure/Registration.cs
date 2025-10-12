@@ -16,6 +16,6 @@ public static class Registration
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        return services.AddScoped<ILocationRepository, LocationRepository>();
+        return services.AddScoped<ILocationsRepository, LocationsRepository>();
     }
 }
