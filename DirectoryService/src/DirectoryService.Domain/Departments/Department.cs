@@ -13,7 +13,7 @@ namespace DirectoryService.Domain.Departments;
 /// <summary>
 /// Сущность подразделения
 /// </summary>
-public class Department : BaseEntity<DepartmentId>, ISoftDeletable
+public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
 {
     private readonly List<Department> _children = [];
 
@@ -21,20 +21,18 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
 
     private readonly List<DepartmentPosition> _positions = [];
 
-    public Department(
+    private Department(
         DepartmentId id,
         DepartmentName name,
         Identifier identifier,
-        DepartmentId parentId,
-        IEnumerable<DepartmentLocation> locations,
-        IEnumerable<DepartmentPosition> positions)
+        Path path,
+        IEnumerable<DepartmentLocation> locations)
     {
         Id = id;
         Name = name;
         Identifier = identifier;
-        ParentId = parentId;
+        Path = path;
         _locations = locations.ToList();
-        _positions = positions.ToList();
     }
 
     /// <summary>
@@ -58,36 +56,55 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
 
     public IReadOnlyList<Department> Children => _children;
 
+
     /// <summary>
-    /// Устанавливает путь для подразделения исходя из короткого название подразделения
+    /// Создать родительское подразделение
     /// </summary>
+    /// <param name="name">Название подразделения.</param>
     /// <param name="identifier">Короткое название подразделения.</param>
-    /// <param name="path">Путь родителя.</param>
-    /// <returns>Результат установки пути.</returns>
-    public UnitResult<Error> SetPath(Identifier identifier, Path? path = null)
+    /// <param name="locations">Локации.</param>
+    /// <param name="departmentId">Идентификатор подразделения.</param>
+    /// <returns>Новый объект <see cref="Department"/> или ошибка <see cref="Error"/>.</returns>
+    public static Result<Department, Error> CreateParent(
+        DepartmentName name,
+        Identifier identifier,
+        IEnumerable<DepartmentLocation> locations,
+        DepartmentId? departmentId = null)
     {
-        // Подраздел является родительским
-        if (path == null)
-        {
-            var resultPath = Path.Of(identifier.Value);
+        var locationsList = locations.ToList();
 
-            if (resultPath.IsFailure)
-                return resultPath.Error;
+        if (locationsList.Count == 0)
+            return GeneralErrors.ValueIsInvalid("Department locations must contain at least one location", "department.location");
 
-            Path = resultPath.Value;
+        var path = Path.CreateParent(identifier);
 
-            return Result.Success<Error>();
-        }
+        return new Department(departmentId ?? DepartmentId.Create(), name, identifier, path, locationsList);
+    }
 
-        // Подраздел является дочерним
-        var resultDescendingPath = Path.Descending(identifier.Value);
+    /// <summary>
+    /// Создать дочернее подразделение
+    /// </summary>
+    /// <param name="name">Название подразделения.</param>
+    /// <param name="identifier">Короткое название подразделения.</param>
+    /// <param name="parent">Родительское подразделение.</param>
+    /// <param name="locations">Локации.</param>
+    /// <param name="departmentId">Идентификатор подразделения.</param>
+    /// <returns>Новый объект <see cref="Department"/> или ошибка <see cref="Error"/>.</returns>
+    public static Result<Department, Error> CreateChild(
+        DepartmentName name,
+        Identifier identifier,
+        Department parent,
+        IEnumerable<DepartmentLocation> locations,
+        DepartmentId? departmentId = null)
+    {
+        var locationsList = locations.ToList();
 
-        if (resultDescendingPath.IsFailure)
-            return resultDescendingPath.Error;
+        if (locationsList.Count == 0)
+            return GeneralErrors.ValueIsInvalid("Department locations must contain at least one location", "department.location");
 
-        Path = resultDescendingPath.Value;
+        var path = parent.Path.CreateChild(identifier);
 
-        return Result.Success<Error>();
+        return new Department(departmentId ?? DepartmentId.Create(), name, identifier, path, locationsList);
     }
 
     /// <summary>
@@ -103,42 +120,6 @@ public class Department : BaseEntity<DepartmentId>, ISoftDeletable
             return nameResult.Error;
 
         Name = nameResult.Value;
-
-        return Result.Success<Error>();
-    }
-
-    /// <summary>
-    /// Изменить короткое название подразделения
-    /// </summary>
-    /// <param name="identifier">Новое короткое название подразделения.</param>
-    /// <returns>Результат выполнения переименования.</returns>
-    public UnitResult<Error> ChangeIdentifier(string identifier)
-    {
-        var identifierResult = Identifier.Of(identifier);
-
-        if (identifierResult.IsFailure)
-            return identifierResult.Error;
-
-        var newIdentifier = identifierResult.Value;
-
-        var changeSegmentResult = Path.ChangeSegment(Identifier.Value, newIdentifier.Value);
-
-        if (changeSegmentResult.IsFailure)
-            return changeSegmentResult.Error;
-
-        foreach (var child in _children)
-        {
-            var childChangeSegmentResult = child.Path.ChangeSegment(Identifier.Value, newIdentifier.Value);
-
-            if (childChangeSegmentResult.IsFailure)
-                return childChangeSegmentResult.Error;
-
-            child.Path = childChangeSegmentResult.Value;
-        }
-
-        Identifier = newIdentifier;
-
-        Path = changeSegmentResult.Value;
 
         return Result.Success<Error>();
     }

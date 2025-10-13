@@ -8,7 +8,7 @@ namespace DirectoryService.Domain.Locations;
 /// <summary>
 /// Сущность локации
 /// </summary>
-public class Location: BaseEntity<LocationId>, ISoftDeletable
+public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
 {
     public Location(
         LocationId id,

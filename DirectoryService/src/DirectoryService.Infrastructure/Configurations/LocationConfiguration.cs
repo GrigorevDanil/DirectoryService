@@ -44,7 +44,7 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
 
             ab.Property(a => a.PostalCode)
                 .HasColumnName("postal_code")
-                .HasMaxLength(Address.MAX_LENGTH_POSTAL_CODE)
+                .HasMaxLength(Address.LENGTH_POSTAL_CODE)
                 .IsRequired();
 
             ab.Property(a => a.Region)

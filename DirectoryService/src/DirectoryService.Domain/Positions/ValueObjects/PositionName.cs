@@ -8,6 +8,7 @@ namespace DirectoryService.Domain.Positions.ValueObjects;
 /// </summary>
 public record PositionName
 {
+    public const int MIN_LENGHT = 3;
     public const int MAX_LENGHT = 100;
 
     private PositionName(string value) => Value = value;
@@ -21,8 +22,11 @@ public record PositionName
     /// <returns>Новый объект <see cref="PositionName"/> или ошибка <see cref="Error"/>.</returns>
     public static Result<PositionName, Error> Of(string value)
     {
-        if (string.IsNullOrWhiteSpace(value) || value.Length > MAX_LENGHT || value.Length < 3)
-            return GeneralErrors.ValueIsEmptyOrInvalidLength("name");
+        if (string.IsNullOrWhiteSpace(value))
+            return GeneralErrors.ValueIsRequired("position.name");
+
+        if (value.Length is > MAX_LENGHT or < MIN_LENGHT)
+            return GeneralErrors.ValueIsInvalidLength("position.name");
 
         return new PositionName(value);
     }

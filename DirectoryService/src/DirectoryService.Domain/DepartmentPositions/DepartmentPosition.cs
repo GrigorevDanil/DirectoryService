@@ -7,7 +7,7 @@ namespace DirectoryService.Domain.DepartmentPositions;
 /// <summary>
 /// Связанная сущность между подразделениями и позициями(должностями сотрудников)
 /// </summary>
-public class DepartmentPosition
+public sealed class DepartmentPosition
 {
     public DepartmentPosition(
         DepartmentPositionId departmentPositionId,
