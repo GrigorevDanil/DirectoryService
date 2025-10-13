@@ -23,8 +23,8 @@ public record Description
     {
         if (value != null)
         {
-            if (string.IsNullOrWhiteSpace(value) || value.Length > MAX_LENGHT)
-                return GeneralErrors.ValueIsEmptyOrInvalidLength("description");
+            if (value.Length > MAX_LENGHT)
+                return GeneralErrors.ValueIsInvalidLength("position.description");
         }
 
         return new Description(value);

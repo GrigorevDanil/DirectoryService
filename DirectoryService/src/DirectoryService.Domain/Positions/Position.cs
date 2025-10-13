@@ -8,7 +8,7 @@ namespace DirectoryService.Domain.Positions;
 /// <summary>
 /// Сущность позиции(должности сотрудника)
 /// </summary>
-public class Position : BaseEntity<PositionId>, ISoftDeletable
+public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
 {
     public Position(
         PositionId id,

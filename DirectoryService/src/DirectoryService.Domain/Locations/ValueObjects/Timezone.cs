@@ -8,6 +8,7 @@ namespace DirectoryService.Domain.Locations.ValueObjects;
 /// </summary>
 public record Timezone
 {
+    public const int MIN_LENGHT = 3;
     public const int MAX_LENGHT = 50;
     private Timezone(string value) => Value = value;
 
@@ -20,11 +21,14 @@ public record Timezone
     /// <returns>Новый объект <see cref="Timezone"/> или ошибка <see cref="Error"/>.</returns>
     public static Result<Timezone, Error> Of(string value)
     {
-        if (string.IsNullOrWhiteSpace(value) || value.Length > MAX_LENGHT || value.Length < 3)
-            return GeneralErrors.ValueIsEmptyOrInvalidLength("timezone");
+        if (string.IsNullOrWhiteSpace(value))
+            return GeneralErrors.ValueIsRequired("location.timezone");
+
+        if (value.Length is > MAX_LENGHT or < MIN_LENGHT)
+            return GeneralErrors.ValueIsInvalidLength("location.timezone");
 
         if (!TimeZoneInfo.TryFindSystemTimeZoneById(value, out _))
-            return GeneralErrors.ValueIsInvalid("Value is not IANA", "timezone");
+            return GeneralErrors.ValueIsInvalid("Value is not IANA", "location.timezone");
 
         return new Timezone(value);
     }
