@@ -2,6 +2,7 @@
 using DirectoryService.Contracts.Dtos;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
+using Microsoft.Extensions.Logging;
 using Shared;
 
 namespace DirectoryService.Application.Locations;
@@ -11,7 +12,13 @@ public class LocationsService : ILocationsService
 {
     private readonly ILocationsRepository _locationsRepository;
 
-    public LocationsService(ILocationsRepository locationsRepository) => _locationsRepository = locationsRepository;
+    private readonly ILogger<LocationsService> _logger;
+
+    public LocationsService(ILocationsRepository locationsRepository, ILogger<LocationsService> logger)
+    {
+        _locationsRepository = locationsRepository;
+        _logger = logger;
+    }
 
     public async Task<Result<Guid, Errors>> AddAsync(LocationDto locationDto, CancellationToken cancellationToken)
     {
@@ -54,6 +61,8 @@ public class LocationsService : ILocationsService
 
         var locationId = addLocationResult.Value;
 
-        return Result.Success<Guid, Errors>(locationId);
+        _logger.LogInformation("Location by id {locationId} has been added.", locationId);
+
+        return locationId;
     }
 }
