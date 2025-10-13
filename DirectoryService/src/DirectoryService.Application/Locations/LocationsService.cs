@@ -2,37 +2,42 @@
 using DirectoryService.Contracts.Dtos;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
+using Shared;
 
 namespace DirectoryService.Application.Locations;
 
 
 public class LocationsService : ILocationsService
 {
-    private readonly ILocationRepository _locationRepository;
+    private readonly ILocationsRepository _locationsRepository;
 
-    public LocationsService(ILocationRepository locationRepository) => _locationRepository = locationRepository;
+    public LocationsService(ILocationsRepository locationsRepository) => _locationsRepository = locationsRepository;
 
-    public async Task<Result<Guid>> AddAsync(LocationDto locationDto, CancellationToken cancellationToken)
+    public async Task<Result<Guid, Errors>> AddAsync(LocationDto locationDto, CancellationToken cancellationToken)
     {
+        var errors = new List<Error>();
+
         var nameResult = LocationName.Of(locationDto.Name);
 
         if (nameResult.IsFailure)
-            return Result.Failure<Guid>(nameResult.Error);
-
-        var name = nameResult.Value;
-
+            errors.Add(nameResult.Error);
 
         var timezoneResult = Timezone.Of(locationDto.Timezone);
 
         if (timezoneResult.IsFailure)
-            return Result.Failure<Guid>(timezoneResult.Error);
-
-        var timezone = timezoneResult.Value;
+            errors.Add(timezoneResult.Error);
 
         var addressResult = Address.Of(locationDto.Address);
 
         if (addressResult.IsFailure)
-            return Result.Failure<Guid>(addressResult.Error);
+            errors.AddRange(addressResult.Error);
+
+        if (errors.Count != 0)
+            return new Errors(errors);
+
+        var name = nameResult.Value;
+
+        var timezone = timezoneResult.Value;
 
         var address = addressResult.Value;
 
@@ -42,13 +47,13 @@ public class LocationsService : ILocationsService
             timezone,
             address);
 
-        var addLocationResult = await _locationRepository.AddLocationAsync(location, cancellationToken);
+        var addLocationResult = await _locationsRepository.AddLocationAsync(location, cancellationToken);
 
         if (addLocationResult.IsFailure)
-            return Result.Failure<Guid>(addLocationResult.Error);
+            return addLocationResult.Error.ToErrors();
 
         var locationId = addLocationResult.Value;
 
-        return Result.Success(locationId);
+        return Result.Success<Guid, Errors>(locationId);
     }
 }

@@ -1,5 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Dtos;
+using Shared;
 
 namespace DirectoryService.Domain.Locations.ValueObjects;
 
@@ -67,7 +68,7 @@ public record Address
     }
 
     /// <summary>
-    /// Создает новый объект "Адрес"
+    /// Создает новый объект <see cref="Address"/>
     /// </summary>
     /// <param name="country">Страна.</param>
     /// <param name="postalCode">Почтовый индекс.</param>
@@ -75,8 +76,8 @@ public record Address
     /// <param name="city">Город.</param>
     /// <param name="street">Улица.</param>
     /// <param name="houseNumber">Номер дома.</param>
-    /// <returns>Новый объект или ошибка.</returns>
-    public static Result<Address> Of(
+    /// <returns>Новый объект <see cref="Address"/> или список ошибок <see cref="Errors"/>.</returns>
+    public static Result<Address, Errors> Of(
         string country,
         string postalCode,
         string region,
@@ -84,34 +85,39 @@ public record Address
         string street,
         string houseNumber)
     {
+        var errors = new List<Error>();
+
         if (string.IsNullOrWhiteSpace(country) || country.Length > MAX_LENGTH_COUNTRY)
-            return Result.Failure<Address>("Country is empty or does not match the allowed length");
+            errors.Add(GeneralErrors.ValueIsEmptyOrInvalidLength("address"));
 
         if (string.IsNullOrWhiteSpace(postalCode) || postalCode.Length < MAX_LENGTH_POSTAL_CODE || !int.TryParse(postalCode, out _))
-            return Result.Failure<Address>("Postal code may be empty, invalid in length, or not a number");
+            errors.Add(GeneralErrors.ValueIsEmptyOrInvalidLength("postalCode", "Postal code may be empty, invalid in length, or not a number"));
 
         if (string.IsNullOrWhiteSpace(region) || region.Length > MAX_LENGTH_REGION)
-            return Result.Failure<Address>("Region is empty or does not match the allowed length");
+            errors.Add(GeneralErrors.ValueIsEmptyOrInvalidLength("region"));
 
         if (string.IsNullOrWhiteSpace(city) || city.Length > MAX_LENGTH_CITY)
-            return Result.Failure<Address>("City is empty or does not match the allowed length");
+            errors.Add(GeneralErrors.ValueIsEmptyOrInvalidLength("city"));
 
         if (string.IsNullOrWhiteSpace(street) || street.Length > MAX_LENGTH_STREET)
-            return Result.Failure<Address>("Street is empty or does not match the allowed length");
+            errors.Add(GeneralErrors.ValueIsEmptyOrInvalidLength("street"));
 
         if (string.IsNullOrWhiteSpace(houseNumber) || houseNumber.Length > MAX_LENGTH_HOUSE_NUMBER ||
             !int.TryParse(houseNumber, out int parsedHouseNumber) || parsedHouseNumber < 1)
-            return Result.Failure<Address>("House number may be empty, longer than allowed, not a number, or less than 1");
+            errors.Add(GeneralErrors.ValueIsEmptyOrInvalidLength("houseNumber", "House number may be empty, longer than allowed, not a number, or less than 1"));
+
+        if (errors.Count != 0)
+            return new Errors(errors);
 
         return new Address(country, postalCode, region, city, street, houseNumber);
     }
 
     /// <summary>
-    /// Создает новый объект "Адрес"
+    /// Создает новый объект <see cref="Address"/>
     /// </summary>
     /// <param name="addressDto">Входящие данные об адресе.</param>
-    /// <returns>Новый объект или ошибка.</returns>
-    public static Result<Address> Of(
+    /// <returns>Новый объект <see cref="Address"/> или список ошибок <see cref="Errors"/>.</returns>
+    public static Result<Address, Errors> Of(
         AddressDto addressDto)
     {
         return Of(
