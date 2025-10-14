@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using DirectoryService.Application.Locations;
+using DirectoryService.Application.Locations.UseCases.Create;
 using DirectoryService.Contracts.Dtos;
+using DirectoryService.Contracts.Locations.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Shared;
@@ -13,17 +15,15 @@ namespace DirectoryService.Presenters.Controllers;
 [Tags("Location - Работа с локациями")]
 public class LocationsController : ControllerBase
 {
-    private readonly ILocationsService _locationsService;
-
-    public LocationsController(ILocationsService locationsService) => _locationsService = locationsService;
-
     [HttpPost]
     [ProducesResponseType<Envelope<Guid>>(201)]
     [ProducesResponseType<Envelope>(400)]
     [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
     [EndpointSummary("Создать локацию")]
     public async Task<EndpointResult<Guid>> Create(
-        [FromBody][Description("Данные локации")] LocationDto locationDto,
+        [FromBody][Description("Данные локации")] CreateLocationRequest request,
+        [FromServices] CreateLocationHandler handler,
         CancellationToken cancellationToken) =>
-        await _locationsService.AddAsync(locationDto, cancellationToken);
+        await handler.Handle(new CreateLocationCommand(request), cancellationToken);
 }

@@ -1,7 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
+using Microsoft.EntityFrameworkCore;
 using Shared;
+using Shared.Constants;
 
 namespace DirectoryService.Infrastructure.Repositories;
 
@@ -18,6 +20,13 @@ public class LocationsRepository : ILocationsRepository
         try
         {
             await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException dbUpdateEx)
+        {
+            if (dbUpdateEx.InnerException?.Data[InnerExceptionDataConstants.SQL_STATE]!.ToString() == SqlStates.UNIQUE_CONSTRAINT_VIOLATION)
+                return GeneralErrors.Conflict();
+
+            return GeneralErrors.Failure(dbUpdateEx.Message);
         }
         catch (Exception ex)
         {
