@@ -17,12 +17,16 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
             .HasConversion(lId => lId.Value, id => LocationId.Of(id))
             .HasColumnName("id");
 
-        builder.ComplexProperty(e => e.Name, nb =>
+        builder.OwnsOne(e => e.Name, nb =>
         {
             nb.Property(n => n.Value)
                 .HasColumnName("name")
                 .HasMaxLength(LocationName.MAX_LENGHT)
                 .IsRequired();
+
+            nb.HasIndex(e => e.Value)
+                .IsUnique()
+                .HasDatabaseName("ix_locations_name");
         });
 
         builder.ComplexProperty(e => e.Timezone, tzb =>

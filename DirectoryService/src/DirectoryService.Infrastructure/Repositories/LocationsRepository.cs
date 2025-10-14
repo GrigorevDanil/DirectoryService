@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
+using Microsoft.EntityFrameworkCore;
 using Shared;
 
 namespace DirectoryService.Infrastructure.Repositories;
@@ -18,6 +19,13 @@ public class LocationsRepository : ILocationsRepository
         try
         {
             await _dbContext.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException dbUpdateEx)
+        {
+            if (dbUpdateEx.InnerException?.Data["SqlState"]!.ToString() == "23505")
+                return GeneralErrors.Conflict();
+
+            return GeneralErrors.Failure(dbUpdateEx.Message);
         }
         catch (Exception ex)
         {

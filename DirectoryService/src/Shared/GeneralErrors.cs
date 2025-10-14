@@ -64,4 +64,14 @@ public static class GeneralErrors
     {
         return Error.Failure(message);
     }
+
+    /// <summary>
+    /// Ошибка конфликта
+    /// </summary>
+    /// <param name="message">Сообщение об ошибке.</param>
+    /// <returns>Экземпляр <see cref="Error"/>.</returns>
+    public static Error Conflict(string message = "Value is conflicting, and it may be a duplicate")
+    {
+        return Error.Conflict(message);
+    }
 }

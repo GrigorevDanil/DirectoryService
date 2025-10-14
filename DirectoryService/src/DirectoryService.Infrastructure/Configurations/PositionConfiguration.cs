@@ -18,12 +18,16 @@ public class PositionConfiguration : IEntityTypeConfiguration<Position>
              .HasConversion(pId => pId.Value, id => PositionId.Of(id))
              .HasColumnName("id");
 
-         builder.ComplexProperty(e => e.Name, nb =>
+         builder.OwnsOne(e => e.Name, nb =>
          {
              nb.Property(n => n.Value)
                  .HasColumnName("name")
                  .HasMaxLength(PositionName.MAX_LENGHT)
                  .IsRequired();
+
+             nb.HasIndex(e => e.Value)
+                 .IsUnique()
+                 .HasDatabaseName("ix_positions_name");
          });
 
          builder.ComplexProperty(e => e.Description, db =>
