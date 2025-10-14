@@ -3,6 +3,7 @@ using DirectoryService.Application.Locations;
 using DirectoryService.Domain.Locations;
 using Microsoft.EntityFrameworkCore;
 using Shared;
+using Shared.Constants;
 
 namespace DirectoryService.Infrastructure.Repositories;
 
@@ -22,7 +23,7 @@ public class LocationsRepository : ILocationsRepository
         }
         catch (DbUpdateException dbUpdateEx)
         {
-            if (dbUpdateEx.InnerException?.Data["SqlState"]!.ToString() == "23505")
+            if (dbUpdateEx.InnerException?.Data[InnerExceptionDataConstants.SQL_STATE]!.ToString() == SqlStates.UNIQUE_CONSTRAINT_VIOLATION)
                 return GeneralErrors.Conflict();
 
             return GeneralErrors.Failure(dbUpdateEx.Message);
