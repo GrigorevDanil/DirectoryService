@@ -10,7 +10,7 @@ public record Path
 {
     private const char SEPARATOR = '.';
 
-    private const short START_DEPTH = 1;
+    private const short START_DEPTH = 0;
 
     private Path(string value, short depth)
     {
@@ -43,6 +43,6 @@ public record Path
 
         string[] depth = path.Split(SEPARATOR);
 
-        return new Path(path, (short)depth.Length);
+        return new Path(path, (short)(depth.Length - 1));
     }
 };

@@ -1,4 +1,6 @@
-﻿using DirectoryService.Application.Locations;
+﻿using DirectoryService.Application.Departments;
+using DirectoryService.Application.Locations;
+using DirectoryService.Application.Positions;
 using DirectoryService.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,6 +18,10 @@ public static class Registration
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
     {
-        return services.AddScoped<ILocationsRepository, LocationsRepository>();
+        services.AddScoped<ILocationRepository, LocationsRepository>();
+        services.AddScoped<IDepartmentRepository, DepartmentsRepository>();
+        services.AddScoped<IPositionsRepository, PositionsRepository>();
+
+        return services;
     }
 }

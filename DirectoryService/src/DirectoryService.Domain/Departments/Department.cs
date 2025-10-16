@@ -4,7 +4,6 @@ using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 using DirectoryService.Domain.Positions.ValueObjects;
-using DirectoryService.Domain.Shared;
 using Shared;
 using Path = DirectoryService.Domain.Departments.ValueObjects.Path;
 
@@ -26,13 +25,15 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
         DepartmentName name,
         Identifier identifier,
         Path path,
-        IEnumerable<DepartmentLocation> locations)
+        IEnumerable<DepartmentLocation> locations,
+        DepartmentId? parentId = null)
     {
         Id = id;
         Name = name;
         Identifier = identifier;
         Path = path;
         _locations = locations.ToList();
+        ParentId = parentId;
     }
 
     /// <summary>
@@ -104,7 +105,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
 
         var path = parent.Path.CreateChild(identifier);
 
-        return new Department(departmentId ?? DepartmentId.Create(), name, identifier, path, locationsList);
+        return new Department(departmentId ?? DepartmentId.Create(), name, identifier, path, locationsList, parent.Id);
     }
 
     /// <summary>

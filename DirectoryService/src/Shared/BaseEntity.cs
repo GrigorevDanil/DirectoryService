@@ -1,12 +1,17 @@
-﻿namespace DirectoryService.Domain.Shared;
+﻿using Shared.Abstractions;
+
+namespace Shared;
 
 /// <summary>
 /// Базовая сущность
 /// </summary>
-/// <typeparam name="T">Идентификатор сущности.</typeparam>
-public class BaseEntity<T>
+/// <typeparam name="TEntityId">Идентификатор сущности.</typeparam>
+public class BaseEntity<TEntityId>
 {
-    public T Id { get; init; } = default!;
+    /// <summary>
+    /// Идентификатор сущности.
+    /// </summary>
+    public TEntityId Id { get; init; } = default!;
 
     /// <summary>
     /// Дата создания

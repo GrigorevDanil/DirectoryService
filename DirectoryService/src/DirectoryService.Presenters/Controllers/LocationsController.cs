@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using DirectoryService.Application.Locations;
 using DirectoryService.Application.Locations.UseCases.Create;
-using DirectoryService.Contracts.Dtos;
 using DirectoryService.Contracts.Locations.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

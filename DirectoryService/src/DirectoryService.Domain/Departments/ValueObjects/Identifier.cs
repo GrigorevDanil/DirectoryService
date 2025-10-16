@@ -33,7 +33,7 @@ public partial record Identifier
         if (value.Length is > MAX_LENGHT or < MIN_LENGHT)
             return GeneralErrors.ValueIsInvalidLength("department.identifier");
 
-        if (IsLatin().IsMatch(value))
+        if (!IsLatin().IsMatch(value))
             return GeneralErrors.ValueIsInvalid("Value is not Latin", "department.identifier");
 
         return new Identifier(value);

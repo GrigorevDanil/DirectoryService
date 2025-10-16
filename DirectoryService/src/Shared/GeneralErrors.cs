@@ -36,6 +36,26 @@ public static class GeneralErrors
         string message = "Value is required") => Error.Validation(message, invalidField);
 
     /// <summary>
+    /// Ошибка в случае если массив не содержит элементы
+    /// </summary>
+    /// <param name="invalidField">Поле в котором произошла ошибка.</param>
+    /// <param name="message">Сообщение об ошибке.</param>
+    /// <returns>Экземпляр <see cref="Error"/>.</returns>
+    public static Error ArrayIsRequired(
+        string? invalidField = null,
+        string message = "Array must have at least 1 element") => Error.Validation(message, invalidField);
+
+    /// <summary>
+    /// Ошибка в случае если массив содержит дубликаты
+    /// </summary>
+    /// <param name="invalidField">Поле в котором произошла ошибка.</param>
+    /// <param name="message">Сообщение об ошибке.</param>
+    /// <returns>Экземпляр <see cref="Error"/>.</returns>
+    public static Error ArrayContainsDuplicates(
+        string? invalidField = null,
+        string message = "Array contains duplicates") => Error.Validation(message, invalidField);
+
+    /// <summary>
     /// Ошибка в случае если значение некорректное
     /// </summary>
     /// <param name="message">Сообщение об ошибке.</param>
@@ -51,7 +71,7 @@ public static class GeneralErrors
     /// <returns>Экземпляр <see cref="Error"/>.</returns>
     public static Error NotFound(Guid? id = null)
     {
-        string byId = id != null ? $"by {id} " : string.Empty;
+        string byId = id != null ? $"by id {id} " : string.Empty;
         return Error.NotFound($"Record {byId}not found");
     }
 
