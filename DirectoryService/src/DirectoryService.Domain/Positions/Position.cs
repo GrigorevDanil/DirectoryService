@@ -1,6 +1,6 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Positions.ValueObjects;
-using DirectoryService.Domain.Shared;
 using Shared;
 
 namespace DirectoryService.Domain.Positions;
@@ -10,14 +10,18 @@ namespace DirectoryService.Domain.Positions;
 /// </summary>
 public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
 {
+    private readonly List<DepartmentPosition> _departments = [];
+
     public Position(
         PositionId id,
         PositionName name,
-        Description description)
+        Description description,
+        IEnumerable<DepartmentPosition> departments)
     {
         Id = id;
         Name = name;
         Description = description;
+        _departments = departments.ToList();
     }
 
     /// <summary>
@@ -28,6 +32,8 @@ public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
     public PositionName Name { get; private set; } = null!;
 
     public Description Description { get; private set; } = null!;
+
+    public IReadOnlyList<DepartmentPosition> Departments => _departments;
 
     public bool IsActive { get; private set; } = true;
 

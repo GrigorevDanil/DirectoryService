@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using DirectoryService.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace DirectoryService.Infrastructure.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251016122846_Path_and_Identifier_is_unique")]
+    partial class Path_and_Identifier_is_unique
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -159,6 +162,7 @@ namespace DirectoryService.Infrastructure.Migrations
                             b1.IsRequired();
 
                             b1.Property<string>("Value")
+                                .IsRequired()
                                 .HasMaxLength(1000)
                                 .HasColumnType("character varying(1000)")
                                 .HasColumnName("description");
@@ -194,7 +198,7 @@ namespace DirectoryService.Infrastructure.Migrations
                         .IsRequired();
 
                     b.HasOne("DirectoryService.Domain.Positions.Position", null)
-                        .WithMany("Departments")
+                        .WithMany()
                         .HasForeignKey("PositionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -408,11 +412,6 @@ namespace DirectoryService.Infrastructure.Migrations
                     b.Navigation("Locations");
 
                     b.Navigation("Positions");
-                });
-
-            modelBuilder.Entity("DirectoryService.Domain.Positions.Position", b =>
-                {
-                    b.Navigation("Departments");
                 });
 #pragma warning restore 612, 618
         }

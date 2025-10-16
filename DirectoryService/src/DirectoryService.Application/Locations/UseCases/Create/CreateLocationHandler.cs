@@ -11,20 +11,20 @@ namespace DirectoryService.Application.Locations.UseCases.Create;
 
 public class CreateLocationHandler : ICommandHandler<CreateLocationCommand, Guid>
 {
-    private readonly ILocationsRepository _locationsRepository;
+    private readonly ILocationRepository _locationsRepository;
 
     private readonly ILogger<CreateLocationHandler> _logger;
 
     private readonly IValidator<CreateLocationCommand> _validator;
 
     public CreateLocationHandler(
-        ILocationsRepository locationsRepository,
         ILogger<CreateLocationHandler> logger,
-        IValidator<CreateLocationCommand> validator)
+        IValidator<CreateLocationCommand> validator, 
+        ILocationRepository locationsRepository)
     {
-        _locationsRepository = locationsRepository;
         _logger = logger;
         _validator = validator;
+        _locationsRepository = locationsRepository;
     }
 
     public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)

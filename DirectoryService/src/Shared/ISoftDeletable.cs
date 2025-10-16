@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Domain.Shared;
+﻿namespace Shared;
 
 /// <summary>
 /// Интерфейс для реализации мягкого удаления

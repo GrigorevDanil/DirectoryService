@@ -35,7 +35,7 @@ public class PositionConfiguration : IEntityTypeConfiguration<Position>
              db.Property(n => n.Value)
                  .HasColumnName("description")
                  .HasMaxLength(Description.MAX_LENGHT)
-                 .IsRequired();
+                 .IsRequired(false);
          });
 
          builder.Property(e => e.IsActive)

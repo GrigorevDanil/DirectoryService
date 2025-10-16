@@ -21,4 +21,11 @@ public record LocationId
     /// <param name="locationId">Входящий идентификатор.</param>
     /// <returns>Идентификатор локации.</returns>
     public static LocationId Of(Guid locationId) => new(locationId);
+
+    /// <summary>
+    /// Создание идентификаторов локаций из входящих идентификаторов
+    /// </summary>
+    /// <param name="locationIds">Входящие идентификаторы.</param>
+    /// <returns>Идентификаторы локаций.</returns>
+    public static LocationId[] Of(Guid[] locationIds) => locationIds.Select(Of).ToArray();
 };

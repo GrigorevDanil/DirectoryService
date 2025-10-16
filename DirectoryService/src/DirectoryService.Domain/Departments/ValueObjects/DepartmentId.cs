@@ -21,4 +21,11 @@ public record DepartmentId
     /// <param name="departmentId">Входящий идентификатор.</param>
     /// <returns>Идентификатор подразделения.</returns>
     public static DepartmentId Of(Guid departmentId) => new(departmentId);
+
+    /// <summary>
+    /// Создание идентификаторов подразделений из входящих идентификаторов
+    /// </summary>
+    /// <param name="departmentIds">Входящие идентификаторы.</param>
+    /// <returns>Идентификаторы подразделений.</returns>
+    public static DepartmentId[] Of(Guid[] departmentIds) => departmentIds.Select(Of).ToArray();
 };
