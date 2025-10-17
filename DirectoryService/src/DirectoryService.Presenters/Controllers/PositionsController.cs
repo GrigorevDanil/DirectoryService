@@ -9,7 +9,7 @@ using Shared.EndpointResults;
 namespace DirectoryService.Presenters.Controllers;
 
 [ApiController]
-[Route("api/position")]
+[Route("api/positions")]
 [Tags("Position - Работа с позициями(должностями сотрудников)")]
 public class PositionsController : ControllerBase
 {

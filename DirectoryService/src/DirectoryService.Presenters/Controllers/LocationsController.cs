@@ -10,7 +10,7 @@ using Shared.EndpointResults;
 namespace DirectoryService.Presenters.Controllers;
 
 [ApiController]
-[Route("api/location")]
+[Route("api/locations")]
 [Tags("Location - Работа с локациями")]
 public class LocationsController : ControllerBase
 {

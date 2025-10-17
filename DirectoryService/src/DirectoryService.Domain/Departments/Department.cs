@@ -16,9 +16,9 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
 {
     private readonly List<Department> _children = [];
 
-    private readonly List<DepartmentLocation> _locations = [];
-
     private readonly List<DepartmentPosition> _positions = [];
+
+    private List<DepartmentLocation> _locations = [];
 
     private Department(
         DepartmentId id,
@@ -141,6 +141,15 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void RemoveDepartment(Department department)
     {
         _children.Remove(department);
+    }
+
+    /// <summary>
+    /// Установить транзакции
+    /// </summary>
+    /// <param name="locations">Локации.</param>
+    public void SetLocations(IEnumerable<DepartmentLocation> locations)
+    {
+        _locations = locations.ToList();
     }
 
     /// <summary>

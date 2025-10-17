@@ -1,9 +1,11 @@
 ﻿using DirectoryService.Application.Departments;
 using DirectoryService.Application.Locations;
 using DirectoryService.Application.Positions;
+using DirectoryService.Infrastructure.Database;
 using DirectoryService.Infrastructure.Repositories;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Database;
 
 namespace DirectoryService.Infrastructure;
 
@@ -13,7 +15,8 @@ public static class Registration
     {
         return
             services.AddScoped<AppDbContext>(_ => new AppDbContext(configuration.GetConnectionString("DirectoryServiceDb")!))
-                .AddRepositories();
+                .AddRepositories()
+                .AddDatabase();
     }
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
@@ -21,6 +24,13 @@ public static class Registration
         services.AddScoped<ILocationRepository, LocationsRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentsRepository>();
         services.AddScoped<IPositionsRepository, PositionsRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddDatabase(this IServiceCollection services)
+    {
+        services.AddScoped<ITransactionManager, TransactionManager>();
 
         return services;
     }

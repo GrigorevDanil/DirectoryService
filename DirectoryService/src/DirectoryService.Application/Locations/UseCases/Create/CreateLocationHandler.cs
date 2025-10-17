@@ -5,6 +5,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
+using Shared.Database;
 using Shared.Validation;
 
 namespace DirectoryService.Application.Locations.UseCases.Create;
@@ -17,14 +18,18 @@ public class CreateLocationHandler : ICommandHandler<CreateLocationCommand, Guid
 
     private readonly IValidator<CreateLocationCommand> _validator;
 
+    private readonly ITransactionManager _transactionManager;
+
     public CreateLocationHandler(
         ILogger<CreateLocationHandler> logger,
-        IValidator<CreateLocationCommand> validator, 
-        ILocationRepository locationsRepository)
+        IValidator<CreateLocationCommand> validator,
+        ILocationRepository locationsRepository,
+        ITransactionManager transactionManager)
     {
         _logger = logger;
         _validator = validator;
         _locationsRepository = locationsRepository;
+        _transactionManager = transactionManager;
     }
 
     public async Task<Result<Guid, Errors>> Handle(CreateLocationCommand command, CancellationToken cancellationToken)
@@ -46,12 +51,12 @@ public class CreateLocationHandler : ICommandHandler<CreateLocationCommand, Guid
             timezone,
             address);
 
-        var addLocationResult = await _locationsRepository.AddLocationAsync(location, cancellationToken);
+        var locationId = await _locationsRepository.AddLocationAsync(location, cancellationToken);
 
-        if (addLocationResult.IsFailure)
-            return addLocationResult.Error.ToErrors();
+        var commitedResult = await _transactionManager.SaveChangesAsyncWithResult(cancellationToken);
 
-        var locationId = addLocationResult.Value;
+        if (commitedResult.IsFailure)
+            return commitedResult.Error.ToErrors();
 
         _logger.LogInformation("Location by id {locationId} has been added.", locationId);
 

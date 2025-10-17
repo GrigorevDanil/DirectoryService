@@ -14,26 +14,19 @@ public class LocationsRepository : ILocationRepository
     public LocationsRepository(AppDbContext dbContext) => _dbContext = dbContext;
 
 
-    public async Task<Result<Guid, Error>> AddLocationAsync(Location location, CancellationToken cancellationToken = default)
+    public async Task<Guid> AddLocationAsync(Location location, CancellationToken cancellationToken = default)
     {
         await _dbContext.Locations.AddAsync(location, cancellationToken);
-
-        var saveChangesResult = await _dbContext.SaveChangesAsyncWithResult(cancellationToken);
-
-        if (saveChangesResult.IsFailure)
-            return saveChangesResult.Error;
 
         return location.Id.Value;
     }
 
-    public async Task<Result<Location, Error>> GetLocationByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Result<Location, Error>> GetLocationByIdAsync(LocationId id, CancellationToken cancellationToken = default)
     {
-        var locationId = LocationId.Of(id);
-
-        var location = await _dbContext.Locations.FirstOrDefaultAsync(x => x.Id == locationId, cancellationToken);
+        var location = await _dbContext.Locations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (location is null)
-            return GeneralErrors.NotFound(id);
+            return GeneralErrors.NotFound(id.Value);
 
         return location;
     }
