@@ -9,6 +9,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
+using Shared.Database;
 using Shared.Validation;
 
 namespace DirectoryService.Application.Departments.UseCases.Create;
@@ -16,20 +17,27 @@ namespace DirectoryService.Application.Departments.UseCases.Create;
 public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, Guid>
 {
     private readonly ILocationRepository _locationRepository;
+
     private readonly IDepartmentRepository _departmentRepository;
+
     private readonly IValidator<CreateDepartmentCommand> _validator;
+
     private readonly ILogger<CreateDepartmentHandler> _logger;
+
+    private readonly ITransactionManager _transactionManager;
 
     public CreateDepartmentHandler(
         IValidator<CreateDepartmentCommand> validator,
         ILocationRepository locationRepository,
         IDepartmentRepository departmentRepository,
-        ILogger<CreateDepartmentHandler> logger)
+        ILogger<CreateDepartmentHandler> logger,
+        ITransactionManager transactionManager)
     {
         _validator = validator;
         _locationRepository = locationRepository;
         _departmentRepository = departmentRepository;
         _logger = logger;
+        _transactionManager = transactionManager;
     }
 
     public async Task<Result<Guid, Errors>> Handle(
@@ -64,16 +72,15 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, 
 
             var parentDepartment = createParentDepartmentResult.Value;
 
-            var addDepartmentResult = await _departmentRepository.AddDepartmentAsync(parentDepartment, cancellationToken);
-
-            if (addDepartmentResult.IsFailure)
-                return addDepartmentResult.Error.ToErrors();
+            await _departmentRepository.AddDepartmentAsync(parentDepartment, cancellationToken);
         }
 
         // Создать дочернее подразделение
         else
         {
-            var getParentDepartmentResult = await _departmentRepository.GetDepartmentByIdAsync(command.Request.ParentId.GetValueOrDefault(), cancellationToken);
+            var parentId = DepartmentId.Of(command.Request.ParentId.GetValueOrDefault());
+
+            var getParentDepartmentResult = await _departmentRepository.GetDepartmentByIdAsync(parentId, cancellationToken);
 
             if (getParentDepartmentResult.IsFailure)
                 return getParentDepartmentResult.Error.ToErrors();
@@ -87,11 +94,13 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, 
 
             var childDepartment = createChildDepartmentResult.Value;
 
-            var addDepartmentResult = await _departmentRepository.AddDepartmentAsync(childDepartment, cancellationToken);
-
-            if (addDepartmentResult.IsFailure)
-                return addDepartmentResult.Error.ToErrors();
+            await _departmentRepository.AddDepartmentAsync(childDepartment, cancellationToken);
         }
+
+        var commitedResult = await _transactionManager.SaveChangesAsyncWithResult(cancellationToken);
+
+        if (commitedResult.IsFailure)
+            return commitedResult.Error.ToErrors();
 
         _logger.LogInformation("Department by id {departmentId} has been added.", departmentId.Value);
 

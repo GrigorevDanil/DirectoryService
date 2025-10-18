@@ -14,14 +14,9 @@ public class PositionsRepository : IPositionsRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Result<Guid, Error>> AddPositionAsync(Position position, CancellationToken cancellationToken = default)
+    public async Task<Guid> AddPositionAsync(Position position, CancellationToken cancellationToken = default)
     {
         await _dbContext.Positions.AddAsync(position, cancellationToken);
-
-        var saveChangesResult = await _dbContext.SaveChangesAsyncWithResult(cancellationToken);
-
-        if (saveChangesResult.IsFailure)
-            return saveChangesResult.Error;
 
         return position.Id.Value;
     }

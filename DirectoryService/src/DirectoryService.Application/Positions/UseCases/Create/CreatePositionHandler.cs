@@ -9,6 +9,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
+using Shared.Database;
 using Shared.Validation;
 
 namespace DirectoryService.Application.Positions.UseCases.Create;
@@ -16,20 +17,27 @@ namespace DirectoryService.Application.Positions.UseCases.Create;
 public class CreatePositionHandler : ICommandHandler<CreatePositionCommand, Guid>
 {
     private readonly IPositionsRepository _positionsRepository;
+
     private readonly IDepartmentRepository _departmentRepository;
+
     private readonly IValidator<CreatePositionCommand> _validator;
+
     private readonly ILogger<CreatePositionHandler> _logger;
+
+    private readonly ITransactionManager _transactionManager;
 
     public CreatePositionHandler(
         IPositionsRepository positionsRepository,
         IValidator<CreatePositionCommand> validator,
         ILogger<CreatePositionHandler> logger,
-        IDepartmentRepository departmentRepository)
+        IDepartmentRepository departmentRepository,
+        ITransactionManager transactionManager)
     {
         _positionsRepository = positionsRepository;
         _validator = validator;
         _logger = logger;
         _departmentRepository = departmentRepository;
+        _transactionManager = transactionManager;
     }
 
     public async Task<Result<Guid, Errors>> Handle(
@@ -58,10 +66,12 @@ public class CreatePositionHandler : ICommandHandler<CreatePositionCommand, Guid
 
         var position = new Position(positionId, name, description, departmentIds);
 
-        var addPositionResult = await _positionsRepository.AddPositionAsync(position, cancellationToken);
+        await _positionsRepository.AddPositionAsync(position, cancellationToken);
 
-        if (addPositionResult.IsFailure) 
-            return addPositionResult.Error.ToErrors();
+        var commitedResult = await _transactionManager.SaveChangesAsyncWithResult(cancellationToken);
+
+        if (commitedResult.IsFailure) 
+            return commitedResult.Error.ToErrors();
 
         _logger.LogInformation("Position by id {positionId} has been added.", positionId.Value);
 

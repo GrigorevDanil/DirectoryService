@@ -16,26 +16,19 @@ public class DepartmentsRepository : IDepartmentRepository
         _dbContext = dbContext;
     }
 
-    public async Task<Result<Guid, Error>> AddDepartmentAsync(Department department, CancellationToken cancellationToken = default)
+    public async Task<Guid> AddDepartmentAsync(Department department, CancellationToken cancellationToken = default)
     {
         await _dbContext.Departments.AddAsync(department, cancellationToken);
-
-        var saveChangesResult = await _dbContext.SaveChangesAsyncWithResult(cancellationToken);
-
-        if (saveChangesResult.IsFailure)
-            return saveChangesResult.Error;
 
         return department.Id.Value;
     }
 
-    public async Task<Result<Department, Error>> GetDepartmentByIdAsync(Guid id, CancellationToken cancellationToken = default)
+    public async Task<Result<Department, Error>> GetDepartmentByIdAsync(DepartmentId id, CancellationToken cancellationToken = default)
     {
-        var departmentId = DepartmentId.Of(id);
-
-        var department = await _dbContext.Departments.FirstOrDefaultAsync(x => x.Id == departmentId, cancellationToken);
+        var department = await _dbContext.Departments.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);
 
         if (department is null)
-            return GeneralErrors.NotFound(id);
+            return GeneralErrors.NotFound(id.Value);
 
         return department;
     }
@@ -57,5 +50,12 @@ public class DepartmentsRepository : IDepartmentRepository
             return new Errors(errors);
 
         return Result.Success<Errors>();
+    }
+
+    public async Task DeleteLocationsById(DepartmentId id, CancellationToken cancellationToken = default)
+    {
+        await _dbContext.DepartmentLocations
+            .Where(x => x.DepartmentId == id)
+            .ExecuteDeleteAsync(cancellationToken);
     }
 }
