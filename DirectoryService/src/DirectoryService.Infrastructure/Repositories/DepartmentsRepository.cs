@@ -75,7 +75,7 @@ public class DepartmentsRepository : IDepartmentRepository
         return department;
     }
 
-    public async Task LockDescending(Path path, CancellationToken cancellationToken = default)
+    public async Task<UnitResult<Error>> LockDescending(Path path, CancellationToken cancellationToken = default)
     {
         const string sql = """
                            SELECT d.* FROM departments d
@@ -86,7 +86,21 @@ public class DepartmentsRepository : IDepartmentRepository
 
         var dbConnection = _dbContext.Database.GetDbConnection();
 
-        await dbConnection.QueryAsync(sql, new { parentPath = path.Value });
+        try
+        {
+            await dbConnection.QueryAsync(
+                sql,
+                new
+                {
+                    parentPath = path.Value,
+                });
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+
+        return Result.Success<Error>();
     }
 
     public async Task<UnitResult<Error>> MoveDepartment(

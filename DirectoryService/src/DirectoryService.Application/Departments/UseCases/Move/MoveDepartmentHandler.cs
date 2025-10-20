@@ -64,7 +64,10 @@ public class MoveDepartmentHandler : ICommandHandler<MoveDepartmentCommand, Guid
 
         var department = getDepartmentResult.Value;
 
-        await _departmentRepository.LockDescending(department.Path, cancellationToken);
+        var lockDescendingResult = await _departmentRepository.LockDescending(department.Path, cancellationToken);
+
+        if (lockDescendingResult.IsFailure)
+            return lockDescendingResult.Error.ToErrors();
 
         // Присоединение подразделения к родителю
         if (command.Request.ParentId != null)

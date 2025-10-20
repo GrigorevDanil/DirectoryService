@@ -18,7 +18,7 @@ public interface IDepartmentRepository
 
     public Task<Result<Department, Error>> GetActiveDepartmentByIdAsyncWithLock(DepartmentId id, CancellationToken cancellationToken = default);
 
-    public Task LockDescending(Path path, CancellationToken cancellationToken = default);
+    public Task<UnitResult<Error>> LockDescending(Path path, CancellationToken cancellationToken = default);
 
     public Task<UnitResult<Error>> MoveDepartment(Path departmentPath, Path parentPath, CancellationToken cancellationToken = default);
 
