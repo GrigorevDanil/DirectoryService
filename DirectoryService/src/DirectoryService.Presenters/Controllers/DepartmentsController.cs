@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel;
 using DirectoryService.Application.Departments.UseCases.Create;
+using DirectoryService.Application.Departments.UseCases.Move;
 using DirectoryService.Application.Departments.UseCases.UpdateLocations;
 using DirectoryService.Contracts.Departments.Requests;
 using Microsoft.AspNetCore.Http;
@@ -38,4 +39,17 @@ public class DepartmentsController : ControllerBase
         [FromServices] SetLocationsForDepartmentHandler handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(new SetLocationsForDepartmentCommand(id, request), cancellationToken);
+
+    [HttpPatch("{id:guid}/parent")]
+    [ProducesResponseType<Envelope<Guid>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Перенос подразделений")]
+    public async Task<EndpointResult<Guid>> Move(
+        [FromRoute][Description("Идентификатор подразделения")] Guid id,
+        [FromBody] [Description("Данные подразделения")] MoveDepartmentRequest request,
+        [FromServices] MoveDepartmentHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new MoveDepartmentCommand(id, request), cancellationToken);
 }

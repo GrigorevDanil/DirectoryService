@@ -80,7 +80,7 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, 
         {
             var parentId = DepartmentId.Of(command.Request.ParentId.GetValueOrDefault());
 
-            var getParentDepartmentResult = await _departmentRepository.GetDepartmentByIdAsync(parentId, cancellationToken);
+            var getParentDepartmentResult = await _departmentRepository.GetActiveDepartmentByIdAsync(parentId, cancellationToken);
 
             if (getParentDepartmentResult.IsFailure)
                 return getParentDepartmentResult.Error.ToErrors();
