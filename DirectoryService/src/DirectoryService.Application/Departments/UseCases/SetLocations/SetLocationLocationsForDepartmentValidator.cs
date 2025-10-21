@@ -2,7 +2,7 @@
 using Shared;
 using Shared.Validation;
 
-namespace DirectoryService.Application.Departments.UseCases.UpdateLocations;
+namespace DirectoryService.Application.Departments.UseCases.SetLocations;
 
 public class SetLocationLocationsForDepartmentValidator : AbstractValidator<SetLocationsForDepartmentCommand>
 {

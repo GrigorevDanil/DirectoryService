@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel;
 using DirectoryService.Application.Departments.UseCases.Create;
 using DirectoryService.Application.Departments.UseCases.Move;
-using DirectoryService.Application.Departments.UseCases.UpdateLocations;
+using DirectoryService.Application.Departments.UseCases.SetLocations;
 using DirectoryService.Contracts.Departments.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
