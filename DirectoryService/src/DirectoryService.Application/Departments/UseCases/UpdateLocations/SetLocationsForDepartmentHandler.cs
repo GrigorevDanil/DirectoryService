@@ -50,7 +50,7 @@ public class SetLocationsForDepartmentHandler : ICommandHandler<SetLocationsForD
 
         var departmentId = DepartmentId.Of(forDepartmentCommand.DepartmentId);
 
-        var getDepartmentResult = await _departmentRepository.GetDepartmentByIdAsync(departmentId, cancellationToken);
+        var getDepartmentResult = await _departmentRepository.GetActiveDepartmentByIdAsync(departmentId, cancellationToken);
 
         if (getDepartmentResult.IsFailure)
             return getDepartmentResult.Error.ToErrors();

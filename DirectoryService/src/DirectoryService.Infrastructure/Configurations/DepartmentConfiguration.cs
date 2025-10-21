@@ -43,6 +43,7 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
         builder.OwnsOne(e => e.Path, pb =>
         {
             pb.Property(p => p.Value)
+                .HasColumnType("ltree")
                 .HasColumnName("path")
                 .IsRequired();
 
@@ -50,7 +51,8 @@ public class DepartmentConfiguration : IEntityTypeConfiguration<Department>
                 .HasColumnName("depth")
                 .IsRequired();
 
-            pb.HasIndex(e => e.Value).IsUnique()
+            pb.HasIndex(e => e.Value)
+                .HasMethod("gist")
                 .HasDatabaseName("ix_departments_path");
         });
 

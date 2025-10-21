@@ -21,5 +21,5 @@ public class BaseEntity<TEntityId>
     /// <summary>
     /// Дата последнего изменения
     /// </summary>
-    public DateTime UpdatedAt { get; private set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; protected set; } = DateTime.UtcNow;
 }

@@ -105,6 +105,8 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
 
         var path = parent.Path.CreateChild(identifier);
 
+        parent.UpdatedAt = DateTime.UtcNow;
+
         return new Department(departmentId ?? DepartmentId.Create(), name, identifier, path, locationsList, parent.Id);
     }
 
@@ -122,6 +124,8 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
 
         Name = nameResult.Value;
 
+        UpdatedAt = DateTime.UtcNow;
+
         return Result.Success<Error>();
     }
 
@@ -132,6 +136,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void AddDepartment(Department department)
     {
         _children.Add(department);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -141,6 +146,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void RemoveDepartment(Department department)
     {
         _children.Remove(department);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -150,6 +156,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void SetLocations(IEnumerable<DepartmentLocation> locations)
     {
         _locations = locations.ToList();
+        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -159,6 +166,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void AddLocation(DepartmentLocation location)
     {
         _locations.Add(location);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -168,6 +176,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void RemoveLocation(DepartmentLocation location)
     {
         _locations.Remove(location);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -192,6 +201,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void AddPosition(DepartmentPosition position)
     {
         _positions.Add(position);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -201,6 +211,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void RemovePosition(DepartmentPosition position)
     {
         _positions.Remove(position);
+        UpdatedAt = DateTime.UtcNow;
     }
 
     /// <summary>
@@ -224,5 +235,6 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void MarkAsDelete()
     {
         IsActive = false;
+        UpdatedAt = DateTime.UtcNow;
     }
 }
