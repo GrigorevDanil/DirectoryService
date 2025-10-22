@@ -110,7 +110,9 @@ public class DepartmentsRepository : IDepartmentRepository
     {
         const string sql = """
                            UPDATE departments d
-                           SET path = @parentPath::ltree || subpath(path, nlevel(@departmentPath::ltree) - 1)
+                           SET 
+                               path = @parentPath::ltree || subpath(path, nlevel(@departmentPath::ltree) - 1),
+                               depth = nlevel(@parentPath::ltree || subpath(path, nlevel(@departmentPath::ltree) - 1)) -1
                            WHERE path <@ @departmentPath::ltree
                            """;
 
@@ -140,7 +142,9 @@ public class DepartmentsRepository : IDepartmentRepository
     {
         const string sql = """
                            UPDATE departments d
-                           SET path = subpath(path, nlevel(@departmentPath::ltree) - 1)
+                           SET 
+                               path = subpath(path, nlevel(@departmentPath::ltree) - 1),
+                               depth = nlevel(subpath(path, nlevel(@departmentPath::ltree) - 1)) -1
                            WHERE path <@ @departmentPath::ltree
                            """;
 

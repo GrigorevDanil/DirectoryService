@@ -14,9 +14,9 @@ public static class Registration
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         return
-            services.AddScoped<AppDbContext>(_ => new AppDbContext(configuration.GetConnectionString("DirectoryServiceDb")!))
+            services
                 .AddRepositories()
-                .AddDatabase();
+                .AddDatabase(configuration);
     }
 
     private static IServiceCollection AddRepositories(this IServiceCollection services)
@@ -28,8 +28,10 @@ public static class Registration
         return services;
     }
 
-    private static IServiceCollection AddDatabase(this IServiceCollection services)
+    private static IServiceCollection AddDatabase(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddScoped<AppDbContext>(_ =>
+            new AppDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
         services.AddScoped<ITransactionManager, TransactionManager>();
 
         return services;
