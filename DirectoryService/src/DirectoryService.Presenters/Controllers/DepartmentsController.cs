@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel;
+using DirectoryService.Application.Departments.Queries.GetTopFiveDepartmentsWithMostPositions;
 using DirectoryService.Application.Departments.UseCases.Create;
 using DirectoryService.Application.Departments.UseCases.Move;
 using DirectoryService.Application.Departments.UseCases.SetLocations;
+using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Departments.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -52,4 +54,15 @@ public class DepartmentsController : ControllerBase
         [FromServices] MoveDepartmentHandler handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(new MoveDepartmentCommand(id, request), cancellationToken);
+
+    [HttpGet("top-positions")]
+    [ProducesResponseType<Envelope<DepartmentDto>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Получить топ 5 подразделений с наибольшим количеством позиций")]
+    public async Task<EndpointResult<DepartmentDto[]>> Get(
+        [FromServices] GetTopFiveDepartmentsWithMostPositionsHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(cancellationToken);
 }
