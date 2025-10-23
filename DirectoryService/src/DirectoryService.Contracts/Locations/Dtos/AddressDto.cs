@@ -1,4 +1,6 @@
-﻿namespace DirectoryService.Contracts.Locations.Dtos;
+﻿using Shared.Dapper;
+
+namespace DirectoryService.Contracts.Locations.Dtos;
 
 public record AddressDto(
     string Country,
@@ -6,4 +8,4 @@ public record AddressDto(
     string Region,
     string City,
     string Street,
-    string HouseNumber);
+    string HouseNumber) : IDapperJson;

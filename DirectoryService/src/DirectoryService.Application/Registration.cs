@@ -11,6 +11,7 @@ public static class Registration
         return
             services
                 .AddCommands()
+                .AddQueries()
                 .AddValidators();
     }
 
@@ -19,6 +20,14 @@ public static class Registration
             scan.FromAssemblies(typeof(Registration).Assembly)
                 .AddClasses(classes =>
                     classes.AssignableToAny(typeof(ICommandHandler<,>), typeof(ICommandHandler<>)))
+                .AsSelfWithInterfaces()
+                .WithScopedLifetime());
+
+    private static IServiceCollection AddQueries(this IServiceCollection services) =>
+        services.Scan(scan =>
+            scan.FromAssemblies(typeof(Registration).Assembly)
+                .AddClasses(classes =>
+                    classes.AssignableToAny(typeof(IQueryHandler<,>), typeof(IQueryHandler<>)))
                 .AsSelfWithInterfaces()
                 .WithScopedLifetime());
 
