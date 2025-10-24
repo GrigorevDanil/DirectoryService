@@ -1,6 +1,8 @@
-﻿namespace DirectoryService.Contracts.Departments.Dtos;
+﻿using DirectoryService.Contracts.DepartmentLocation.Dtos;
 
-public class DepartmentDto
+namespace DirectoryService.Contracts.Departments.Dtos;
+
+public record DepartmentDto
 {
     public Guid Id { get; init; }
 

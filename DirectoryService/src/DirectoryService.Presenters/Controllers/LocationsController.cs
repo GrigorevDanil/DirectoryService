@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using DirectoryService.Application.Locations;
+using DirectoryService.Application.Locations.Queries.Get;
 using DirectoryService.Application.Locations.UseCases.Create;
+using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.Contracts.Locations.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -25,4 +27,16 @@ public class LocationsController : ControllerBase
         [FromServices] CreateLocationHandler handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(new CreateLocationCommand(request), cancellationToken);
+
+    [HttpGet]
+    [ProducesResponseType<Envelope<LocationDto>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Получить локации")]
+    public async Task<EndpointResult<PaginationEnvelope<LocationDto>>> Get(
+        [FromQuery] GetLocationsRequest request,
+        [FromServices] GetLocationsHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new GetLocationsQuery(request), cancellationToken);
 }

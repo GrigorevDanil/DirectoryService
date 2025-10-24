@@ -1,4 +1,6 @@
-﻿public class DepartmentLocationDto
+﻿namespace DirectoryService.Contracts.DepartmentLocation.Dtos;
+
+public class DepartmentLocationDto
 {
     public Guid Id { get; init; }
 
