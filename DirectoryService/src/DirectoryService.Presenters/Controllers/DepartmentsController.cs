@@ -1,4 +1,6 @@
 ﻿using System.ComponentModel;
+using DirectoryService.Application.Departments.Queries.GetChildrenDepartments;
+using DirectoryService.Application.Departments.Queries.GetRootDepartments;
 using DirectoryService.Application.Departments.Queries.GetTopFiveDepartmentsWithMostPositions;
 using DirectoryService.Application.Departments.UseCases.Create;
 using DirectoryService.Application.Departments.UseCases.Move;
@@ -56,13 +58,38 @@ public class DepartmentsController : ControllerBase
         await handler.Handle(new MoveDepartmentCommand(id, request), cancellationToken);
 
     [HttpGet("top-positions")]
-    [ProducesResponseType<Envelope<DepartmentDto>>(200)]
+    [ProducesResponseType<Envelope<PaginationEnvelope<DepartmentDto>>>(200)]
     [ProducesResponseType<Envelope>(400)]
     [ProducesResponseType<Envelope>(500)]
     [ProducesResponseType<Envelope>(409)]
     [EndpointSummary("Получить топ 5 подразделений с наибольшим количеством позиций")]
-    public async Task<EndpointResult<DepartmentDto[]>> Get(
+    public async Task<EndpointResult<DepartmentDto[]>> GetTopFiveDepartmentsWithMostPositions(
         [FromServices] GetTopFiveDepartmentsWithMostPositionsHandler handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(cancellationToken);
+
+    [HttpGet("roots")]
+    [ProducesResponseType<Envelope<PaginationEnvelope<DepartmentDto>>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Получение корневых отделов с предзагрузкой детей")]
+    public async Task<EndpointResult<PaginationEnvelope<DepartmentDto>>> GetRoots(
+        [FromQuery] GetRootDepartmentsRequest request,
+        [FromServices] GetRootDepartmentsHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new GetRootDepartmentsQuery(request), cancellationToken);
+
+    [HttpGet("{parentId:guid}/children")]
+    [ProducesResponseType<Envelope<PaginationEnvelope<DepartmentDto>>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Получить детей по родительскому отделу")]
+    public async Task<EndpointResult<PaginationEnvelope<DepartmentDto>>> GetChildren(
+        [FromRoute][Description("Идентификатор родительского подразделения")] Guid parentId,
+        [FromQuery] GetChildrenDepartmentsRequest request,
+        [FromServices] GetChildrenDepartmentsHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new GetChildrenDepartmentsQuery(parentId, request), cancellationToken);
 }

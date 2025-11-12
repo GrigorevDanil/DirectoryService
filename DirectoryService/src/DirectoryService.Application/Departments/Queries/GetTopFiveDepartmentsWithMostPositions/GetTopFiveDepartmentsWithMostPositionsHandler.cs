@@ -16,7 +16,7 @@ public class GetTopFiveDepartmentsWithMostPositionsHandler : IQueryHandler<Depar
 
     public async Task<DepartmentDto[]> Handle(CancellationToken cancellationToken = default)
     {
-        string sql = """
+        const string sql = """
                       SELECT d.* FROM departments d
                       LEFT JOIN department_positions dp ON dp.department_id = d.id
                       GROUP BY d.id
