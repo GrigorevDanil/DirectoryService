@@ -9,4 +9,9 @@ public interface ISoftDeletable
     /// Является ли сущность удаленной
     /// </summary>
     public bool IsActive { get; }
+
+    /// <summary>
+    /// Дата последнего изменения
+    /// </summary>
+    public DateTime? DeletedAt { get; }
 }

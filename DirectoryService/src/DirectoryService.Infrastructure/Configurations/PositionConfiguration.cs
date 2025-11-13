@@ -49,5 +49,9 @@ public class PositionConfiguration : IEntityTypeConfiguration<Position>
          builder.Property(x => x.UpdatedAt)
              .HasColumnName("updated_at")
              .IsRequired();
+
+         builder.Property(x => x.DeletedAt)
+             .HasColumnName("deleted_at")
+             .IsRequired(false);
      }
  }

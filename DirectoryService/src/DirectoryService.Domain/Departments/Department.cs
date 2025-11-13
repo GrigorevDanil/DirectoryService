@@ -51,6 +51,8 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
 
     public bool IsActive { get; private set; } = true;
 
+    public DateTime? DeletedAt { get; private set; }
+
     public IReadOnlyList<DepartmentLocation> Locations => _locations;
 
     public IReadOnlyList<DepartmentPosition> Positions => _positions;
@@ -235,6 +237,6 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     public void MarkAsDelete()
     {
         IsActive = false;
-        UpdatedAt = DateTime.UtcNow;
+        DeletedAt = DateTime.UtcNow;
     }
 }

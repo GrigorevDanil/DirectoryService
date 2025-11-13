@@ -4,9 +4,9 @@ using Shared.Validation;
 
 namespace DirectoryService.Application.Departments.UseCases.SetLocations;
 
-public class SetLocationLocationsForDepartmentValidator : AbstractValidator<SetLocationsForDepartmentCommand>
+public class SetLocationForDepartmentValidator : AbstractValidator<SetLocationsForDepartmentCommand>
 {
-    public SetLocationLocationsForDepartmentValidator()
+    public SetLocationForDepartmentValidator()
     {
         RuleFor(x => x.DepartmentId)
             .NotEmpty().WithError(GeneralErrors.ValueIsRequired("department.departmentId"));
