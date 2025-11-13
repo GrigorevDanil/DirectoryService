@@ -10,6 +10,8 @@ public interface IDepartmentRepository
 {
     public Task<Guid> AddDepartmentAsync(Department department, CancellationToken cancellationToken = default);
 
+    public Task<UnitResult<Error>> UpdatePathsAfterDelete(Path departmentPath, CancellationToken cancellationToken = default);
+
     public Task<Result<Department, Error>> GetActiveDepartmentByIdAsync(DepartmentId id, CancellationToken cancellationToken = default);
 
     public Task<UnitResult<Errors>> CheckExistingAndActiveIds(Guid[] ids, CancellationToken cancellationToken = default);

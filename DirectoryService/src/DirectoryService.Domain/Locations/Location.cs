@@ -34,6 +34,8 @@ public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
 
     public bool IsActive { get; private set; } = true;
 
+    public DateTime? DeletedAt { get;  private set; }
+
     /// <summary>
     /// Переименовать название локации
     /// </summary>
@@ -108,5 +110,6 @@ public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
     public void MarkAsDelete()
     {
         IsActive = false;
+        DeletedAt = DateTime.UtcNow;
     }
 }

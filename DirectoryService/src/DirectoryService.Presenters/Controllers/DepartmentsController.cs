@@ -3,6 +3,7 @@ using DirectoryService.Application.Departments.Queries.GetChildrenDepartments;
 using DirectoryService.Application.Departments.Queries.GetRootDepartments;
 using DirectoryService.Application.Departments.Queries.GetTopFiveDepartmentsWithMostPositions;
 using DirectoryService.Application.Departments.UseCases.Create;
+using DirectoryService.Application.Departments.UseCases.Delete;
 using DirectoryService.Application.Departments.UseCases.Move;
 using DirectoryService.Application.Departments.UseCases.SetLocations;
 using DirectoryService.Contracts.Departments.Dtos;
@@ -92,4 +93,16 @@ public class DepartmentsController : ControllerBase
         [FromServices] GetChildrenDepartmentsHandler handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(new GetChildrenDepartmentsQuery(parentId, request), cancellationToken);
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType<Envelope<Guid>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Удаление подразделения")]
+    public async Task<EndpointResult<Guid>> Delete(
+        [FromRoute][Description("Идентификатор подразделения")] Guid id,
+        [FromServices] DeleteDepartmentHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new DeleteDepartmentCommand(id), cancellationToken);
 }

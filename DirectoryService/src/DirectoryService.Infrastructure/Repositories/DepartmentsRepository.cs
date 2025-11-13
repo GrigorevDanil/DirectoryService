@@ -25,6 +25,47 @@ public class DepartmentsRepository : IDepartmentRepository
         return department.Id.Value;
     }
 
+    public async Task<UnitResult<Error>> UpdatePathsAfterDelete(Path departmentPath, CancellationToken cancellationToken = default)
+    {
+        string sql;
+
+        if (departmentPath.Depth == 0)
+        {
+            sql = """
+                  UPDATE departments
+                  SET path = ('deleted-' || subpath(path, nlevel(@DepartmentPath::ltree) - 1)::text)::ltree
+                  WHERE path <@ @DepartmentPath::ltree;
+                  """;
+        }
+        else
+        {
+            sql = """
+                  UPDATE departments
+                  SET path = (subpath(path, 0, nlevel(@DepartmentPath::ltree) - 1)::text ||
+                              '.deleted-' || subpath(path, nlevel(@DepartmentPath::ltree) - 1)::text)::ltree
+                  WHERE path <@ @DepartmentPath::ltree;
+                  """;
+        }
+
+        var dbConnection = _dbContext.Database.GetDbConnection();
+
+        try
+        {
+            await dbConnection.ExecuteAsync(
+                sql,
+                new
+                {
+                    DepartmentPath = departmentPath.Value,
+                });
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+
+        return UnitResult.Success<Error>();
+    }
+
     public async Task<Result<Department, Error>> GetActiveDepartmentByIdAsync(DepartmentId id, CancellationToken cancellationToken = default)
     {
         var department = await _dbContext.Departments.FirstOrDefaultAsync(x => x.Id == id && x.IsActive == true, cancellationToken);

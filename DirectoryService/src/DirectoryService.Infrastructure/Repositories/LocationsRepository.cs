@@ -1,5 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
+using Dapper;
 using DirectoryService.Application.Locations;
+using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -19,6 +21,48 @@ public class LocationsRepository : ILocationRepository
         await _dbContext.Locations.AddAsync(location, cancellationToken);
 
         return location.Id.Value;
+    }
+
+    public async Task<UnitResult<Error>> DeleteUnusedLocationsByDepartmentIdAsync(
+        DepartmentId id,
+        CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+                           UPDATE locations
+                                     SET is_active = false,
+                                         deleted_at = NOW()
+                                     WHERE id IN (
+                                         SELECT dl.location_id
+                                         FROM department_locations dl
+                                         WHERE dl.department_id = @DepartmentId
+                                         AND NOT EXISTS (
+                                             SELECT 1 
+                                             FROM department_locations dl2 
+                                             JOIN departments d ON dl2.department_id = d.id
+                                             WHERE dl2.location_id = dl.location_id 
+                                             AND d.is_active = true
+                                             AND d.id != @DepartmentId
+                                         )
+                                     ) AND is_active = true;
+                           """;
+
+        var dbConnection = _dbContext.Database.GetDbConnection();
+
+        try
+        {
+            await dbConnection.ExecuteAsync(
+                sql,
+                new
+                {
+                    DepartmentId = id.Value,
+                });
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+
+        return UnitResult.Success<Error>();
     }
 
     public async Task<Result<Location, Error>> GetLocationByIdAsync(LocationId id, CancellationToken cancellationToken = default)

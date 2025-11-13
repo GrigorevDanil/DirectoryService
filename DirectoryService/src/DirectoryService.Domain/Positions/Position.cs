@@ -37,6 +37,8 @@ public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
 
     public bool IsActive { get; private set; } = true;
 
+    public DateTime? DeletedAt { get; private set; }
+
     /// <summary>
     /// Переименовать название позиции(должности сотрудника)
     /// </summary>
@@ -77,5 +79,6 @@ public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
     public void MarkAsDelete()
     {
         IsActive = false;
+        DeletedAt = DateTime.UtcNow;
     }
 }
