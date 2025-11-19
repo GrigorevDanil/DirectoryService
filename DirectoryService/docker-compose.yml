@@ -1,4 +1,13 @@
 services:
+  web:
+    build:
+      context: .
+      dockerfile: src/DirectoryService.API/Dockerfile
+    ports:
+      - "8000:8000"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+  
   postgres:
     container_name: postgres
     image: postgres
@@ -23,4 +32,4 @@ services:
       - 8081:80
   
 volumes:
-  postgres-data:
+  postgres-data:  
