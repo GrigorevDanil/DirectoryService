@@ -5,6 +5,8 @@ using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
+using DirectoryService.Domain.Positions;
+using DirectoryService.Domain.Positions.ValueObjects;
 using DirectoryService.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Shared;
@@ -33,6 +35,25 @@ public class DirectoryBaseTests : IClassFixture<DirectoryTestWebFactory>, IAsync
         await _resetDatabaseAsync();
     }
 
+    protected async Task<PositionId> CreatePositionAsync(string name)
+    {
+        var positionId = await ExecuteInDb(async dbContext =>
+        {
+            var position = new Position(
+                PositionId.Create(),
+                PositionName.Of(name).Value,
+                Description.Empty(),
+                []);
+
+            dbContext.Positions.Add(position);
+            await dbContext.SaveChangesAsync();
+
+            return position.Id;
+        });
+
+        return positionId;
+    }
+
     protected async Task<LocationId> CreateLocationAsync(string name)
     {
         var locationId = await ExecuteInDb(async dbContext =>
@@ -46,6 +67,31 @@ public class DirectoryBaseTests : IClassFixture<DirectoryTestWebFactory>, IAsync
                 LocationName.Of(name).Value,
                 Timezone.Of("Europe/Moscow").Value,
                 Address.Of("123", randomString, "123", "123", "123", "1").Value);
+
+            dbContext.Locations.Add(location);
+            await dbContext.SaveChangesAsync();
+
+            return location.Id;
+        });
+
+        return locationId;
+    }
+
+    protected async Task<LocationId> CreateDeletedLocationAsync(string name)
+    {
+        var locationId = await ExecuteInDb(async dbContext =>
+        {
+            var random = new Random();
+
+            string randomString = random.Next(100000, 999999).ToString();
+
+            var location = new Location(
+                LocationId.Create(),
+                LocationName.Of(name).Value,
+                Timezone.Of("Europe/Moscow").Value,
+                Address.Of("123", randomString, "123", "123", "123", "1").Value);
+
+            location.MarkAsDelete(DateTime.UtcNow.AddMonths(-1));
 
             dbContext.Locations.Add(location);
             await dbContext.SaveChangesAsync();
@@ -103,10 +149,61 @@ public class DirectoryBaseTests : IClassFixture<DirectoryTestWebFactory>, IAsync
         return child;
     }
 
-    protected async Task<TResult> ExecuteHandler<TResult, THandler>(Func<THandler, Task<TResult>> action)
+    protected async Task<Department> CreateDeletedParentDepartmentAsync(string name, string identifier, IEnumerable<LocationId> locationIds)
+    {
+        var departmentId = DepartmentId.Create();
+
+        var departmentLocationIds = locationIds
+            .Select(locationId =>
+                new DepartmentLocation(DepartmentLocationId.Create(), departmentId, locationId));
+
+        var parent = Department.CreateParent(
+            DepartmentName.Of(name).Value,
+            Identifier.Of("deleted-" + identifier).Value,
+            departmentLocationIds,
+            departmentId).Value;
+
+        parent.MarkAsDelete(DateTime.UtcNow.AddMonths(-1));
+
+        await ExecuteInDb(async dbContext =>
+        {
+            dbContext.Departments.Add(parent);
+            await dbContext.SaveChangesAsync();
+        });
+
+        return parent;
+    }
+
+    protected async Task<Department> CreateDeletedChildDepartmentAsync(string name, string identifier, Department parent, IEnumerable<LocationId> locationIds)
+    {
+        var departmentId = DepartmentId.Create();
+
+        var departmentLocationIds = locationIds
+            .Select(locationId =>
+                new DepartmentLocation(DepartmentLocationId.Create(), departmentId, locationId));
+
+        var child = Department.CreateChild(
+            DepartmentName.Of(name).Value,
+            Identifier.Of("deleted-" + identifier).Value,
+            parent,
+            departmentLocationIds,
+            departmentId).Value;
+
+        child.MarkAsDelete(DateTime.UtcNow.AddMonths(-1));
+
+        await ExecuteInDb(async dbContext =>
+        {
+            dbContext.Departments.Add(child);
+            await dbContext.SaveChangesAsync();
+        });
+
+        return child;
+    }
+
+    protected async Task<TResult> Execute<TResult, TService>(Func<TService, Task<TResult>> action)
     {
         await using var scope = _serviceProvider.CreateAsyncScope();
-        var handler = scope.ServiceProvider.GetRequiredService<THandler>();
+        var handler = scope.ServiceProvider.GetRequiredService<TService>();
         return await action(handler);
     }
 

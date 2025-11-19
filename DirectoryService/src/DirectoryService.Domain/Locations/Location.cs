@@ -107,9 +107,10 @@ public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
     /// <summary>
     /// Помечает сущность как удаленную
     /// </summary>
-    public void MarkAsDelete()
+    /// <param name="deletedAt">Дата удаления.</param>
+    public void MarkAsDelete(DateTime? deletedAt = null)
     {
         IsActive = false;
-        DeletedAt = DateTime.UtcNow;
+        DeletedAt = deletedAt ?? DateTime.UtcNow;
     }
 }

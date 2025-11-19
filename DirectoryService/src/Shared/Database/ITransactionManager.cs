@@ -12,7 +12,7 @@ public interface ITransactionManager
     /// </summary>
     /// <param name="cancellationToken">Токен отмены.</param>
     /// <returns>Обертка транзакции <see cref="ITransactionScope"/> или ошибка <see cref="Error"/>.</returns>
-    public Task<Result<ITransactionScope, Error>> BeginTransaction(CancellationToken cancellationToken = default);
+    public Task<Result<ITransactionScope, Error>> BeginTransactionAsync(CancellationToken cancellationToken = default);
 
     /// <summary>
     /// Сохранить изменения в бд с результатом

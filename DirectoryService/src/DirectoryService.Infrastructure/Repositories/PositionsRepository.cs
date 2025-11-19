@@ -65,4 +65,20 @@ public class PositionsRepository : IPositionsRepository
 
         return UnitResult.Success<Error>();
     }
+
+    public async Task<UnitResult<Error>> DeleteOutdatedPositionsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _dbContext.Positions
+                .Where(x => !x.IsActive && x.DeletedAt < DateTime.UtcNow.AddMonths(-1))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+    }
 }

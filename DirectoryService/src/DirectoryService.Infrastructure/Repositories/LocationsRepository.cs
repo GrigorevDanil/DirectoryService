@@ -65,6 +65,22 @@ public class LocationsRepository : ILocationRepository
         return UnitResult.Success<Error>();
     }
 
+    async Task<UnitResult<Error>> ILocationRepository.DeleteOutdatedLocationsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _dbContext.Locations
+                .Where(x => !x.IsActive && x.DeletedAt < DateTime.UtcNow.AddMonths(-1))
+                .ExecuteDeleteAsync(cancellationToken);
+
+            return UnitResult.Success<Error>();
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+    }
+
     public async Task<Result<Location, Error>> GetLocationByIdAsync(LocationId id, CancellationToken cancellationToken = default)
     {
         var location = await _dbContext.Locations.FirstOrDefaultAsync(x => x.Id == id, cancellationToken);

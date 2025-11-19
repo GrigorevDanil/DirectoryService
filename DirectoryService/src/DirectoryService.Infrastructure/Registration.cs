@@ -4,8 +4,11 @@ using DirectoryService.Application.Database;
 using DirectoryService.Application.Departments;
 using DirectoryService.Application.Locations;
 using DirectoryService.Application.Positions;
+using DirectoryService.Application.SoftDelete;
+using DirectoryService.Infrastructure.BackgroundServices;
 using DirectoryService.Infrastructure.Database;
 using DirectoryService.Infrastructure.Repositories;
+using DirectoryService.Infrastructure.SoftDelete;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Shared.Dapper;
@@ -20,6 +23,7 @@ public static class Registration
         return
             services
                 .AddRepositories()
+                .AddSoftDelete(configuration)
                 .AddDatabase(configuration);
     }
 
@@ -28,6 +32,16 @@ public static class Registration
         services.AddScoped<ILocationRepository, LocationsRepository>();
         services.AddScoped<IDepartmentRepository, DepartmentsRepository>();
         services.AddScoped<IPositionsRepository, PositionsRepository>();
+
+        return services;
+    }
+
+    private static IServiceCollection AddSoftDelete(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddScoped<IDeletedRecordsCleanerService, DeletedRecordsCleanerService>();
+        services.AddHostedService<DeletedRecordsCleanerBackgroundService>();
+        services.Configure<SoftDeleteSettings>(
+            configuration.GetSection("SoftDeleteSettings"));
 
         return services;
     }
