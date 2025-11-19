@@ -21,8 +21,6 @@ public interface IDepartmentRepository
 
     public Task<Result<Department, Error>> GetActiveDepartmentByIdAsyncWithLock(DepartmentId id, CancellationToken cancellationToken = default);
 
-    public Task<Result<DepartmentDtoOnlyWithPath[], Error>> GetOutdatedDepartmentsAsync(CancellationToken cancellationToken = default);
-
     public Task<UnitResult<Error>> LockDescending(Path path, CancellationToken cancellationToken = default);
 
     public Task<UnitResult<Error>> MoveChildDepartment(Path departmentPath, Path parentPath, CancellationToken cancellationToken = default);
@@ -31,11 +29,11 @@ public interface IDepartmentRepository
 
     public Task<UnitResult<Error>> CheckParentIsChild(Path departmentPath, Path parentPath, CancellationToken cancellationToken = default);
 
-    public Task<UnitResult<Error>> DeleteDepartmentsByIdsAsync(DepartmentId[] departmentIds, CancellationToken cancellationToken = default);
+    public Task<UnitResult<Error>> DeleteDepartmentsAsync(CancellationToken cancellationToken = default);
 
-    public Task<UnitResult<Error>> DeleteDepartmentLocationsByIdsAsync(DepartmentId[] departmentIds, CancellationToken cancellationToken = default);
+    public Task<UnitResult<Error>> DeleteDepartmentLocationsAsync(CancellationToken cancellationToken = default);
 
-    public Task<UnitResult<Error>> DeleteDepartmentPositionsByIdsAsync(DepartmentId[] departmentIds, CancellationToken cancellationToken = default);
+    public Task<UnitResult<Error>> DeleteDepartmentPositionsAsync(CancellationToken cancellationToken = default);
 
-    public Task<UnitResult<Error>> UpdatePathsBeforeDeleteDepartments(Path[] paths, CancellationToken cancellationToken = default);
+    public Task<UnitResult<Error>> UpdatePathsBeforeDeleteDepartments(CancellationToken cancellationToken = default);
 }

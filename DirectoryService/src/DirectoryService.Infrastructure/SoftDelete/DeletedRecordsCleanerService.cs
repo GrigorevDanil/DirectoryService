@@ -41,35 +41,7 @@ public class DeletedRecordsCleanerService : IDeletedRecordsCleanerService
 
         using var transactionScope = beginTransactionResult.Value;
 
-        var getDepartmentsResult = await _departmentRepository.GetOutdatedDepartmentsAsync(cancellationToken);
-
-        if (getDepartmentsResult.IsFailure)
-        {
-            var rollbackResult = transactionScope.Rollback();
-
-            if (rollbackResult.IsFailure)
-                return rollbackResult.Error;
-
-            return getDepartmentsResult.Error;
-        }
-
-        var departmentDtos = getDepartmentsResult.Value;
-
-        var departmentIds = DepartmentId.Of(departmentDtos.Select(x => x.Id).ToArray());
-
-        List<Path> departmentPaths = [];
-
-        foreach (string path in departmentDtos.Select(x => x.Path))
-        {
-            var pathResult = Path.Of(path);
-
-            if (pathResult.IsFailure)
-                return pathResult.Error;
-
-            departmentPaths.Add(pathResult.Value);
-        }
-
-        var deleteDepartmentLocationsResult = await _departmentRepository.DeleteDepartmentLocationsByIdsAsync(departmentIds, cancellationToken);
+        var deleteDepartmentLocationsResult = await _departmentRepository.DeleteDepartmentLocationsAsync(cancellationToken);
 
         if (deleteDepartmentLocationsResult.IsFailure)
         {
@@ -81,7 +53,7 @@ public class DeletedRecordsCleanerService : IDeletedRecordsCleanerService
             return deleteDepartmentLocationsResult.Error;
         }
 
-        var deleteDepartmentPositionsResult = await _departmentRepository.DeleteDepartmentPositionsByIdsAsync(departmentIds, cancellationToken);
+        var deleteDepartmentPositionsResult = await _departmentRepository.DeleteDepartmentPositionsAsync(cancellationToken);
 
         if (deleteDepartmentPositionsResult.IsFailure)
         {
@@ -93,7 +65,7 @@ public class DeletedRecordsCleanerService : IDeletedRecordsCleanerService
             return deleteDepartmentPositionsResult.Error;
         }
 
-        var updatePathsResult = await _departmentRepository.UpdatePathsBeforeDeleteDepartments(departmentPaths.ToArray(), cancellationToken);
+        var updatePathsResult = await _departmentRepository.UpdatePathsBeforeDeleteDepartments(cancellationToken);
 
         if (updatePathsResult.IsFailure)
         {
@@ -105,7 +77,7 @@ public class DeletedRecordsCleanerService : IDeletedRecordsCleanerService
             return updatePathsResult.Error;
         }
 
-        var deleteDepartmentsResult = await _departmentRepository.DeleteDepartmentsByIdsAsync(departmentIds, cancellationToken);
+        var deleteDepartmentsResult = await _departmentRepository.DeleteDepartmentsAsync(cancellationToken);
 
         if (deleteDepartmentsResult.IsFailure)
         {
