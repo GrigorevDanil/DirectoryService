@@ -1,9 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Constants;
 using DirectoryService.Domain.Departments.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
+using Shared.Caching;
 using Shared.Database;
 using Shared.Validation;
 using Path = DirectoryService.Domain.Departments.ValueObjects.Path;
@@ -20,16 +22,20 @@ public class MoveDepartmentHandler : ICommandHandler<MoveDepartmentCommand, Guid
 
     private readonly ITransactionManager _transactionManager;
 
+    private readonly ICacheService _cache;
+
     public MoveDepartmentHandler(
         IDepartmentRepository departmentRepository,
         IValidator<MoveDepartmentCommand> validator,
         ILogger<MoveDepartmentHandler> logger,
-        ITransactionManager transactionManager)
+        ITransactionManager transactionManager,
+        ICacheService cache)
     {
         _departmentRepository = departmentRepository;
         _validator = validator;
         _logger = logger;
         _transactionManager = transactionManager;
+        _cache = cache;
     }
 
     public async Task<Result<Guid, Errors>> Handle(
@@ -126,6 +132,8 @@ public class MoveDepartmentHandler : ICommandHandler<MoveDepartmentCommand, Guid
 
         if (commitedTransactionResult.IsFailure)
             return commitedTransactionResult.Error.ToErrors();
+
+        await _cache.RemoveByPrefixAsync(CachingKeys.DEPARTMENTS_KEY, cancellationToken);
 
         if (command.Request.ParentId != null)
         {

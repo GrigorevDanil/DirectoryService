@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Constants;
 using DirectoryService.Application.Locations;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentLocations.ValueObjects;
@@ -9,6 +10,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
+using Shared.Caching;
 using Shared.Database;
 using Shared.Validation;
 
@@ -26,18 +28,22 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, 
 
     private readonly ITransactionManager _transactionManager;
 
+    private readonly ICacheService _cache;
+
     public CreateDepartmentHandler(
         IValidator<CreateDepartmentCommand> validator,
         ILocationRepository locationRepository,
         IDepartmentRepository departmentRepository,
         ILogger<CreateDepartmentHandler> logger,
-        ITransactionManager transactionManager)
+        ITransactionManager transactionManager,
+        ICacheService cache)
     {
         _validator = validator;
         _locationRepository = locationRepository;
         _departmentRepository = departmentRepository;
         _logger = logger;
         _transactionManager = transactionManager;
+        _cache = cache;
     }
 
     public async Task<Result<Guid, Errors>> Handle(
@@ -101,6 +107,8 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, 
 
         if (commitedResult.IsFailure)
             return commitedResult.Error.ToErrors();
+
+        await _cache.RemoveByPrefixAsync(CachingKeys.DEPARTMENTS_KEY, cancellationToken);
 
         _logger.LogInformation("Department by id {departmentId} has been added.", departmentId.Value);
 
