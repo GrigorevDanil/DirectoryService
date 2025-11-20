@@ -41,7 +41,7 @@ public class MoveDepartmentHandler : ICommandHandler<MoveDepartmentCommand, Guid
         if (!validationResult.IsValid)
             return validationResult.ToErrors();
 
-        var beginTransactionResult = await _transactionManager.BeginTransaction(cancellationToken);
+        var beginTransactionResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
 
         if (beginTransactionResult.IsFailure)
             return beginTransactionResult.Error.ToErrors();
@@ -94,7 +94,7 @@ public class MoveDepartmentHandler : ICommandHandler<MoveDepartmentCommand, Guid
                 return checkParentIsChildResult.Error.ToErrors();
 
             var moveDepartmentResult =
-                await _departmentRepository.MoveDepartment(department.Path, parent.Path, cancellationToken);
+                await _departmentRepository.MoveChildDepartment(department.Path, parent.Path, cancellationToken);
 
             if (moveDepartmentResult.IsFailure)
                 return moveDepartmentResult.Error.ToErrors();
@@ -104,7 +104,7 @@ public class MoveDepartmentHandler : ICommandHandler<MoveDepartmentCommand, Guid
         else
         {
             var moveDepartmentResult =
-                await _departmentRepository.MoveDepartment(department.Path, cancellationToken);
+                await _departmentRepository.MoveDepartmentToRoot(department.Path, cancellationToken);
 
             if (moveDepartmentResult.IsFailure)
                 return moveDepartmentResult.Error.ToErrors();

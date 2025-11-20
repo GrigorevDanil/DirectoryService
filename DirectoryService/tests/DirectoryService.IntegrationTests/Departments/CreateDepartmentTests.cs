@@ -138,5 +138,5 @@ public class CreateDepartmentTests : DirectoryBaseTests
 
     private Task<Result<Guid, Errors>> ExecuteCreateDepartmentHandler(
         Func<CreateDepartmentHandler, Task<Result<Guid, Errors>>> action) =>
-        ExecuteHandler(action);
+        Execute(action);
 }

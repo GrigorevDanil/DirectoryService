@@ -14,6 +14,8 @@ public record Description
 
     public string? Value { get; private set; }
 
+    public static Description Empty() => new(string.Empty);
+
     /// <summary>
     /// Создает новый объект <see cref="Description"/>
     /// </summary>

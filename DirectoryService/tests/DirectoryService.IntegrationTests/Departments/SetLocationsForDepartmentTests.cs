@@ -79,5 +79,5 @@ public class SetLocationsForDepartmentTests : DirectoryBaseTests
 
     private Task<Result<Guid, Errors>> ExecuteSetLocationsForDepartmentHandler(
         Func<SetLocationsForDepartmentHandler, Task<Result<Guid, Errors>>> action) =>
-        ExecuteHandler(action);
+        Execute(action);
 }

@@ -1,6 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Departments;
+using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
 using Microsoft.EntityFrameworkCore;
@@ -25,7 +26,7 @@ public class DepartmentsRepository : IDepartmentRepository
         return department.Id.Value;
     }
 
-    public async Task<UnitResult<Error>> UpdatePathsAfterDelete(Path departmentPath, CancellationToken cancellationToken = default)
+    public async Task<UnitResult<Error>> MarkPathsAsDeleted(Path departmentPath, CancellationToken cancellationToken = default)
     {
         string sql;
 
@@ -144,7 +145,7 @@ public class DepartmentsRepository : IDepartmentRepository
         return Result.Success<Error>();
     }
 
-    public async Task<UnitResult<Error>> MoveDepartment(
+    public async Task<UnitResult<Error>> MoveChildDepartment(
         Path departmentPath,
         Path parentPath,
         CancellationToken cancellationToken = default)
@@ -153,8 +154,12 @@ public class DepartmentsRepository : IDepartmentRepository
                            UPDATE departments d
                            SET 
                                path = @parentPath::ltree || subpath(path, nlevel(@departmentPath::ltree) - 1),
-                               depth = nlevel(@parentPath::ltree || subpath(path, nlevel(@departmentPath::ltree) - 1)) -1
-                           WHERE path <@ @departmentPath::ltree
+                               depth = nlevel(@parentPath::ltree || subpath(path, nlevel(@departmentPath::ltree) - 1)) - 1,
+                               parent_id = (
+                                   SELECT id FROM departments 
+                                   WHERE path = subpath(@parentPath::ltree || subpath(d.path, nlevel(@departmentPath::ltree) - 1), 0, -1)
+                               )
+                           WHERE path <@ @departmentPath::ltree;
                            """;
 
         var dbConnection = _dbContext.Database.GetDbConnection();
@@ -177,7 +182,7 @@ public class DepartmentsRepository : IDepartmentRepository
         return Result.Success<Error>();
     }
 
-    public async Task<UnitResult<Error>> MoveDepartment(
+    public async Task<UnitResult<Error>> MoveDepartmentToRoot(
         Path departmentPath,
         CancellationToken cancellationToken = default)
     {
@@ -185,8 +190,13 @@ public class DepartmentsRepository : IDepartmentRepository
                            UPDATE departments d
                            SET 
                                path = subpath(path, nlevel(@departmentPath::ltree) - 1),
-                               depth = nlevel(subpath(path, nlevel(@departmentPath::ltree) - 1)) -1
-                           WHERE path <@ @departmentPath::ltree
+                               depth = nlevel(subpath(path, nlevel(@departmentPath::ltree) - 1)) - 1,
+                               parent_id = (
+                                   SELECT id FROM departments 
+                                   WHERE path = subpath(subpath(d.path, nlevel(@departmentPath::ltree) - 1), 0, -1)
+                                   AND nlevel(subpath(d.path, nlevel(@departmentPath::ltree) - 1)) > 1
+                               )
+                           WHERE path <@ @departmentPath::ltree;
                            """;
 
         var dbConnection = _dbContext.Database.GetDbConnection();
@@ -241,4 +251,111 @@ public class DepartmentsRepository : IDepartmentRepository
 
         return Result.Success<Error>();
     }
+
+    public async Task<UnitResult<Error>> DeleteDepartmentLocationsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _dbContext.DepartmentLocations
+                .Where(x => _dbContext.Departments
+                    .Where(dep => !dep.IsActive && dep.DeletedAt < DateTime.UtcNow.AddMonths(-1))
+                    .Select(dep => dep.Id)
+                    .Contains(x.DepartmentId))
+                .ExecuteDeleteAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+
+        return UnitResult.Success<Error>();
+    }
+
+    public async Task<UnitResult<Error>> DeleteDepartmentPositionsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _dbContext.DepartmentPositions
+                .Where(x => _dbContext.Departments
+                    .Where(dep => !dep.IsActive && dep.DeletedAt < DateTime.UtcNow.AddMonths(-1))
+                    .Select(dep => dep.Id)
+                    .Contains(x.DepartmentId))
+                .ExecuteDeleteAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+
+        return UnitResult.Success<Error>();
+    }
+
+    public async Task<UnitResult<Error>> UpdatePathsBeforeDeleteDepartments(CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+                        WITH outdated_departments AS (
+                            SELECT path
+                            FROM departments 
+                            WHERE is_active = false AND deleted_at < now() - INTERVAL '1 month'
+                        )
+                        UPDATE departments d
+                        SET 
+                            path = CASE 
+                                WHEN d.path = od.path THEN text2ltree(split_part(ltree2text(d.path), '.', 1))
+                                WHEN (SELECT depth FROM departments WHERE path = od.path) = 0 THEN subpath(d.path, 1)
+                                ELSE subpath(d.path, 0, 1) || subpath(d.path, 2)
+                            END,
+                            depth = CASE 
+                                WHEN d.path = od.path THEN 0
+                                ELSE d.depth - 1
+                            END,
+                            parent_id = CASE 
+                                WHEN d.path = od.path THEN NULL
+                                WHEN d.depth - 1 = 0 THEN NULL
+                                ELSE (
+                                    SELECT id FROM departments dp 
+                                    WHERE dp.path = subpath(
+                                        CASE 
+                                            WHEN (SELECT depth FROM departments WHERE path = od.path) = 0 THEN subpath(d.path, 1)
+                                            ELSE subpath(d.path, 0, 1) || subpath(d.path, 2)
+                                        END, 
+                                        0, 
+                                        -1
+                                    )
+                                )
+                            END
+                        FROM outdated_departments od
+                        WHERE d.path <@ od.path;
+                        """;
+
+        var dbConnection = _dbContext.Database.GetDbConnection();
+
+        try
+        {
+            await dbConnection.ExecuteAsync(sql);
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+
+        return UnitResult.Success<Error>();
+    }
+
+    public async Task<UnitResult<Error>> DeleteDepartmentsAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await _dbContext.Departments
+                .Where(dep => !dep.IsActive && dep.DeletedAt < DateTime.UtcNow.AddMonths(-1))
+                .ExecuteDeleteAsync(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+
+        return UnitResult.Success<Error>();
+    }
+
 }

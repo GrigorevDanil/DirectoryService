@@ -12,6 +12,8 @@ public interface ILocationRepository
 
     public Task<UnitResult<Error>> DeleteUnusedLocationsByDepartmentIdAsync(DepartmentId id, CancellationToken cancellationToken = default);
 
+    public Task<UnitResult<Error>> DeleteOutdatedLocationsAsync(CancellationToken cancellationToken = default);
+
     public Task<Result<Location, Error>> GetLocationByIdAsync(LocationId id, CancellationToken cancellationToken = default);
 
     public Task<UnitResult<Errors>> CheckExistingAndActiveIds(Guid[] ids, CancellationToken cancellationToken = default);

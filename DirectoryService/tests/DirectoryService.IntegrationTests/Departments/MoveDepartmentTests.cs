@@ -66,7 +66,7 @@ public class MoveDepartmentTests : DirectoryBaseTests
     }
 
     [Fact]
-    public async Task MoveDepartmentWithValidDataShouldSucceed()
+    public async Task MoveChildDepartmentWithValidDataShouldSucceed()
     {
         // arrange
         var locationId = await CreateLocationAsync("Локация 1");
@@ -109,12 +109,15 @@ public class MoveDepartmentTests : DirectoryBaseTests
                     departmentPath = "dev.backend",
                 });
 
+            var devFromQuery = await dbContext.Departments.FirstOrDefaultAsync(x => x.Id == dev.Id, cancellationToken);
+
             var backendFromQuery = departments.First(x => x.Id == backend.Id.Value);
 
             var team1FromQuery = departments.First(x => x.Id == team1.Id.Value);
 
             Assert.Equal("dev.backend", backendFromQuery.Path);
             Assert.Equal(1, backendFromQuery.Depth);
+            Assert.Equal(devFromQuery!.Id.Value, backendFromQuery.ParentId);
 
             Assert.Equal("dev.backend.team-one", team1FromQuery.Path);
             Assert.Equal(2, team1FromQuery.Depth);
@@ -126,5 +129,5 @@ public class MoveDepartmentTests : DirectoryBaseTests
 
     private Task<Result<Guid, Errors>> ExecuteMoveDepartmentHandler(
         Func<MoveDepartmentHandler, Task<Result<Guid, Errors>>> action) =>
-        ExecuteHandler(action);
+        Execute(action);
 }

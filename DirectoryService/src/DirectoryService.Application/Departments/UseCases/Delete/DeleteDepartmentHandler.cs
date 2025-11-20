@@ -52,7 +52,7 @@ public class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand, 
 
         var departmentId = DepartmentId.Of(command.Id);
 
-        var beginTransactionResult = await _transactionManager.BeginTransaction(cancellationToken);
+        var beginTransactionResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
 
         if (beginTransactionResult.IsFailure)
             return beginTransactionResult.Error.ToErrors();
@@ -75,16 +75,16 @@ public class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand, 
 
         department.MarkAsDelete();
 
-        var updatePathsResult = await _departmentRepository.UpdatePathsAfterDelete(department.Path, cancellationToken);
+        var markPathsResult = await _departmentRepository.MarkPathsAsDeleted(department.Path, cancellationToken);
 
-        if (updatePathsResult.IsFailure)
+        if (markPathsResult.IsFailure)
         {
             var rollbackResult = transactionScope.Rollback();
 
             if (rollbackResult.IsFailure)
                 return rollbackResult.Error.ToErrors();
 
-            return updatePathsResult.Error.ToErrors();
+            return markPathsResult.Error.ToErrors();
         }
 
         var deleteLocationsResult = await _locationRepository.DeleteUnusedLocationsByDepartmentIdAsync(departmentId, cancellationToken);

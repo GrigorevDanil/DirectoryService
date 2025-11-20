@@ -66,7 +66,7 @@ public class SetLocationsForDepartmentHandler : ICommandHandler<SetLocationsForD
             .Select(locationId =>
                 new DepartmentLocation(DepartmentLocationId.Create(), departmentId, LocationId.Of(locationId)));
 
-        var beginTransactionResult = await _transactionManager.BeginTransaction(cancellationToken);
+        var beginTransactionResult = await _transactionManager.BeginTransactionAsync(cancellationToken);
 
         if (beginTransactionResult.IsFailure)
             return beginTransactionResult.Error.ToErrors();
