@@ -11,6 +11,7 @@ using DirectoryService.Infrastructure.Repositories;
 using DirectoryService.Infrastructure.SoftDelete;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Shared.Caching;
 using Shared.Dapper;
 using Shared.Database;
 
@@ -23,6 +24,7 @@ public static class Registration
         return
             services
                 .AddRepositories()
+                .AddDistributedCache(configuration)
                 .AddSoftDelete(configuration)
                 .AddDatabase(configuration);
     }
@@ -42,6 +44,19 @@ public static class Registration
         services.AddHostedService<DeletedRecordsCleanerBackgroundService>();
         services.Configure<SoftDeleteSettings>(
             configuration.GetSection("SoftDeleteSettings"));
+
+        return services;
+    }
+
+    private static IServiceCollection AddDistributedCache(this IServiceCollection services, IConfiguration configuration)
+    {
+        services.AddStackExchangeRedisCache(options =>
+        {
+            options.Configuration = configuration.GetConnectionString("Redis") ??
+                                    throw new ArgumentNullException(nameof(configuration));
+        });
+
+        services.AddSingleton<ICacheService, DistributedCacheService>();
 
         return services;
     }

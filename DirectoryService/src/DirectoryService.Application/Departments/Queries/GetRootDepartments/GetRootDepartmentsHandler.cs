@@ -1,78 +1,103 @@
 ﻿using Dapper;
+using DirectoryService.Application.Constants;
 using DirectoryService.Contracts.Departments.Dtos;
+using Microsoft.Extensions.Caching.Distributed;
 using Shared;
 using Shared.Abstractions;
+using Shared.Caching;
 using Shared.Database;
 
 namespace DirectoryService.Application.Departments.Queries.GetRootDepartments;
 
 public class GetRootDepartmentsHandler : IQueryHandler<GetRootDepartmentsQuery, PaginationEnvelope<DepartmentDto>>
 {
+    private readonly DistributedCacheEntryOptions _cacheOptions = new()
+    {
+        AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(5),
+    };
+
     private readonly IDbConnectionFactory _dbConnectionFactory;
 
-    public GetRootDepartmentsHandler(IDbConnectionFactory dbConnectionFactory)
+    private readonly ICacheService _cache;
+
+    public GetRootDepartmentsHandler(IDbConnectionFactory dbConnectionFactory, ICacheService cache)
     {
         _dbConnectionFactory = dbConnectionFactory;
+        _cache = cache;
     }
 
     public async Task<PaginationEnvelope<DepartmentDto>> Handle(
         GetRootDepartmentsQuery query,
         CancellationToken cancellationToken = default)
     {
+        string key = CachingKeys.CreateDepartmentsKey(
+            query.Request.Prefetch.ToString(),
+            query.Request.Page.ToString(),
+            query.Request.PageSize.ToString());
+
+        return await _cache.GetOrSetAsync(
+            key,
+            async () => await GetRootDepartments(query),
+            _cacheOptions,
+            cancellationToken) ?? new PaginationEnvelope<DepartmentDto>([], 0);
+    }
+
+    private async Task<PaginationEnvelope<DepartmentDto>?> GetRootDepartments(GetRootDepartmentsQuery query)
+    {
         const string sql = """
-                     WITH roots AS (
-                     SELECT COUNT(*) OVER() as totalCount,
-                            d.id,
-                            d.parent_id,
-                            d.name,
-                            d.identifier,
-                            d.path,
-                            d.depth,
-                            d.is_active,
-                            d.created_at,
-                            d.updated_at
-                     FROM departments d
-                     WHERE d.parent_id IS NULL
-                     ORDER BY d.created_at
-                     LIMIT @RootSize
-                     OFFSET @RootPage)
-                     
-                     SELECT *,
-                            (EXISTS(
-                                SELECT 1
-                                FROM departments d
-                                WHERE d.parent_id = r.id
-                                OFFSET @ChildSize
-                            )) AS has_more_children
-                     FROM roots r
-                     
-                     UNION ALL
-                     
-                     SELECT 0,
-                            c.*,
-                            (EXISTS(
-                                SELECT 1
-                                FROM departments d
-                                WHERE d.parent_id = c.id
-                            )) AS has_more_children
-                     
-                     FROM roots r
-                     CROSS JOIN LATERAL (
-                         SELECT d.id,
-                                d.parent_id,
-                                d.name,
-                                d.identifier,
-                                d.path,
-                                d.depth,
-                                d.is_active,
-                                d.created_at,
-                                d.updated_at
-                         FROM departments d
-                         WHERE d.parent_id = r.id AND d.is_active = true
-                         ORDER BY d.created_at
-                         LIMIT @ChildSize
-                         ) AS c
-                     """;
+                           WITH roots AS (
+                           SELECT COUNT(*) OVER() as totalCount,
+                                  d.id,
+                                  d.parent_id,
+                                  d.name,
+                                  d.identifier,
+                                  d.path,
+                                  d.depth,
+                                  d.is_active,
+                                  d.created_at,
+                                  d.updated_at
+                           FROM departments d
+                           WHERE d.parent_id IS NULL
+                           ORDER BY d.created_at
+                           LIMIT @RootSize
+                           OFFSET @RootPage)
+
+                           SELECT *,
+                                  (EXISTS(
+                                      SELECT 1
+                                      FROM departments d
+                                      WHERE d.parent_id = r.id
+                                      OFFSET @ChildSize
+                                  )) AS has_more_children
+                           FROM roots r
+
+                           UNION ALL
+
+                           SELECT 0,
+                                  c.*,
+                                  (EXISTS(
+                                      SELECT 1
+                                      FROM departments d
+                                      WHERE d.parent_id = c.id
+                                  )) AS has_more_children
+
+                           FROM roots r
+                           CROSS JOIN LATERAL (
+                               SELECT d.id,
+                                      d.parent_id,
+                                      d.name,
+                                      d.identifier,
+                                      d.path,
+                                      d.depth,
+                                      d.is_active,
+                                      d.created_at,
+                                      d.updated_at
+                               FROM departments d
+                               WHERE d.parent_id = r.id AND d.is_active = true
+                               ORDER BY d.created_at
+                               LIMIT @ChildSize
+                               ) AS c
+                           """;
 
         var dbConnection = _dbConnectionFactory.GetDbConnection();
 

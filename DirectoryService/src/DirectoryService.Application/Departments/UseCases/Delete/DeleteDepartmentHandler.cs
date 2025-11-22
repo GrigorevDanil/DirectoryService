@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Constants;
 using DirectoryService.Application.Locations;
 using DirectoryService.Application.Positions;
 using DirectoryService.Domain.Departments.ValueObjects;
@@ -6,6 +7,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
+using Shared.Caching;
 using Shared.Database;
 using Shared.Validation;
 
@@ -25,13 +27,16 @@ public class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand, 
 
     private readonly ITransactionManager _transactionManager;
 
+    private readonly ICacheService _cache;
+
     public DeleteDepartmentHandler(
         IDepartmentRepository departmentRepository,
         IValidator<DeleteDepartmentCommand> validator,
         ILogger<DeleteDepartmentHandler> logger,
         ITransactionManager transactionManager,
         ILocationRepository locationRepository,
-        IPositionsRepository positionsRepository)
+        IPositionsRepository positionsRepository,
+        ICacheService cache)
     {
         _departmentRepository = departmentRepository;
         _validator = validator;
@@ -39,6 +44,7 @@ public class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand, 
         _transactionManager = transactionManager;
         _locationRepository = locationRepository;
         _positionsRepository = positionsRepository;
+        _cache = cache;
     }
 
     public async Task<Result<Guid, Errors>> Handle(
@@ -127,6 +133,8 @@ public class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand, 
 
         if (transactionCommitedResult.IsFailure)
             return transactionCommitedResult.Error.ToErrors();
+
+        await _cache.RemoveByPrefixAsync(CachingKeys.DEPARTMENTS_KEY, cancellationToken);
 
         _logger.LogInformation("Soft delete department by id {departmentId}", departmentId.Value);
 

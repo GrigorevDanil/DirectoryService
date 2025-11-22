@@ -1,4 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
+using DirectoryService.Application.Constants;
 using DirectoryService.Application.Locations;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentLocations.ValueObjects;
@@ -8,6 +9,7 @@ using FluentValidation;
 using Microsoft.Extensions.Logging;
 using Shared;
 using Shared.Abstractions;
+using Shared.Caching;
 using Shared.Database;
 using Shared.Validation;
 
@@ -25,18 +27,22 @@ public class SetLocationsForDepartmentHandler : ICommandHandler<SetLocationsForD
 
     private readonly ITransactionManager _transactionManager;
 
+    private readonly ICacheService _cache;
+
     public SetLocationsForDepartmentHandler(
         IDepartmentRepository departmentRepository,
         IValidator<SetLocationsForDepartmentCommand> validator,
         ILogger<SetLocationsForDepartmentHandler> logger,
         ITransactionManager transactionManager,
-        ILocationRepository locationRepository)
+        ILocationRepository locationRepository,
+        ICacheService cache)
     {
         _departmentRepository = departmentRepository;
         _validator = validator;
         _logger = logger;
         _transactionManager = transactionManager;
         _locationRepository = locationRepository;
+        _cache = cache;
     }
 
     public async Task<Result<Guid, Errors>> Handle(
@@ -93,6 +99,8 @@ public class SetLocationsForDepartmentHandler : ICommandHandler<SetLocationsForD
 
         if (transactionCommitedResult.IsFailure)
             return transactionCommitedResult.Error.ToErrors();
+
+        await _cache.RemoveByPrefixAsync(CachingKeys.DEPARTMENTS_KEY, cancellationToken);
 
         _logger.LogInformation("New locations have been set for the department by id {departmentId}", departmentId.Value);
 
