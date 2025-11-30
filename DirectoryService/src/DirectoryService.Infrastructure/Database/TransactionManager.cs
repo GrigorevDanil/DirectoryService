@@ -2,14 +2,14 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Storage;
 using Microsoft.Extensions.Logging;
-using Shared;
-using Shared.Constants;
-using Shared.Database;
+using Npgsql;
+using SharedService.Core.Database;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.Database;
 
 /// <summary>
-/// Менеджер для управления транзакциями
+/// Менеджер для управления транзакциями.
 /// </summary>
 public class TransactionManager : ITransactionManager
 {
@@ -54,17 +54,16 @@ public class TransactionManager : ITransactionManager
             await _dbContext.SaveChangesAsync(cancellationToken);
             return Result.Success<Error>();
         }
-        catch (DbUpdateException dbUpdateEx)
+        catch (DbUpdateException ex) when (ex.InnerException is PostgresException pEx)
         {
-            if (dbUpdateEx.InnerException?.Data[InnerExceptionDataConstants.SQL_STATE]!.ToString() ==
-                SqlStates.UNIQUE_CONSTRAINT_VIOLATION)
+            if (pEx.SqlState == PostgresErrorCodes.UniqueViolation)
             {
-                _logger.LogError(dbUpdateEx, "Duplicate record");
+                _logger.LogError(pEx, "Duplicate record");
                 return GeneralErrors.Conflict();
             }
 
-            _logger.LogError(dbUpdateEx, "Database update error");
-            return GeneralErrors.Failure(dbUpdateEx.Message);
+            _logger.LogError(pEx, "Database update error");
+            return GeneralErrors.Failure(pEx.Message);
         }
         catch (Exception ex)
         {

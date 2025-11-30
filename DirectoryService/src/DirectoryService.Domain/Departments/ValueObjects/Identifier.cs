@@ -1,15 +1,15 @@
 ﻿using System.Text.RegularExpressions;
 using CSharpFunctionalExtensions;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Departments.ValueObjects;
 
 /// <summary>
-/// Краткое название подразделения для формирования пути
+/// Краткое название подразделения для формирования пути.
 /// </summary>
 public partial record Identifier
 {
-    // Проверяет что бы значение являлось латиницей, что бы в название мог быть дефис, а так же что название не содержит пробелы
+    // Проверяет что бы значение являлось латиницей, что бы в название мог быть дефис, а так же что название не содержит пробелы.
     [GeneratedRegex("^[a-zA-Z]+(?:-[a-zA-Z]+)*$")]
     private static partial Regex IsLatin();
 
@@ -21,7 +21,7 @@ public partial record Identifier
     public string Value { get; private set; }
 
     /// <summary>
-    /// Создает новый объект <see cref="Identifier"/>
+    /// Создает новый объект <see cref="Identifier"/>.
     /// </summary>
     /// <param name="value">Входящее значение.</param>
     /// <returns>Новый объект <see cref="Identifier"/> или ошибка <see cref="Error"/>.</returns>
@@ -39,4 +39,4 @@ public partial record Identifier
         return new Identifier(value);
     }
 
-};
+}

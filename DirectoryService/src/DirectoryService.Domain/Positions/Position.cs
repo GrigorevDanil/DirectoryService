@@ -1,12 +1,12 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Positions.ValueObjects;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Positions;
 
 /// <summary>
-/// Сущность позиции(должности сотрудника)
+/// Сущность позиции(должности сотрудника).
 /// </summary>
 public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
 {
@@ -25,7 +25,7 @@ public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Конструктор для работы EF
+    /// Конструктор для работы EF.
     /// </summary>
     private Position() { }
 
@@ -40,7 +40,7 @@ public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
     public DateTime? DeletedAt { get; private set; }
 
     /// <summary>
-    /// Переименовать название позиции(должности сотрудника)
+    /// Переименовать название позиции(должности сотрудника).
     /// </summary>
     /// <param name="name">Новое название позиции(должности сотрудника).</param>
     /// <returns>Результат выполнения переименования.</returns>
@@ -57,7 +57,7 @@ public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Изменить описание позиции(должности сотрудника)
+    /// Изменить описание позиции(должности сотрудника).
     /// </summary>
     /// <param name="description">Новое описание позиции(должности сотрудника).</param>
     /// <returns>Результат выполнения изменения описания.</returns>
@@ -74,7 +74,7 @@ public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Помечает сущность как удаленную
+    /// Помечает сущность как удаленную.
     /// </summary>
     /// <param name="deletedAt">Дата удаления.</param>
     public void MarkAsDelete(DateTime? deletedAt = null)

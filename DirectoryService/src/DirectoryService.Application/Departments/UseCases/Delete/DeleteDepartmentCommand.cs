@@ -1,4 +1,4 @@
-﻿using Shared.Abstractions;
+﻿using SharedService.Core.Handlers;
 
 namespace DirectoryService.Application.Departments.UseCases.Delete;
 

@@ -3,7 +3,7 @@ using DirectoryService.Application.Departments.UseCases.SetLocations;
 using DirectoryService.Contracts.Departments.Requests;
 using DirectoryService.Domain.Departments.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.IntegrationTests.Departments;
 

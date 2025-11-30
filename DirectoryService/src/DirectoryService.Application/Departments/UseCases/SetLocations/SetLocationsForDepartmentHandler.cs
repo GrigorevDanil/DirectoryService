@@ -7,11 +7,11 @@ using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Shared;
-using Shared.Abstractions;
-using Shared.Caching;
-using Shared.Database;
-using Shared.Validation;
+using SharedService.Core.Caching;
+using SharedService.Core.Database;
+using SharedService.Core.Handlers;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.UseCases.SetLocations;
 
@@ -102,7 +102,7 @@ public class SetLocationsForDepartmentHandler : ICommandHandler<SetLocationsForD
 
         await _cache.RemoveByPrefixAsync(CachingKeys.DEPARTMENTS_KEY, cancellationToken);
 
-        _logger.LogInformation("New locations have been set for the department by id {departmentId}", departmentId.Value);
+        _logger.LogInformation("New locations have been set for the department by id {DepartmentId}", departmentId.Value);
 
         return departmentId.Value;
     }

@@ -1,5 +1,4 @@
 ﻿using System.Data.Common;
-using DirectoryService.API;
 using DirectoryService.Infrastructure;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;

@@ -1,9 +1,9 @@
 ﻿using System.Data;
 using Dapper;
 using DirectoryService.Contracts.Locations.Dtos;
-using Shared;
-using Shared.Abstractions;
-using Shared.Database;
+using SharedService.Core.Database;
+using SharedService.Core.Handlers;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Locations.Queries.Get;
 
@@ -54,9 +54,9 @@ public class GetLocationsHandler : IQueryHandler<GetLocationsQuery, PaginationEn
         string conditionalsString =
             conditionals.Count != 0 ? "WHERE " + string.Join(" AND ", conditionals) : string.Empty;
 
-        string sortDirection = query.Request.SortDirection.ToLower() == "asc" ? "ASC" : "DESC";
+        string sortDirection = query.Request.SortDirection.ToLowerInvariant() == "asc" ? "ASC" : "DESC";
 
-        string sortBy = query.Request.SortBy.ToLower() switch
+        string sortBy = query.Request.SortBy.ToLowerInvariant() switch
         {
             "name" => "l.name",
             "createdat" => "l.created_at",

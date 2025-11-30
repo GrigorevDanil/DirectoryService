@@ -1,7 +1,7 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.SoftDelete;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.IntegrationTests.SoftDelete;
 

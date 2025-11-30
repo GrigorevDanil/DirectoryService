@@ -1,11 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Departments;
-using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using SharedService.SharedKernel;
 using Path = DirectoryService.Domain.Departments.ValueObjects.Path;
 
 namespace DirectoryService.Infrastructure.Repositories;

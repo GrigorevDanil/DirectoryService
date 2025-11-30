@@ -1,10 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Positions.ValueObjects;
 
 /// <summary>
-/// Описание позиции(должности сотрудника)
+/// Описание позиции(должности сотрудника).
 /// </summary>
 public record Description
 {
@@ -17,7 +17,7 @@ public record Description
     public static Description Empty() => new(string.Empty);
 
     /// <summary>
-    /// Создает новый объект <see cref="Description"/>
+    /// Создает новый объект <see cref="Description"/>.
     /// </summary>
     /// <param name="value">Входящее значение.</param>
     /// <returns>Новый объект <see cref="Description"/> или ошибка <see cref="Error"/>.</returns>
@@ -31,4 +31,4 @@ public record Description
 
         return new Description(value);
     }
-};
+}

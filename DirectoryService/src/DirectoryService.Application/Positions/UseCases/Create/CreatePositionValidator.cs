@@ -1,7 +1,7 @@
 ﻿using DirectoryService.Domain.Positions.ValueObjects;
 using FluentValidation;
-using Shared;
-using Shared.Validation;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Positions.UseCases.Create;
 

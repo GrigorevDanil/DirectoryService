@@ -10,6 +10,30 @@ charset = utf-8-bom
 end_of_line = crlf
 trim_trailing_whitespace = false
 
+# Code Analysis - отключение строгих правил для Domain
+dotnet_diagnostic.CA1716.severity = none
+dotnet_diagnostic.CA1707.severity = none
+dotnet_diagnostic.CA1036.severity = none
+dotnet_diagnostic.CA1062.severity = none
+dotnet_diagnostic.CA1860.severity = none
+dotnet_diagnostic.CA1008.severity = none
+dotnet_diagnostic.CA2007.severity = none
+dotnet_diagnostic.CA5394.severity = none
+dotnet_diagnostic.CA1515.severity = none
+dotnet_diagnostic.CA1031.severity = none
+dotnet_diagnostic.CA1848.severity = none
+dotnet_diagnostic.CA1063.severity = none
+dotnet_diagnostic.CA1816.severity = none
+dotnet_diagnostic.CA1819.severity = none
+dotnet_diagnostic.CA1002.severity = none
+dotnet_diagnostic.CA1308.severity = none
+dotnet_diagnostic.CA1862.severity = none
+dotnet_diagnostic.CA1822.severity = none
+
+# StyleCop - отключение правил форматирования
+dotnet_diagnostic.SA1516.severity = none
+dotnet_diagnostic.SA1413.severity = none
+
 # Microsoft .NET properties
 csharp_new_line_before_members_in_object_initializers = false
 csharp_preferred_modifier_order = public, private, protected, internal, file, new, static, abstract, virtual, sealed, readonly, override, extern, unsafe, volatile, async, required:suggestion
@@ -269,7 +293,7 @@ dotnet_diagnostic.SA1602.severity = none
 dotnet_diagnostic.SA1201.severity = none
 dotnet_diagnostic.SA1623.severity = none
 dotnet_diagnostic.SA1118.severity = none
-dotnet_diagnostic.eSA1128.severity = none
+dotnet_diagnostic.SA1128.severity = none
 dotnet_diagnostic.SA1401.severity = none
 dotnet_diagnostic.SA1642.severity = none
 

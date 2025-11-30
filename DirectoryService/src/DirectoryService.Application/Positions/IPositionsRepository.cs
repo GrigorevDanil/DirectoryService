@@ -1,17 +1,17 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Positions;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Positions;
 
 public interface IPositionsRepository
 {
-    public Task<Guid> AddPositionAsync(Position position, CancellationToken cancellationToken = default);
+    Task<Guid> AddPositionAsync(Position position, CancellationToken cancellationToken = default);
 
-    public Task<UnitResult<Error>> DeleteUnusedPositionsByDepartmentIdAsync(
+    Task<UnitResult<Error>> DeleteUnusedPositionsByDepartmentIdAsync(
         DepartmentId id,
         CancellationToken cancellationToken = default);
 
-    public Task<UnitResult<Error>> DeleteOutdatedPositionsAsync(CancellationToken cancellationToken = default);
+    Task<UnitResult<Error>> DeleteOutdatedPositionsAsync(CancellationToken cancellationToken = default);
 }

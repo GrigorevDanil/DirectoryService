@@ -1,11 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Locations.ValueObjects;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Locations;
 
 /// <summary>
-/// Сущность локации
+/// Сущность локации.
 /// </summary>
 public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
 {
@@ -22,7 +22,7 @@ public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Конструктор для работы EF
+    /// Конструктор для работы EF.
     /// </summary>
     private Location() { }
 
@@ -37,7 +37,7 @@ public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
     public DateTime? DeletedAt { get;  private set; }
 
     /// <summary>
-    /// Переименовать название локации
+    /// Переименовать название локации.
     /// </summary>
     /// <param name="name">Новое название локации.</param>
     /// <returns>Результат выполнения переименования.</returns>
@@ -54,7 +54,7 @@ public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Изменяет часовой пояс
+    /// Изменяет часовой пояс.
     /// </summary>
     /// <param name="timezone">Новый IANA-код часового пояса.</param>
     /// <returns>Результат выполнения изменения часового пояса.</returns>
@@ -71,7 +71,7 @@ public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Изменяет адрес локации
+    /// Изменяет адрес локации.
     /// </summary>
     /// <param name="country">Страна.</param>
     /// <param name="postalCode">Почтовый индекс.</param>
@@ -105,7 +105,7 @@ public sealed class Location: BaseEntity<LocationId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Помечает сущность как удаленную
+    /// Помечает сущность как удаленную.
     /// </summary>
     /// <param name="deletedAt">Дата удаления.</param>
     public void MarkAsDelete(DateTime? deletedAt = null)

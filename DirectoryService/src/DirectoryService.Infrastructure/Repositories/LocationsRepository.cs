@@ -5,7 +5,7 @@ using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.Repositories;
 
@@ -14,7 +14,6 @@ public class LocationsRepository : ILocationRepository
     private readonly AppDbContext _dbContext;
 
     public LocationsRepository(AppDbContext dbContext) => _dbContext = dbContext;
-
 
     public async Task<Guid> AddLocationAsync(Location location, CancellationToken cancellationToken = default)
     {
@@ -65,7 +64,7 @@ public class LocationsRepository : ILocationRepository
         return UnitResult.Success<Error>();
     }
 
-    async Task<UnitResult<Error>> ILocationRepository.DeleteOutdatedLocationsAsync(CancellationToken cancellationToken = default)
+    public async Task<UnitResult<Error>> DeleteOutdatedLocationsAsync(CancellationToken cancellationToken = default)
     {
         try
         {
@@ -93,7 +92,7 @@ public class LocationsRepository : ILocationRepository
 
     public async Task<UnitResult<Errors>> CheckExistingAndActiveIds(Guid[] ids, CancellationToken cancellationToken = default)
     {
-        var locationIds = LocationId.Of(ids);
+        var locationIds = LocationId.Of(ids).AsEnumerable();
 
         var existingIds = await _dbContext.Locations
             .Where(l => locationIds.Contains(l.Id) && l.IsActive)

@@ -4,7 +4,7 @@ using DirectoryService.Application.Positions;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Positions;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.Repositories;
 

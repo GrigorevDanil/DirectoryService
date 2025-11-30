@@ -1,11 +1,12 @@
-﻿using Dapper;
+﻿using System.Globalization;
+using Dapper;
 using DirectoryService.Application.Constants;
 using DirectoryService.Contracts.Departments.Dtos;
 using Microsoft.Extensions.Caching.Distributed;
-using Shared;
-using Shared.Abstractions;
-using Shared.Caching;
-using Shared.Database;
+using SharedService.Core.Caching;
+using SharedService.Core.Database;
+using SharedService.Core.Handlers;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.Queries.GetChildrenDepartments;
 
@@ -32,8 +33,8 @@ public class GetChildrenDepartmentsHandler : IQueryHandler<GetChildrenDepartment
     {
         string key = CachingKeys.CreateDepartmentsKey(
             query.ParentId.ToString(),
-            query.Request.Page.ToString(),
-            query.Request.PageSize.ToString());
+            query.Request.Page.ToString(CultureInfo.InvariantCulture),
+            query.Request.PageSize.ToString(CultureInfo.InvariantCulture));
 
         return await _cache.GetOrSetAsync(
             key,

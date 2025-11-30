@@ -1,10 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Departments.ValueObjects;
 
 /// <summary>
-/// Путь подразделения
+/// Путь подразделения.
 /// </summary>
 public record Path
 {
@@ -23,7 +23,7 @@ public record Path
     public short Depth { get; private set; }
 
     /// <summary>
-    /// Создает новый объект <see cref="Path"/> для родителя
+    /// Создает новый объект <see cref="Path"/> для родителя.
     /// </summary>
     /// <param name="identifier">Входящее короткое название подразделения.</param>
     /// <returns>Новый объект <see cref="Path"/> или ошибку <see cref="Error"/>.</returns>
@@ -33,7 +33,7 @@ public record Path
     }
 
     /// <summary>
-    /// Создает новый объект <see cref="Path"/> для дочернего подразделения
+    /// Создает новый объект <see cref="Path"/> для дочернего подразделения.
     /// </summary>
     /// <param name="identifier">Входящее короткое название подразделения.</param>
     /// <returns>Новый объект <see cref="Path"/> или ошибку <see cref="Error"/>.</returns>
@@ -47,7 +47,7 @@ public record Path
     }
 
     /// <summary>
-    /// Создает новый объект <see cref="Path"/> из строки
+    /// Создает новый объект <see cref="Path"/> из строки.
     /// </summary>
     /// <param name="path">Входящий путь.</param>
     /// <returns>Новый объект <see cref="Path"/> или ошибку <see cref="Error"/>.</returns>
@@ -72,4 +72,4 @@ public record Path
 
         return new Path(path, depth);
     }
-};
+}

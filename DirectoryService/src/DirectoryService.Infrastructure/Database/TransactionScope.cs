@@ -1,13 +1,13 @@
 ﻿using System.Data;
 using CSharpFunctionalExtensions;
 using Microsoft.Extensions.Logging;
-using Shared;
-using Shared.Database;
+using SharedService.Core.Database;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.Database;
 
 /// <summary>
-/// Обертка транзакции
+/// Обертка транзакции.
 /// </summary>
 public class TransactionScope : ITransactionScope
 {

@@ -5,7 +5,7 @@ using DirectoryService.Domain.Locations.ValueObjects;
 namespace DirectoryService.Domain.DepartmentLocations;
 
 /// <summary>
-/// Связанная сущность между подразделениями и локациями
+/// Связанная сущность между подразделениями и локациями.
 /// </summary>
 public sealed class DepartmentLocation
 {
@@ -20,7 +20,7 @@ public sealed class DepartmentLocation
     }
 
     /// <summary>
-    /// Конструктор для работы EF
+    /// Конструктор для работы EF.
     /// </summary>
     private DepartmentLocation() { }
 

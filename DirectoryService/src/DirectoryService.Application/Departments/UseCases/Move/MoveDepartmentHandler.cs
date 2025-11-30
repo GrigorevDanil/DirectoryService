@@ -3,12 +3,11 @@ using DirectoryService.Application.Constants;
 using DirectoryService.Domain.Departments.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Shared;
-using Shared.Abstractions;
-using Shared.Caching;
-using Shared.Database;
-using Shared.Validation;
-using Path = DirectoryService.Domain.Departments.ValueObjects.Path;
+using SharedService.Core.Caching;
+using SharedService.Core.Database;
+using SharedService.Core.Handlers;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.UseCases.Move;
 
@@ -138,13 +137,13 @@ public class MoveDepartmentHandler : ICommandHandler<MoveDepartmentCommand, Guid
         if (command.Request.ParentId != null)
         {
             _logger.LogInformation(
-                "Department by id {departmentId} was added to parent by id {parentId}",
+                "Department by id {DepartmentId} was added to parent by id {ParentId}",
                 command.DepartmentId, command.Request.ParentId);
         }
         else
         {
             _logger.LogInformation(
-                "Department by id {departmentId} became root",
+                "Department by id {DepartmentId} became root",
                 command.DepartmentId);
         }
 

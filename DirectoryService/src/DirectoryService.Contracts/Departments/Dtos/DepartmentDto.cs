@@ -1,4 +1,4 @@
-﻿using DirectoryService.Contracts.DepartmentLocation.Dtos;
+﻿using DirectoryService.Contracts.DepartmentLocations.Dtos;
 
 namespace DirectoryService.Contracts.Departments.Dtos;
 

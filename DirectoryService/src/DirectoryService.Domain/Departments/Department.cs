@@ -4,13 +4,13 @@ using DirectoryService.Domain.DepartmentPositions;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 using DirectoryService.Domain.Positions.ValueObjects;
-using Shared;
+using SharedService.SharedKernel;
 using Path = DirectoryService.Domain.Departments.ValueObjects.Path;
 
 namespace DirectoryService.Domain.Departments;
 
 /// <summary>
-/// Сущность подразделения
+/// Сущность подразделения.
 /// </summary>
 public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
 {
@@ -37,7 +37,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Конструктор для работы EF
+    /// Конструктор для работы EF.
     /// </summary>
     private Department() { }
 
@@ -59,9 +59,8 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
 
     public IReadOnlyList<Department> Children => _children;
 
-
     /// <summary>
-    /// Создать родительское подразделение
+    /// Создать родительское подразделение.
     /// </summary>
     /// <param name="name">Название подразделения.</param>
     /// <param name="identifier">Короткое название подразделения.</param>
@@ -85,7 +84,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Создать дочернее подразделение
+    /// Создать дочернее подразделение.
     /// </summary>
     /// <param name="name">Название подразделения.</param>
     /// <param name="identifier">Короткое название подразделения.</param>
@@ -113,7 +112,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Переименовать название подразделения
+    /// Переименовать название подразделения.
     /// </summary>
     /// <param name="name">Новое название подразделения.</param>
     /// <returns>Результат выполнения переименования.</returns>
@@ -132,7 +131,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Добавляет дочерний подраздел к родительскому подразделу
+    /// Добавляет дочерний подраздел к родительскому подразделу.
     /// </summary>
     /// <param name="department">Дочерний подраздел.</param>
     public void AddDepartment(Department department)
@@ -142,7 +141,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Удалить дочерний подраздел из родительского подраздела
+    /// Удалить дочерний подраздел из родительского подраздела.
     /// </summary>
     /// <param name="department">Дочерний подраздел.</param>
     public void RemoveDepartment(Department department)
@@ -152,7 +151,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Установить транзакции
+    /// Установить транзакции.
     /// </summary>
     /// <param name="locations">Локации.</param>
     public void SetLocations(IEnumerable<DepartmentLocation> locations)
@@ -162,7 +161,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Добавляет локацию к подразделению
+    /// Добавляет локацию к подразделению.
     /// </summary>
     /// <param name="location">Локация.</param>
     public void AddLocation(DepartmentLocation location)
@@ -172,7 +171,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Удалить локацию из подразделения
+    /// Удалить локацию из подразделения.
     /// </summary>
     /// <param name="location">Локация.</param>
     public void RemoveLocation(DepartmentLocation location)
@@ -182,7 +181,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Ищет локацию в подразделении по идентификатору
+    /// Ищет локацию в подразделении по идентификатору.
     /// </summary>
     /// <param name="locationId">Идентификатор локации.</param>
     /// <returns>Объект <see cref="DepartmentLocation"/> или ошибку <see cref="Error"/>.</returns>
@@ -197,7 +196,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Добавляет позицию(должность сотрудника) к подразделению
+    /// Добавляет позицию(должность сотрудника) к подразделению.
     /// </summary>
     /// <param name="position">Позиция.</param>
     public void AddPosition(DepartmentPosition position)
@@ -207,7 +206,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Удалить позицию(должность сотрудника) из подразделения
+    /// Удалить позицию(должность сотрудника) из подразделения.
     /// </summary>
     /// <param name="position">Позиция.</param>
     public void RemovePosition(DepartmentPosition position)
@@ -217,7 +216,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Ищет позицию(должность сотрудника) в подразделении по идентификатору
+    /// Ищет позицию(должность сотрудника) в подразделении по идентификатору.
     /// </summary>
     /// <param name="positionId">Идентификатор позиции(должность сотрудника).</param>
     /// <returns>Объект <see cref="DepartmentPosition"/> или ошибку <see cref="Error"/>.</returns>
@@ -232,7 +231,7 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
-    /// Помечает сущность как удаленную
+    /// Помечает сущность как удаленную.
     /// </summary>
     /// <param name="deletedAt">Дата удаления.</param>
     public void MarkAsDelete(DateTime? deletedAt = null)

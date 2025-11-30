@@ -1,13 +1,12 @@
 ﻿using System.ComponentModel;
-using DirectoryService.Application.Locations;
 using DirectoryService.Application.Locations.Queries.Get;
 using DirectoryService.Application.Locations.UseCases.Create;
 using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.Contracts.Locations.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
-using Shared.EndpointResults;
+using SharedService.Framework.Endpoints;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Presenters.Controllers;
 

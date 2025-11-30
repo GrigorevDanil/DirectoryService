@@ -1,5 +1,5 @@
 ﻿using DirectoryService.Contracts.Positions.Requests;
-using Shared.Abstractions;
+using SharedService.Core.Handlers;
 
 namespace DirectoryService.Application.Positions.UseCases.Create;
 

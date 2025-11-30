@@ -1,6 +1,6 @@
 ﻿using FluentValidation;
-using Shared;
-using Shared.Validation;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.UseCases.Delete;
 
