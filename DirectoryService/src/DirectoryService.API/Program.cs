@@ -1,72 +1,37 @@
-using DirectoryService.Application;
-using DirectoryService.Infrastructure;
-using Microsoft.OpenApi.Models;
+using System.Globalization;
+using DirectoryService.API;
 using Serilog;
-using Serilog.AspNetCore;
-using Serilog.Events;
-using Serilog.Exceptions;
-using Shared;
-using Shared.Middlewares;
-
-var builder = WebApplication.CreateBuilder(args);
 
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console()
-    .WriteTo.Debug()
-    .WriteTo.Seq(builder.Configuration.GetConnectionString("Seq") ??
-                 throw new ArgumentNullException("Seq"))
-    .Enrich.WithExceptionDetails()
-    .Enrich.WithThreadId()
-    .Enrich.WithEnvironmentName()
-    .Enrich.WithMachineName()
-    .Enrich.WithEnvironmentUserName()
-    .MinimumLevel.Override("Microsoft.AspNetCore.Hosting", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.AspNetCore.Mvc", LogEventLevel.Warning)
-    .MinimumLevel.Override("Microsoft.AspNetCore.Routing", LogEventLevel.Warning)
+    .MinimumLevel.Information()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
     .CreateLogger();
 
-builder.Services.AddControllers();
-
-builder.Services.AddSerilog();
-
-builder.Services.AddOpenApi(options =>
+try
 {
-    options.AddSchemaTransformer((schema, context, _) =>
-    {
-        if (context.JsonTypeInfo.Type == typeof(Envelope<Errors>))
-        {
-            if (schema.Properties.TryGetValue("errors", out var errorsProp))
-            {
-                errorsProp.Items.Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.Schema,
-                    Id = "Error",
-                };
-            }
-        }
+    Log.Information("Starting directory service");
 
-        return Task.CompletedTask;
-    });
-});
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-builder.Services
-    .AddApplication()
-    .AddInfrastructure(builder.Configuration);
+    string envName = builder.Environment.EnvironmentName;
 
-var app = builder.Build();
+    builder.Configuration.AddJsonFile($"appsettings.{envName}.json", true, true);
 
-app.UseExceptionMiddleware();
+    builder.Configuration.AddEnvironmentVariables();
 
-app.UseSerilogRequestLogging();
+    builder.Services.AddConfiguration(builder.Configuration);
 
-app.MapOpenApi();
-app.UseSwaggerUI(options => options.SwaggerEndpoint("/openapi/v1.json", "DirectoryService"));
+    WebApplication app = builder.Build();
 
-app.MapControllers();
+    app.Configure();
 
-app.Run();
-
-namespace DirectoryService.API
+    app.Run();
+}
+catch (Exception ex)
 {
-    public partial class Program;
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    Log.CloseAndFlush();
 }

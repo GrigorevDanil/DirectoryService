@@ -1,11 +1,11 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Contracts.Locations.Dtos;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Locations.ValueObjects;
 
 /// <summary>
-/// Адрес
+/// Адрес.
 /// </summary>
 public record Address
 {
@@ -26,32 +26,32 @@ public record Address
     public const int MAX_LENGTH_HOUSE_NUMBER = 3;
 
     /// <summary>
-    /// Страна
+    /// Страна.
     /// </summary>
     public string Country { get; }
 
     /// <summary>
-    /// Почтовый индекс
+    /// Почтовый индекс.
     /// </summary>
     public string PostalCode { get; }
 
     /// <summary>
-    /// Регион
+    /// Регион.
     /// </summary>
     public string Region { get; }
 
     /// <summary>
-    /// Город
+    /// Город.
     /// </summary>
     public string City { get; }
 
     /// <summary>
-    /// Улица
+    /// Улица.
     /// </summary>
     public string Street { get; }
 
     /// <summary>
-    /// Номер дома
+    /// Номер дома.
     /// </summary>
     public string HouseNumber { get; }
 
@@ -72,7 +72,7 @@ public record Address
     }
 
     /// <summary>
-    /// Создает новый объект <see cref="Address"/>
+    /// Создает новый объект <see cref="Address"/>.
     /// </summary>
     /// <param name="country">Страна.</param>
     /// <param name="postalCode">Почтовый индекс.</param>
@@ -117,7 +117,7 @@ public record Address
     }
 
     /// <summary>
-    /// Создает новый объект <see cref="Address"/>
+    /// Создает новый объект <see cref="Address"/>.
     /// </summary>
     /// <param name="addressDto">Входящие данные об адресе.</param>
     /// <returns>Новый объект <see cref="Address"/> или список ошибок <see cref="Errors"/>.</returns>

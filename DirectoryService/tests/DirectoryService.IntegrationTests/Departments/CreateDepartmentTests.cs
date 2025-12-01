@@ -1,11 +1,9 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments.UseCases.Create;
 using DirectoryService.Contracts.Departments.Requests;
-using DirectoryService.Domain.DepartmentLocations;
-using DirectoryService.Domain.DepartmentLocations.ValueObjects;
 using DirectoryService.Domain.Departments.ValueObjects;
 using Microsoft.EntityFrameworkCore;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.IntegrationTests.Departments;
 

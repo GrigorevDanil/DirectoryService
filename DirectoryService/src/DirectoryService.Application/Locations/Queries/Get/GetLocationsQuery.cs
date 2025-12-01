@@ -1,5 +1,5 @@
 ﻿using DirectoryService.Contracts.Locations.Requests;
-using Shared.Abstractions;
+using SharedService.Core.Handlers;
 
 namespace DirectoryService.Application.Locations.Queries.Get;
 

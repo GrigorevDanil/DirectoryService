@@ -1,11 +1,12 @@
-﻿using Dapper;
+﻿using System.Globalization;
+using Dapper;
 using DirectoryService.Application.Constants;
 using DirectoryService.Contracts.Departments.Dtos;
 using Microsoft.Extensions.Caching.Distributed;
-using Shared;
-using Shared.Abstractions;
-using Shared.Caching;
-using Shared.Database;
+using SharedService.Core.Caching;
+using SharedService.Core.Database;
+using SharedService.Core.Handlers;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.Queries.GetRootDepartments;
 
@@ -31,9 +32,9 @@ public class GetRootDepartmentsHandler : IQueryHandler<GetRootDepartmentsQuery, 
         CancellationToken cancellationToken = default)
     {
         string key = CachingKeys.CreateDepartmentsKey(
-            query.Request.Prefetch.ToString(),
-            query.Request.Page.ToString(),
-            query.Request.PageSize.ToString());
+            query.Request.Prefetch.ToString(CultureInfo.InvariantCulture),
+            query.Request.Page.ToString(CultureInfo.InvariantCulture),
+            query.Request.PageSize.ToString(CultureInfo.InvariantCulture));
 
         return await _cache.GetOrSetAsync(
             key,

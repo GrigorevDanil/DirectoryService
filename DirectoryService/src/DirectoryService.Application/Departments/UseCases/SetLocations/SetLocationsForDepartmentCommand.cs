@@ -1,5 +1,5 @@
 ﻿using DirectoryService.Contracts.Departments.Requests;
-using Shared.Abstractions;
+using SharedService.Core.Handlers;
 
 namespace DirectoryService.Application.Departments.UseCases.SetLocations;
 

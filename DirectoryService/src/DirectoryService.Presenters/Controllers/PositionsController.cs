@@ -3,8 +3,8 @@ using DirectoryService.Application.Positions.UseCases.Create;
 using DirectoryService.Contracts.Positions.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Shared;
-using Shared.EndpointResults;
+using SharedService.Framework.Endpoints;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Presenters.Controllers;
 

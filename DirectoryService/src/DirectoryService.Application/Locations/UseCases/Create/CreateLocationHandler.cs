@@ -3,10 +3,10 @@ using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Locations.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Shared;
-using Shared.Abstractions;
-using Shared.Database;
-using Shared.Validation;
+using SharedService.Core.Database;
+using SharedService.Core.Handlers;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Locations.UseCases.Create;
 
@@ -58,7 +58,7 @@ public class CreateLocationHandler : ICommandHandler<CreateLocationCommand, Guid
         if (commitedResult.IsFailure)
             return commitedResult.Error.ToErrors();
 
-        _logger.LogInformation("Location by id {locationId} has been added.", locationId);
+        _logger.LogInformation("Location by id {LocationId} has been added.", locationId);
 
         return locationId;
     }

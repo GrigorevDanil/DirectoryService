@@ -1,5 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.SoftDelete;
 

@@ -3,10 +3,8 @@ using DirectoryService.Application.Departments;
 using DirectoryService.Application.Locations;
 using DirectoryService.Application.Positions;
 using DirectoryService.Application.SoftDelete;
-using DirectoryService.Domain.Departments.ValueObjects;
-using Shared;
-using Shared.Database;
-using Path = DirectoryService.Domain.Departments.ValueObjects.Path;
+using SharedService.Core.Database;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Infrastructure.SoftDelete;
 

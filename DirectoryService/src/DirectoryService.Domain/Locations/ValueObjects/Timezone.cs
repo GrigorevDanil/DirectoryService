@@ -1,10 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Locations.ValueObjects;
 
 /// <summary>
-/// Часовой пояс представленный в виде IANA
+/// Часовой пояс представленный в виде IANA.
 /// </summary>
 public record Timezone
 {
@@ -15,7 +15,7 @@ public record Timezone
     public string Value { get; private set; }
 
     /// <summary>
-    /// Создает новый объект <see cref="Timezone"/>
+    /// Создает новый объект <see cref="Timezone"/>.
     /// </summary>
     /// <param name="value">Входящее значение.</param>
     /// <returns>Новый объект <see cref="Timezone"/> или ошибка <see cref="Error"/>.</returns>
@@ -32,4 +32,4 @@ public record Timezone
 
         return new Timezone(value);
     }
-};
+}

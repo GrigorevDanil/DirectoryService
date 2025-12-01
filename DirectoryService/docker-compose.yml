@@ -1,12 +1,12 @@
 services:
-  web:
-    build:
-      context: .
-      dockerfile: src/DirectoryService.API/Dockerfile
-    ports:
-      - "8000:8000"
-    environment:
-      ASPNETCORE_ENVIRONMENT: Docker
+#  web:
+#    build:
+#      context: .
+#      dockerfile: src/DirectoryService.API/Dockerfile
+#    ports:
+#      - "8000:8000"
+#    environment:
+#      ASPNETCORE_ENVIRONMENT: Docker
       
   redis:
     container_name: redis

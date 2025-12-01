@@ -1,10 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Departments.ValueObjects;
 
 /// <summary>
-/// Название подразделения
+/// Название подразделения.
 /// </summary>
 public record DepartmentName
 {
@@ -16,7 +16,7 @@ public record DepartmentName
     public string Value { get; private set; }
 
     /// <summary>
-    /// Создает новый объект <see cref="DepartmentName"/>
+    /// Создает новый объект <see cref="DepartmentName"/>.
     /// </summary>
     /// <param name="value">Входящее значение.</param>
     /// <returns>Новый объект <see cref="DepartmentName"/> или ошибка <see cref="Error"/>.</returns>
@@ -30,4 +30,4 @@ public record DepartmentName
 
         return new DepartmentName(value);
     }
-};
+}

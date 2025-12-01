@@ -1,4 +1,4 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Globalization;
 using DirectoryService.Domain.DepartmentLocations;
 using DirectoryService.Domain.DepartmentLocations.ValueObjects;
 using DirectoryService.Domain.Departments;
@@ -9,7 +9,6 @@ using DirectoryService.Domain.Positions;
 using DirectoryService.Domain.Positions.ValueObjects;
 using DirectoryService.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
-using Shared;
 
 namespace DirectoryService.IntegrationTests;
 
@@ -60,7 +59,7 @@ public class DirectoryBaseTests : IClassFixture<DirectoryTestWebFactory>, IAsync
         {
             var random = new Random();
 
-            string randomString = random.Next(100000, 999999).ToString();
+            string randomString = random.Next(100000, 999999).ToString(CultureInfo.InvariantCulture);
 
             var location = new Location(
                 LocationId.Create(),
@@ -83,7 +82,7 @@ public class DirectoryBaseTests : IClassFixture<DirectoryTestWebFactory>, IAsync
         {
             var random = new Random();
 
-            string randomString = random.Next(100000, 999999).ToString();
+            string randomString = random.Next(100000, 999999).ToString(CultureInfo.InvariantCulture);
 
             var location = new Location(
                 LocationId.Create(),
@@ -201,6 +200,7 @@ public class DirectoryBaseTests : IClassFixture<DirectoryTestWebFactory>, IAsync
     }
 
     protected async Task<TResult> Execute<TResult, TService>(Func<TService, Task<TResult>> action)
+        where TService : notnull
     {
         await using var scope = _serviceProvider.CreateAsyncScope();
         var handler = scope.ServiceProvider.GetRequiredService<TService>();

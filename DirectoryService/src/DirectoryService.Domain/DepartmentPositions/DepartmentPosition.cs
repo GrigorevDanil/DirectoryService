@@ -5,7 +5,7 @@ using DirectoryService.Domain.Positions.ValueObjects;
 namespace DirectoryService.Domain.DepartmentPositions;
 
 /// <summary>
-/// Связанная сущность между подразделениями и позициями(должностями сотрудников)
+/// Связанная сущность между подразделениями и позициями(должностями сотрудников).
 /// </summary>
 public sealed class DepartmentPosition
 {
@@ -20,7 +20,7 @@ public sealed class DepartmentPosition
     }
 
     /// <summary>
-    /// Конструктор для работы EF
+    /// Конструктор для работы EF.
     /// </summary>
     private DepartmentPosition() { }
 

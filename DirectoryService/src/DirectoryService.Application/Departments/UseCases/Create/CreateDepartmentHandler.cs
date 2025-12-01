@@ -8,11 +8,11 @@ using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Locations.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Shared;
-using Shared.Abstractions;
-using Shared.Caching;
-using Shared.Database;
-using Shared.Validation;
+using SharedService.Core.Caching;
+using SharedService.Core.Database;
+using SharedService.Core.Handlers;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.UseCases.Create;
 
@@ -24,7 +24,7 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, 
 
     private readonly IValidator<CreateDepartmentCommand> _validator;
 
-    private readonly ILogger<CreateDepartmentHandler> _logger;
+    private readonly ILogger _logger;
 
     private readonly ITransactionManager _transactionManager;
 
@@ -110,7 +110,7 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, 
 
         await _cache.RemoveByPrefixAsync(CachingKeys.DEPARTMENTS_KEY, cancellationToken);
 
-        _logger.LogInformation("Department by id {departmentId} has been added.", departmentId.Value);
+        _logger.LogInformation("Department by id {DepartmentId} has been added.", departmentId.Value);
 
         return departmentId.Value;
     }

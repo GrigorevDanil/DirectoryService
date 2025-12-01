@@ -1,4 +1,4 @@
-﻿namespace DirectoryService.Contracts.DepartmentLocation.Dtos;
+﻿namespace DirectoryService.Contracts.DepartmentLocations.Dtos;
 
 public class DepartmentLocationDto
 {

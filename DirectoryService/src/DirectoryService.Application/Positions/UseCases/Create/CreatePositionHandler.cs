@@ -7,10 +7,10 @@ using DirectoryService.Domain.Positions;
 using DirectoryService.Domain.Positions.ValueObjects;
 using FluentValidation;
 using Microsoft.Extensions.Logging;
-using Shared;
-using Shared.Abstractions;
-using Shared.Database;
-using Shared.Validation;
+using SharedService.Core.Database;
+using SharedService.Core.Handlers;
+using SharedService.Core.Validation;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Positions.UseCases.Create;
 
@@ -70,10 +70,10 @@ public class CreatePositionHandler : ICommandHandler<CreatePositionCommand, Guid
 
         var commitedResult = await _transactionManager.SaveChangesAsyncWithResult(cancellationToken);
 
-        if (commitedResult.IsFailure) 
+        if (commitedResult.IsFailure)
             return commitedResult.Error.ToErrors();
 
-        _logger.LogInformation("Position by id {positionId} has been added.", positionId.Value);
+        _logger.LogInformation("Position by id {PositionId} has been added.", positionId.Value);
 
         return positionId.Value;
     }

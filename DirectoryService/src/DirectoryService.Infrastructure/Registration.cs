@@ -5,15 +5,13 @@ using DirectoryService.Application.Departments;
 using DirectoryService.Application.Locations;
 using DirectoryService.Application.Positions;
 using DirectoryService.Application.SoftDelete;
-using DirectoryService.Infrastructure.BackgroundServices;
 using DirectoryService.Infrastructure.Database;
 using DirectoryService.Infrastructure.Repositories;
 using DirectoryService.Infrastructure.SoftDelete;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Shared.Caching;
-using Shared.Dapper;
-using Shared.Database;
+using SharedService.Core.Caching;
+using SharedService.Core.Database;
 
 namespace DirectoryService.Infrastructure;
 
@@ -69,33 +67,12 @@ public static class Registration
             new AppDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
         services.AddScoped<ITransactionManager, TransactionManager>();
 
-        services.AddDapper(configuration);
-
-        return services;
-    }
-
-    private static IServiceCollection AddDapper(this IServiceCollection services, IConfiguration configuration)
-    {
         services.AddScoped<IDbConnectionFactory, AppDbContext>(_ =>
             new AppDbContext(configuration.GetConnectionString("DirectoryServiceDb")!));
 
         DefaultTypeMap.MatchNamesWithUnderscores = true;
 
-        var assembly = Assembly.GetAssembly(typeof(Contracts.Registration));
-
-        if (assembly != null)
-        {
-            var jsonTypes = assembly.GetTypes()
-                .Where(t => t.IsClass && typeof(IDapperJson).IsAssignableFrom(t))
-                .ToList();
-
-            foreach (var type in jsonTypes)
-            {
-                var handlerType = typeof(JsonTypeHandler<>).MakeGenericType(type);
-                object? handler = Activator.CreateInstance(handlerType);
-                SqlMapper.AddTypeHandler(type, handler as SqlMapper.ITypeHandler ?? throw new InvalidOperationException());
-            }
-        }
+        services.AddDapperJson(Assembly.Load("DirectoryService.Contracts"));
 
         return services;
     }

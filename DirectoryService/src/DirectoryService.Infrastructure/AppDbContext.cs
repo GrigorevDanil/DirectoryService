@@ -6,7 +6,7 @@ using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Locations;
 using DirectoryService.Domain.Positions;
 using Microsoft.EntityFrameworkCore;
-using Shared.Database;
+using SharedService.Core.Database;
 
 namespace DirectoryService.Infrastructure;
 
@@ -21,7 +21,6 @@ public class AppDbContext(string connectionString) : DbContext, IReadDbContext, 
     public DbSet<DepartmentLocation> DepartmentLocations => Set<DepartmentLocation>();
 
     public DbSet<DepartmentPosition> DepartmentPositions => Set<DepartmentPosition>();
-
 
     public IQueryable<Department> DepartmentsRead => Set<Department>().AsNoTracking().AsQueryable();
 

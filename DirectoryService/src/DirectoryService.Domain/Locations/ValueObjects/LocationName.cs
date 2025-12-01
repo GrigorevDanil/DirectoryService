@@ -1,10 +1,10 @@
 ﻿using CSharpFunctionalExtensions;
-using Shared;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Domain.Locations.ValueObjects;
 
 /// <summary>
-/// Название локации
+/// Название локации.
 /// </summary>
 public record LocationName
 {
@@ -16,7 +16,7 @@ public record LocationName
     public string Value { get; private set; }
 
     /// <summary>
-    /// Создает новый объект <see cref="LocationName"/>
+    /// Создает новый объект <see cref="LocationName"/>.
     /// </summary>
     /// <param name="value">Входящее значение.</param>
     /// <returns>Новый объект <see cref="LocationName"/> или ошибка <see cref="Error"/>.</returns>
@@ -30,4 +30,4 @@ public record LocationName
 
         return new LocationName(value);
     }
-};
+}
