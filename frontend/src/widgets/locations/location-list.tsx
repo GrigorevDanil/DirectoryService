@@ -1,6 +1,5 @@
 "use client";
 
-import { LocationDto } from "@/entities/locations/types";
 import {
   Card,
   CardContent,
@@ -11,12 +10,16 @@ import {
 } from "@/shared/components/ui/card";
 import { Badge } from "@/shared/components/ui/badge";
 import { MapPin } from "lucide-react";
+import { useLocationList } from "@/entities/locations/hooks/use-location-list";
+import { Spinner } from "@/shared/components/ui/spinner";
 
-type LocationListProps = {
-  locations: LocationDto[];
-};
+export const LocationList = () => {
+  const { isPending, locations } = useLocationList();
 
-export const LocationList = ({ locations }: LocationListProps) => {
+  if (isPending) {
+    return <Spinner />;
+  }
+
   if (locations.length === 0) {
     return (
       <div className="text-center py-12 text-muted-foreground">
