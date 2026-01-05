@@ -10,22 +10,10 @@ namespace DirectoryService.API;
 
 public static class Registration
 {
-    public static IApplicationBuilder Configure(this WebApplication app)
-    {
-        app.UseExceptionMiddleware();
-        app.UseRequestCorrelationId();
-        app.UseSerilogRequestLogging();
-
-        app.UseSwagger();
-        app.UseSwaggerUI();
-
-        app.MapControllers();
-
-        return app;
-    }
-
     public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
+        services.AddCors();
+
         services.AddControllers();
 
         services
@@ -38,5 +26,27 @@ public static class Registration
             .AddEndpoints(typeof(Registration).Assembly);
 
         return services;
+    }
+
+    public static IApplicationBuilder Configure(this WebApplication app)
+    {
+        app.UseCors(builder =>
+        {
+            builder.WithOrigins("http://localhost:3000")
+                .AllowCredentials()
+                .AllowAnyHeader()
+                .AllowAnyMethod();
+        });
+
+        app.UseExceptionMiddleware();
+        app.UseRequestCorrelationId();
+        app.UseSerilogRequestLogging();
+
+        app.UseSwagger();
+        app.UseSwaggerUI();
+
+        app.MapControllers();
+
+        return app;
     }
 }
