@@ -12,12 +12,17 @@ import { Badge } from "@/shared/components/ui/badge";
 import { MapPin } from "lucide-react";
 import { useLocationList } from "@/entities/locations/hooks/use-location-list";
 import { Spinner } from "@/shared/components/ui/spinner";
+import { Error } from "../error";
 
 export const LocationList = () => {
-  const { isPending, locations } = useLocationList();
+  const { isPending, locations, error, refetch } = useLocationList();
 
   if (isPending) {
     return <Spinner />;
+  }
+
+  if (error) {
+    return <Error error={error} reset={refetch} />;
   }
 
   if (locations.length === 0) {

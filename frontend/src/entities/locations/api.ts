@@ -4,7 +4,6 @@ import { Envelope, PaginationEnvelope } from "@/shared/api/envelope";
 import { SortDirection } from "@/shared/api/sort-direction";
 import { PaginationRequest } from "@/shared/api/pagination-request";
 import { queryOptions } from "@tanstack/react-query";
-import qs from "qs";
 
 export interface GetLocationsRequest extends PaginationRequest {
   search?: string;
@@ -31,7 +30,7 @@ export const locationsApi = {
       queryFn: async () => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<LocationDto>>
-        >("/locations?" + qs.stringify(request, { arrayFormat: "repeat" }));
+        >("/locations", { params: request });
 
         return response.data;
       },
