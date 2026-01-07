@@ -1,1 +1,1 @@
-export { SidebarLayout as default } from "@/app/sidebar-layout";
+export { SidebarLayout as default } from "@/app/layouts/sidebar-layout";
