@@ -1,6 +1,6 @@
 import { httpClient } from "@/shared/api/http-client";
 import { LocationDto } from "./types";
-import { Envelope, PaginationEnvelope } from "@/shared/api/envelope";
+import { Envelope, PaginationEnvelope } from "@/shared/api/envelops";
 import { SortDirection } from "@/shared/api/sort-direction";
 import { PaginationRequest } from "@/shared/api/pagination-request";
 import { queryOptions } from "@tanstack/react-query";
