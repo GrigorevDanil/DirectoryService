@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel;
 using DirectoryService.Application.Locations.Queries.Get;
 using DirectoryService.Application.Locations.UseCases.Create;
+using DirectoryService.Application.Locations.UseCases.Delete;
+using DirectoryService.Application.Locations.UseCases.Update;
 using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.Contracts.Locations.Requests;
 using Microsoft.AspNetCore.Http;
@@ -38,4 +40,29 @@ public class LocationsController : ControllerBase
         [FromServices] GetLocationsHandler handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(new GetLocationsQuery(request), cancellationToken);
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType<Envelope<Guid>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Обновить информацию о локации")]
+    public async Task<EndpointResult<Guid>> Update(
+        [FromRoute][Description("Идентификатор локации")] Guid id,
+        [FromBody][Description("Данные локации")] UpdateLocationRequest request,
+        [FromServices] UpdateLocationHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new UpdateLocationCommand(id, request), cancellationToken);
+
+    [HttpDelete("{id:guid}")]
+    [ProducesResponseType<Envelope<Guid>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Удаление локации")]
+    public async Task<EndpointResult<Guid>> Delete(
+        [FromRoute][Description("Идентификатор локации")] Guid id,
+        [FromServices] DeleteLocationHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new DeleteLocationCommand(id), cancellationToken);
 }
