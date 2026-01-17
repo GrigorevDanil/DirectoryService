@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { locationsApi, LocationUpdateRequest } from "../api";
-import { Envelope } from "@/shared/api/envelops";
+import { locationsApi } from "../api";
 import { toast } from "sonner";
 
 export const useLocationUpdate = () => {
@@ -13,25 +12,13 @@ export const useLocationUpdate = () => {
     },
     onSuccess(_, variables) {
       toast.success(
-        `Локация под названием '${variables.name}' была успешно обновлена`
+        `Локация под названием '${variables.name}' была успешно обновлена`,
       );
     },
   });
 
-  const locationUpdateAsync = async (
-    id: string,
-    request: LocationUpdateRequest
-  ): Promise<Envelope<string>> => {
-    const response = await locationUpdateMutation.mutateAsync({
-      ...request,
-      id,
-    });
-
-    return response;
-  };
-
   return {
-    locationUpdateAsync,
+    locationUpdateAsync: locationUpdateMutation.mutateAsync,
     isPending: locationUpdateMutation.isPending,
     error: locationUpdateMutation.error,
   };

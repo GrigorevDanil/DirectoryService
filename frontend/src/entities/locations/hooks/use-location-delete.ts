@@ -1,6 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { locationsApi } from "../api";
-import { Envelope } from "@/shared/api/envelops";
 import { toast } from "sonner";
 
 export const useLocationDelete = () => {
@@ -16,14 +15,8 @@ export const useLocationDelete = () => {
     },
   });
 
-  const locationDeleteAsync = async (id: string): Promise<Envelope<string>> => {
-    const response = await locationDeleteMutation.mutateAsync(id);
-
-    return response;
-  };
-
   return {
-    locationDeleteAsync,
+    locationDeleteAsync: locationDeleteMutation.mutateAsync,
     isPending: locationDeleteMutation.isPending,
     error: locationDeleteMutation.error,
   };

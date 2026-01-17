@@ -100,7 +100,7 @@ export const LocationUpdateForm = ({
     }
 
     try {
-      await locationUpdateAsync(location.id, formData);
+      await locationUpdateAsync({ ...formData, id: location.id });
       onSuccess?.();
     } catch {
       setShowErrors(true);

@@ -10,10 +10,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
-import { LocationAddForm } from "./location-add-form";
+import { LocationAddForm } from "./location-create-form";
 import { useState } from "react";
 
-export function LocationAddDialog() {
+export function LocationCreateDialog() {
   const [open, setOpen] = useState(false);
 
   const handleSuccess = () => {

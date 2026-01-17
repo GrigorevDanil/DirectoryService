@@ -1,6 +1,6 @@
 "use client";
 
-import { useLocationAdd } from "@/entities/locations/hooks/use-location-add";
+import { useLocationCreate } from "@/entities/locations/hooks/use-location-create";
 import {
   addressValidation,
   locationNameValidation,
@@ -51,7 +51,7 @@ export const LocationAddForm = ({
   onSuccess,
   ...props
 }: React.ComponentProps<"form"> & { onSuccess?: () => void }) => {
-  const { locationAddAsync, isPending, error } = useLocationAdd();
+  const { locationCreateAsync, isPending, error } = useLocationCreate();
 
   const [userFormData, setUserFormData] = useState<Partial<FormData>>({});
 
@@ -94,7 +94,7 @@ export const LocationAddForm = ({
     }
 
     try {
-      await locationAddAsync(formData);
+      await locationCreateAsync(formData);
       onSuccess?.();
     } catch {
       setShowErrors(true);

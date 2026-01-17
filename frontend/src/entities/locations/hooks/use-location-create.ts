@@ -1,9 +1,8 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { LocationAddRequest, locationsApi } from "../api";
-import { Envelope } from "@/shared/api/envelops";
+import { locationsApi } from "../api";
 import { toast } from "sonner";
 
-export const useLocationAdd = () => {
+export const useLocationCreate = () => {
   const queryClient = useQueryClient();
 
   const locationAddMutation = useMutation({
@@ -13,21 +12,13 @@ export const useLocationAdd = () => {
     },
     onSuccess(_, variables) {
       toast.success(
-        `Локация под названием '${variables.name}' была успешно добавлена`
+        `Локация под названием '${variables.name}' была успешно добавлена`,
       );
     },
   });
 
-  const locationAddAsync = async (
-    request: LocationAddRequest
-  ): Promise<Envelope<string>> => {
-    const response = await locationAddMutation.mutateAsync(request);
-
-    return response;
-  };
-
   return {
-    locationAddAsync,
+    locationCreateAsync: locationAddMutation.mutateAsync,
     isPending: locationAddMutation.isPending,
     error: locationAddMutation.error,
   };
