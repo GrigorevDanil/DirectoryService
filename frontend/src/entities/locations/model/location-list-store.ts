@@ -1,3 +1,4 @@
+import { DepartmentId, DepartmentShortDto } from "@/entities/departments/types";
 import { ActiveState } from "@/shared/api/active-state";
 import { DEFAULT_PAGE_SIZE } from "@/shared/api/constants";
 import { SortDirection } from "@/shared/api/sort-direction";
@@ -12,6 +13,7 @@ interface LocationListState {
   sortBy: LocationSortBy;
   sortDirection: SortDirection;
   pageSize: number;
+  selectedDepartments: DepartmentShortDto[];
 }
 
 const initialState: LocationListState = {
@@ -20,6 +22,7 @@ const initialState: LocationListState = {
   sortBy: "name",
   sortDirection: "asc",
   pageSize: DEFAULT_PAGE_SIZE,
+  selectedDepartments: [],
 };
 
 const useLocationListStore = create<LocationListState>()(
@@ -63,3 +66,17 @@ export const useLocationPageSize = () =>
 
 export const setLocationPageSize = (pageSize: number) =>
   useLocationListStore.setState({ pageSize });
+
+export const useLocationSelectedDepartments = () =>
+  useLocationListStore((state) => state.selectedDepartments);
+
+export const setLocationSelectedDepartments = (
+  selectedDepartments: DepartmentShortDto[],
+) => useLocationListStore.setState({ selectedDepartments });
+
+export const removeSelectedDepartmentFromLocationList = (id: DepartmentId) =>
+  useLocationListStore.setState((state) => ({
+    selectedDepartments: state.selectedDepartments.filter(
+      (dep) => dep.id !== id,
+    ),
+  }));

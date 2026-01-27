@@ -1,5 +1,8 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Domain.DepartmentPositions;
+using DirectoryService.Domain.DepartmentPositions.ValueObjects;
+using DirectoryService.Domain.Departments;
+using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Positions.ValueObjects;
 using SharedService.SharedKernel;
 
@@ -71,6 +74,49 @@ public sealed class Position : BaseEntity<PositionId>, ISoftDeletable
         Description = descriptionResult.Value;
 
         return Result.Success<Error>();
+    }
+
+    /// <summary>
+    /// Добавить подразделения к позиции.
+    /// </summary>
+    /// <param name="departmentPositions">Добавляемые подразделения.</param>
+    /// <returns>Результат добавления подразделений к позиции.</returns>
+    public UnitResult<Errors> AddDepartments(DepartmentPosition[] departmentPositions)
+    {
+        DepartmentId[] intersectedDepartments = _departments
+            .Select(x => x.DepartmentId)
+            .Intersect(departmentPositions
+                .Select(x => x.DepartmentId)).ToArray();
+
+        if (intersectedDepartments.Any())
+        {
+            return new Errors(intersectedDepartments
+                .Select(departmentId => GeneralErrors.Conflict($"Department with id {departmentId} already exists.")));
+        }
+
+        _departments.AddRange(departmentPositions);
+
+        return UnitResult.Success<Errors>();
+    }
+
+    /// <summary>
+    /// Удалить подразделения из позиции.
+    /// </summary>
+    /// <param name="departmentIds">Идентификаторы удаляемых отделов.</param>
+    /// <returns>Результат удаления подразделений из позиции.</returns>
+    public UnitResult<Errors> RemoveDepartments(DepartmentId[] departmentIds)
+    {
+        DepartmentPosition[] beingDeletedDepartmentPositions = _departments.Where(x => departmentIds.Contains(x.DepartmentId)).ToArray();
+
+        if (beingDeletedDepartmentPositions.Length == 0)
+        {
+            return new Errors(departmentIds
+                .Select(id => GeneralErrors.NotFound(id.Value)));
+        }
+
+        _departments.RemoveAll(id => departmentIds.Contains(id.DepartmentId));
+
+        return UnitResult.Success<Errors>();
     }
 
     /// <summary>

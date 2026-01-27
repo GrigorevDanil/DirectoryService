@@ -81,7 +81,7 @@ public class DepartmentsRepository : IDepartmentRepository
         var departmentIds = DepartmentId.Of(ids);
 
         var existingIds = await _dbContext.Departments
-            .Where(d => departmentIds.Contains(d.Id) && d.IsActive)
+            .Where(d => departmentIds.AsEnumerable().Contains(d.Id) && d.IsActive)
             .Select(d => d.Id.Value)
             .ToListAsync(cancellationToken);
 

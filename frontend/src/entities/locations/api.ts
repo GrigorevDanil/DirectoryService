@@ -1,6 +1,10 @@
 import { httpClient } from "@/shared/api/http-client";
 import { AddressDto, LocationDto } from "./types";
-import { Envelope, PaginationEnvelope } from "@/shared/api/envelops";
+import {
+  Envelope,
+  envelopeInfinityQueryOptions,
+  PaginationEnvelope,
+} from "@/shared/api/envelops";
 import { SortDirection } from "@/shared/api/sort-direction";
 import { PaginationRequest } from "@/shared/api/pagination-request";
 import { infiniteQueryOptions, queryOptions } from "@tanstack/react-query";
@@ -22,7 +26,7 @@ export interface GetLocationsRequest extends PaginationRequest {
   sortDirection?: SortDirection;
 }
 
-export interface LocationAddRequest {
+export interface LocationCreateRequest {
   name: string;
   timezone: string;
   address: AddressDto;
@@ -54,29 +58,7 @@ export const locationsApi = {
 
         return response.data;
       },
-      initialPageParam: 1,
-      getNextPageParam(lastPage, _, lastPageParam) {
-        const totalPages = Math.ceil(
-          lastPage.result!.totalCount / request.pageSize!,
-        );
-
-        return lastPageParam < totalPages ? lastPageParam + 1 : undefined;
-      },
-      select: (data): Envelope<PaginationEnvelope<LocationDto>> => {
-        const firstPage = data.pages[0];
-
-        return {
-          ...firstPage,
-          result: firstPage.result && {
-            items: data.pages.flatMap((page) => page.result?.items ?? []),
-            totalCount: firstPage.result.totalCount,
-          },
-          isError: data.pages.some((page) => page.isError),
-          errorList: data.pages.flatMap((page) => page.errorList || []),
-          timeGenerated:
-            data.pages.at(-1)?.timeGenerated || firstPage.timeGenerated,
-        };
-      },
+      ...envelopeInfinityQueryOptions<LocationDto>(request),
     }),
   getLocationsQueryOptions: (request: GetLocationsRequest) =>
     queryOptions({
@@ -98,8 +80,8 @@ export const locationsApi = {
         return response.data;
       },
     }),
-  locationAdd: async (
-    request: LocationAddRequest,
+  locationCreate: async (
+    request: LocationCreateRequest,
   ): Promise<Envelope<string>> => {
     const response = await httpClient.post<Envelope<string>>(
       "/locations",

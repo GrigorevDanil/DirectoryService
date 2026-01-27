@@ -4,6 +4,7 @@ import {
   useLocationActive,
   useLocationPageSize,
   useLocationSearch,
+  useLocationSelectedDepartments,
   useLocationSortBy,
   useLocationSortDirection,
 } from "../model/location-list-store";
@@ -16,6 +17,7 @@ export const useLocationInfinityList = () => {
   const sortBy = useLocationSortBy();
   const sortDirection = useLocationSortDirection();
   const pageSize = useLocationPageSize();
+  const selectedDepartments = useLocationSelectedDepartments();
 
   const isActive = activeState === "all" ? undefined : activeState === "active";
 
@@ -35,6 +37,7 @@ export const useLocationInfinityList = () => {
       sortBy,
       sortDirection,
       pageSize,
+      departmentIds: selectedDepartments.map((x) => x.id),
     }),
   });
 

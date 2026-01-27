@@ -44,7 +44,7 @@ export const LocationCard = ({ location }: { location: LocationDto }) => {
         )}
       </CardContent>
 
-      <CardFooter className="flex gap-2 text-xs text-muted-foreground">
+      <CardFooter className="flex gap-2 text-xs text-muted-foreground mt-auto">
         <div className="flex flex-col gap-1 w-full">
           <span>
             Создано: {new Date(location.createdAt).toLocaleDateString()}

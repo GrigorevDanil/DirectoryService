@@ -1,11 +1,11 @@
 "use client";
 
-import { useCallback, useRef } from "react";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { Error } from "../error";
 import { cn } from "@/shared/lib/utils";
 import { LocationCard } from "./location-card";
 import { useLocationInfinityList } from "@/entities/locations/hooks/use-location-infinity-list";
+import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
 
 export const LocationInfinityList = ({
   className,
@@ -22,26 +22,11 @@ export const LocationInfinityList = ({
     hasNextPage,
   } = useLocationInfinityList();
 
-  const observerRef = useRef<IntersectionObserver>(null);
-
-  const loadMoreRef = useCallback(
-    (node: HTMLDivElement | null) => {
-      if (observerRef.current) {
-        observerRef.current.disconnect();
-      }
-
-      if (!node || !hasNextPage) return;
-
-      observerRef.current = new IntersectionObserver((entries) => {
-        if (entries[0].isIntersecting && !isFetchingNextPage) {
-          fetchNextPage();
-        }
-      });
-
-      observerRef.current.observe(node);
-    },
-    [hasNextPage, isFetchingNextPage, fetchNextPage],
-  );
+  const intersectionRef = useIntersectionObserver({
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  });
 
   if (isPending && locations.length === 0) {
     return <Spinner />;
@@ -67,7 +52,10 @@ export const LocationInfinityList = ({
         ))}
       </div>
 
-      <div ref={loadMoreRef} className="col-span-full flex justify-center py-8">
+      <div
+        ref={intersectionRef}
+        className="col-span-full flex justify-center py-8"
+      >
         {isFetchingNextPage && <Spinner />}
       </div>
     </div>
