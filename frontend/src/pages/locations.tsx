@@ -1,24 +1,39 @@
+"use client";
+
 import { LocationCreateDialog } from "@/features/locations/location-create-dialog";
-import { LocationListActive } from "@/features/locations/location-list-active";
-import { LocationListPageSize } from "@/features/locations/location-list-page-size";
-import { LocationListSearch } from "@/features/locations/location-list-search";
-import { LocationListSortBy } from "@/features/locations/location-list-sort-by";
-import { LocationListSortDirection } from "@/features/locations/location-sort-direction";
+import { LocationListActive } from "@/features/locations/list/location-list-active";
+import { LocationListPageSize } from "@/features/locations/list/location-list-page-size";
+import { LocationListSearch } from "@/features/locations/list/location-list-search";
+import { LocationListSortBy } from "@/features/locations/list/location-list-sort-by";
+import { LocationListSortDirection } from "@/features/locations/list/location-list-sort-direction";
 import { LocationInfinityList } from "@/widgets/locations/location-infinity-list";
+import { ListLayout } from "@/shared/components/ui/list-layout";
+import { LocationListSelectDepartments } from "@/features/locations/list/location-list-select-departments";
+
+const { Container, Content, Filters, Header } = ListLayout;
 
 export const LocationsPage = () => {
   return (
-    <div className="flex flex-col gap-2 justify-center bg-background w-full p-2">
-      <div className="flex gap-2 justify-between flex-wrap">
+    <ListLayout className="p-2">
+      <Header>
         <LocationListSearch />
-        <LocationListSortBy />
-        <LocationListSortDirection />
-        <LocationListActive />
-        <LocationListPageSize />
         <LocationCreateDialog />
-      </div>
-
-      <LocationInfinityList />
-    </div>
+      </Header>
+      <Container>
+        <Content>
+          <LocationInfinityList />
+        </Content>
+        <Filters className="w-75">
+          <h3 className="font-medium text-sm mb-3">Фильтры</h3>
+          <div className="space-y-3">
+            <LocationListSortBy />
+            <LocationListSortDirection />
+            <LocationListActive />
+            <LocationListPageSize />
+            <LocationListSelectDepartments />
+          </div>
+        </Filters>
+      </Container>
+    </ListLayout>
   );
 };

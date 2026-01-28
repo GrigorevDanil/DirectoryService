@@ -5,8 +5,8 @@ import { toast } from "sonner";
 export const useLocationCreate = () => {
   const queryClient = useQueryClient();
 
-  const locationAddMutation = useMutation({
-    mutationFn: locationsApi.locationAdd,
+  const locationCreateMutation = useMutation({
+    mutationFn: locationsApi.locationCreate,
     async onSettled() {
       await queryClient.invalidateQueries({ queryKey: [locationsApi.baseKey] });
     },
@@ -18,8 +18,8 @@ export const useLocationCreate = () => {
   });
 
   return {
-    locationCreateAsync: locationAddMutation.mutateAsync,
-    isPending: locationAddMutation.isPending,
-    error: locationAddMutation.error,
+    locationCreateAsync: locationCreateMutation.mutateAsync,
+    isPending: locationCreateMutation.isPending,
+    error: locationCreateMutation.error,
   };
 };

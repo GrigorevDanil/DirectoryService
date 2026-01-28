@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Positions;
 using DirectoryService.Domain.Departments.ValueObjects;
@@ -80,5 +81,27 @@ public class PositionsRepository : IPositionsRepository
         {
             return GeneralErrors.Failure(ex.Message);
         }
+    }
+
+    public async Task<Result<Position, Error>> GetBy(Expression<Func<Position, bool>> predicate, CancellationToken cancellationToken = default)
+    {
+        Position? position = await _dbContext.Positions.FirstOrDefaultAsync(predicate, cancellationToken);
+
+        if (position is null)
+            return GeneralErrors.NotFound();
+
+        return position;
+    }
+
+    public async Task<Result<Position, Error>> GetWithDepartmentsBy(
+        Expression<Func<Position, bool>> predicate,
+        CancellationToken cancellationToken = default)
+    {
+        Position? position = await _dbContext.Positions.Include(x => x.Departments).FirstOrDefaultAsync(predicate, cancellationToken);
+
+        if (position is null)
+            return GeneralErrors.NotFound();
+
+        return position;
     }
 }

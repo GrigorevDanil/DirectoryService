@@ -47,7 +47,7 @@ const formDataSchema = z.object({
 
 type FormData = z.infer<typeof formDataSchema>;
 
-export const LocationAddForm = ({
+export const LocationCreateForm = ({
   onSuccess,
   ...props
 }: React.ComponentProps<"form"> & { onSuccess?: () => void }) => {

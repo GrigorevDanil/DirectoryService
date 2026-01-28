@@ -10,7 +10,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
-import { LocationAddForm } from "./location-create-form";
+import { LocationCreateForm } from "./location-create-form";
 import { useState } from "react";
 
 export function LocationCreateDialog() {
@@ -31,7 +31,7 @@ export function LocationCreateDialog() {
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-2">
-          <LocationAddForm onSuccess={handleSuccess} />
+          <LocationCreateForm onSuccess={handleSuccess} />
         </div>
 
         <DialogFooter>

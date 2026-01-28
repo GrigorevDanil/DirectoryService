@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel;
+using DirectoryService.Application.Departments.Queries.Get;
 using DirectoryService.Application.Departments.Queries.GetChildrenDepartments;
 using DirectoryService.Application.Departments.Queries.GetRootDepartments;
 using DirectoryService.Application.Departments.Queries.GetTopFiveDepartmentsWithMostPositions;
@@ -68,6 +69,18 @@ public class DepartmentsController : ControllerBase
         [FromServices] GetTopFiveDepartmentsWithMostPositionsHandler handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(cancellationToken);
+
+    [HttpGet]
+    [ProducesResponseType<Envelope<PaginationEnvelope<DepartmentShortDto>>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Получить подразделения")]
+    public async Task<EndpointResult<PaginationEnvelope<DepartmentShortDto>>> Get(
+        [FromQuery] GetDepartmentsRequest request,
+        [FromServices] GetDepartmentsHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new GetDepartmentsQuery(request), cancellationToken);
 
     [HttpGet("roots")]
     [ProducesResponseType<Envelope<PaginationEnvelope<DepartmentDto>>>(200)]
