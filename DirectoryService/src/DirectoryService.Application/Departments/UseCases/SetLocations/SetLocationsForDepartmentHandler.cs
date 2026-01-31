@@ -46,29 +46,29 @@ public class SetLocationsForDepartmentHandler : ICommandHandler<SetLocationsForD
     }
 
     public async Task<Result<Guid, Errors>> Handle(
-        SetLocationsForDepartmentCommand forDepartmentCommand,
+        SetLocationsForDepartmentCommand command,
         CancellationToken cancellationToken = default)
     {
-        var validationResult = await _validator.ValidateAsync(forDepartmentCommand, cancellationToken);
+        var validationResult = await _validator.ValidateAsync(command, cancellationToken);
 
         if (!validationResult.IsValid)
             return validationResult.ToErrors();
 
-        var departmentId = DepartmentId.Of(forDepartmentCommand.DepartmentId);
+        var departmentId = DepartmentId.Of(command.DepartmentId);
 
-        var getDepartmentResult = await _departmentRepository.GetActiveDepartmentByIdAsync(departmentId, cancellationToken);
+        var getDepartmentResult = await _departmentRepository.GetByAsync(x => x.Id == departmentId && x.IsActive == true, cancellationToken);
 
         if (getDepartmentResult.IsFailure)
             return getDepartmentResult.Error.ToErrors();
 
         var department = getDepartmentResult.Value;
 
-        var checkExistingIdsResult = await _locationRepository.CheckExistingAndActiveIds(forDepartmentCommand.ForDepartmentRequest.LocationIds, cancellationToken);
+        var checkExistingIdsResult = await _locationRepository.CheckExistingAndActiveIds(command.ForDepartmentRequest.LocationIds, cancellationToken);
 
         if (checkExistingIdsResult.IsFailure)
             return checkExistingIdsResult.Error;
 
-        var locationsIds = forDepartmentCommand.ForDepartmentRequest.LocationIds
+        var locationsIds = command.ForDepartmentRequest.LocationIds
             .Select(locationId =>
                 new DepartmentLocation(DepartmentLocationId.Create(), departmentId, LocationId.Of(locationId)));
 

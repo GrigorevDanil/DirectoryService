@@ -6,11 +6,18 @@ import { cn } from "@/shared/lib/utils";
 import { usePositionList } from "@/entities/positions/hooks/use-position-list";
 import { PositionCard } from "./position-card";
 import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
+import { PositionListId } from "@/entities/positions/model/position-list-store";
+import { GetPositionsRequest } from "@/entities/positions/api";
 
 export const PositionList = ({
+  stateId,
+  request,
   className,
   ...props
-}: React.ComponentProps<"div">) => {
+}: React.ComponentProps<"div"> & {
+  stateId?: PositionListId;
+  request?: GetPositionsRequest;
+}) => {
   const {
     isPending,
     isFetching,
@@ -20,7 +27,7 @@ export const PositionList = ({
     refetch,
     fetchNextPage,
     hasNextPage,
-  } = usePositionList();
+  } = usePositionList({ stateId, request });
 
   const intersectionRef = useIntersectionObserver({
     hasNextPage,
@@ -46,7 +53,7 @@ export const PositionList = ({
 
   return (
     <div className={cn("space-y-6", className)} {...props}>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid gap-6 grid-cols-[repeat(auto-fit,minmax(280px,1fr))]">
         {positions.map((position) => (
           <PositionCard key={position.id} position={position} />
         ))}

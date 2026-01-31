@@ -1,12 +1,15 @@
 ﻿using System.ComponentModel;
 using DirectoryService.Application.Departments.Queries.Get;
 using DirectoryService.Application.Departments.Queries.GetChildrenDepartments;
+using DirectoryService.Application.Departments.Queries.GetDetail;
 using DirectoryService.Application.Departments.Queries.GetRootDepartments;
 using DirectoryService.Application.Departments.Queries.GetTopFiveDepartmentsWithMostPositions;
 using DirectoryService.Application.Departments.UseCases.Create;
 using DirectoryService.Application.Departments.UseCases.Delete;
 using DirectoryService.Application.Departments.UseCases.Move;
 using DirectoryService.Application.Departments.UseCases.SetLocations;
+using DirectoryService.Application.Departments.UseCases.Update;
+using DirectoryService.Application.Positions.Queries.GetDetail;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Departments.Requests;
 using Microsoft.AspNetCore.Http;
@@ -118,4 +121,29 @@ public class DepartmentsController : ControllerBase
         [FromServices] DeleteDepartmentHandler handler,
         CancellationToken cancellationToken) =>
         await handler.Handle(new DeleteDepartmentCommand(id), cancellationToken);
+
+    [HttpGet("{id:guid}")]
+    [ProducesResponseType<Envelope<PaginationEnvelope<DepartmentDto>>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Получить по идентификатору")]
+    public async Task<EndpointResult<DepartmentDetailDto?>> GetDetail(
+        [FromRoute][Description("Идентификатор подразделения")] Guid id,
+        [FromServices] GetDetailDepartmentHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new GetDetailDepartmentQuery(id), cancellationToken);
+
+    [HttpPut("{id:guid}")]
+    [ProducesResponseType<Envelope<Guid>>(200)]
+    [ProducesResponseType<Envelope>(400)]
+    [ProducesResponseType<Envelope>(500)]
+    [ProducesResponseType<Envelope>(409)]
+    [EndpointSummary("Обновить информацию о подразделении")]
+    public async Task<EndpointResult<Guid>> Update(
+        [FromRoute][Description("Идентификатор подразделения")] Guid id,
+        [FromBody][Description("Данные подразделения")] UpdateDepartmentRequest request,
+        [FromServices] UpdateDepartmentHandler handler,
+        CancellationToken cancellationToken) =>
+        await handler.Handle(new UpdateDepartmentCommand(id, request), cancellationToken);
 }

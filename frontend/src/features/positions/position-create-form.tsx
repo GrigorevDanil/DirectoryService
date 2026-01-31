@@ -1,5 +1,9 @@
 "use client";
 
+import {
+  departmentIdsValidator,
+  DepartmentShortDto,
+} from "@/entities/departments/types";
 import { usePositionCreate } from "@/entities/positions/hooks/use-position-create";
 import {
   descriptionValidation,
@@ -22,33 +26,20 @@ import {
 import { Input } from "@/shared/components/ui/input";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { Textarea } from "@/shared/components/ui/textarea";
-import { DepartmentMultiSelect } from "@/widgets/departments/multi-select";
+import { DepartmentSelect } from "@/widgets/departments/select/department-select";
 import { useState } from "react";
 import z from "zod";
 
 const initialFormState = {
   name: "",
   description: "",
-  departments: [],
+  departmentIds: [],
 };
 
 const formDataSchema = z.object({
   name: positionNameValidation,
   description: descriptionValidation,
-  departments: z
-    .array(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        identifier: z.string(),
-        isActive: z.boolean(),
-      }),
-    )
-    .min(1, "Выберите хотя бы одно подразделение")
-    .refine(
-      (arr) => new Set(arr.map((dept) => dept.id)).size === arr.length,
-      "Подразделения не должны повторяться",
-    ),
+  departmentIds: departmentIdsValidator,
 });
 
 type FormData = z.infer<typeof formDataSchema>;
@@ -100,10 +91,7 @@ export const PositionCreateForm = ({
     }
 
     try {
-      await positionCreateAsync({
-        ...formData,
-        departmentIds: formData.departments.map((dep) => dep.id),
-      });
+      await positionCreateAsync(formData);
       onSuccess?.();
     } catch {
       setShowErrors(true);
@@ -156,15 +144,17 @@ export const PositionCreateForm = ({
 
           <Field>
             <FieldLabel htmlFor="departmentIds">Подразделения</FieldLabel>
-            <DepartmentMultiSelect
+            <DepartmentSelect
               className="max-h-75"
               id="departmentIds"
               stateId="multi-select-create-position"
-              selectedDepartments={formData.departments}
+              selectedDepartments={formData.departmentIds.map(
+                (id) => ({ id }) as DepartmentShortDto,
+              )}
               onChangeChecked={(deps) =>
                 setUserFormData((l) => ({
                   ...l,
-                  departments: deps,
+                  departmentIds: deps.map((x) => x.id),
                 }))
               }
               aria-invalid={!!errors?.departments}

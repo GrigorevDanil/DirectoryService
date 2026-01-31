@@ -21,7 +21,7 @@ public static class Registration
             .AddInfrastructure(configuration);
 
         services
-            .AddSerilogLogging(configuration, "FileService")
+            .AddSerilogLogging(configuration, "DirectoryService")
             .AddCustomSwagger(configuration)
             .AddEndpoints(typeof(Registration).Assembly);
 

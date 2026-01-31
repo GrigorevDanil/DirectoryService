@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  PositionListId,
   PositionSortBy,
   setPositionSortBy,
   usePositionSortBy,
@@ -16,16 +17,20 @@ import {
 import * as SelectPrimitive from "@radix-ui/react-select";
 
 export const PositionListSortBy = ({
+  stateId,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
+  stateId?: PositionListId;
 }) => {
-  const sortBy = usePositionSortBy();
+  const sortBy = usePositionSortBy(stateId);
 
   return (
     <Select
       value={sortBy}
-      onValueChange={(value) => setPositionSortBy(value as PositionSortBy)}
+      onValueChange={(value) =>
+        setPositionSortBy(value as PositionSortBy, stateId)
+      }
     >
       <SelectTrigger {...props}>
         <p>Сортировать по:</p>

@@ -20,7 +20,7 @@ export const LocationInfinityList = ({
     refetch,
     fetchNextPage,
     hasNextPage,
-  } = useLocationInfinityList();
+  } = useLocationInfinityList({});
 
   const intersectionRef = useIntersectionObserver({
     hasNextPage,

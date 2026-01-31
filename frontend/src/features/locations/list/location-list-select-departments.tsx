@@ -11,24 +11,29 @@ import {
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
 import { useState } from "react";
-import { DepartmentMultiSelect } from "@/widgets/departments/multi-select";
 import {
+  LocationListId,
   removeSelectedDepartmentFromLocationList,
   setLocationSelectedDepartments,
   useLocationSelectedDepartments,
 } from "@/entities/locations/model/location-list-store";
-import { DepartmentMultiSelectSelected } from "@/widgets/departments/multi-select/department-multi-select-selected";
+import { DepartmentSelected } from "@/widgets/departments/select/department-selected";
+import { DepartmentSelect } from "@/widgets/departments/select/department-select";
 
-export function LocationListSelectDepartments() {
-  const selectedDepartments = useLocationSelectedDepartments();
+export function LocationListSelectDepartments({
+  stateId,
+}: {
+  stateId?: LocationListId;
+}) {
+  const selectedDepartments = useLocationSelectedDepartments(stateId);
 
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <DepartmentMultiSelectSelected
+      <DepartmentSelected
         selectedDepartments={selectedDepartments}
-        onRemove={removeSelectedDepartmentFromLocationList}
+        onRemove={(id) => removeSelectedDepartmentFromLocationList(id, stateId)}
       />
 
       <Dialog open={open} onOpenChange={(flag) => setOpen(flag)}>
@@ -40,11 +45,14 @@ export function LocationListSelectDepartments() {
             <DialogTitle>Выбор подразделений</DialogTitle>
           </DialogHeader>
 
-          <DepartmentMultiSelect
+          <DepartmentSelect
             className="flex-1 min-h-0"
             selectedDepartments={selectedDepartments}
-            onChangeChecked={setLocationSelectedDepartments}
-            stateId="multi-select"
+            onChangeChecked={(selectedDepartments) =>
+              setLocationSelectedDepartments(selectedDepartments, stateId)
+            }
+            stateId="multi-select-locations"
+            multiselect={false}
           />
 
           <DialogFooter>

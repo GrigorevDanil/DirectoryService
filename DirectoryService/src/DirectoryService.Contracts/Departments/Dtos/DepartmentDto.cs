@@ -18,9 +18,13 @@ public record DepartmentDto
 
     public bool IsActive { get; init; }
 
-    public DepartmentLocationDto[] Locations { get; init; } = [];
-
     public List<DepartmentDto> Children { get; init; } = [];
 
     public bool HasMoreChildren { get; init; }
+
+    public DateTime CreatedAt { get; init; }
+
+    public DateTime UpdatedAt { get; init; }
+
+    public DateTime? DeletedAt { get; init; }
 }

@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { useDebounce } from "use-debounce";
 import {
+  PositionListId,
   usePositionActive,
   usePositionPageSize,
   usePositionSearch,
@@ -8,16 +9,22 @@ import {
   usePositionSortBy,
   usePositionSortDirection,
 } from "../model/position-list-store";
-import { positionsApi } from "../api";
+import { GetPositionsRequest, positionsApi } from "../api";
 
-export const usePositionList = () => {
-  const search = usePositionSearch();
+export const usePositionList = ({
+  stateId,
+  request,
+}: {
+  stateId?: PositionListId;
+  request?: GetPositionsRequest;
+}) => {
+  const search = usePositionSearch(stateId);
   const [debouncedSearch] = useDebounce(search, 300);
-  const activeState = usePositionActive();
-  const sortBy = usePositionSortBy();
-  const sortDirection = usePositionSortDirection();
-  const pageSize = usePositionPageSize();
-  const selectedDepartments = usePositionSelectedDepartments();
+  const activeState = usePositionActive(stateId);
+  const sortBy = usePositionSortBy(stateId);
+  const sortDirection = usePositionSortDirection(stateId);
+  const pageSize = usePositionPageSize(stateId);
+  const selectedDepartments = usePositionSelectedDepartments(stateId);
 
   const isActive = activeState === "all" ? undefined : activeState === "active";
 
@@ -38,6 +45,7 @@ export const usePositionList = () => {
       sortDirection,
       pageSize,
       departmentIds: selectedDepartments.map((x) => x.id),
+      ...request,
     }),
   });
 

@@ -65,7 +65,7 @@ public class DeleteDepartmentHandler : ICommandHandler<DeleteDepartmentCommand, 
 
         using var transactionScope = beginTransactionResult.Value;
 
-        var getDepartmentResult = await _departmentRepository.GetActiveDepartmentByIdAsync(departmentId, cancellationToken);
+        var getDepartmentResult = await _departmentRepository.GetByAsync(x => x.Id == departmentId, cancellationToken);
 
         if (getDepartmentResult.IsFailure)
         {

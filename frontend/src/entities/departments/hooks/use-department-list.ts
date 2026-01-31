@@ -7,21 +7,30 @@ import {
   useDepartmentSortDirection,
   useDepartmentPageSize,
   DepartmentListId,
+  useDepartmentIsParent,
+  useDepartmentSelectedLocations,
   useDepartmentParent,
 } from "../model/department-list-store";
 import { departmentsApi, GetDepartmentsRequest } from "../api";
 
-export const useDepartmentList = (
-  stateId: DepartmentListId,
-  request?: GetDepartmentsRequest,
-) => {
+interface UseDepartmentListProps {
+  stateId?: DepartmentListId;
+  request?: GetDepartmentsRequest;
+}
+
+export const useDepartmentList = ({
+  request,
+  stateId,
+}: UseDepartmentListProps) => {
   const search = useDepartmentSearch(stateId);
   const [debouncedSearch] = useDebounce(search, 300);
   const activeState = useDepartmentActive(stateId);
-  const parentState = useDepartmentParent(stateId);
+  const parentState = useDepartmentIsParent(stateId);
   const sortBy = useDepartmentSortBy(stateId);
   const sortDirection = useDepartmentSortDirection(stateId);
   const pageSize = useDepartmentPageSize(stateId);
+  const selectedLocations = useDepartmentSelectedLocations(stateId);
+  const parent = useDepartmentParent(stateId);
 
   const isActive = activeState === "all" ? undefined : activeState === "active";
 
@@ -44,6 +53,8 @@ export const useDepartmentList = (
       sortBy,
       sortDirection,
       pageSize,
+      locationIds: selectedLocations.map((loc) => loc.id),
+      parentId: parent?.id,
       ...request,
     }),
   });

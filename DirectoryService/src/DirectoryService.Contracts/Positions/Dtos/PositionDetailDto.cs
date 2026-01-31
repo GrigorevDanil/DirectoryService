@@ -1,4 +1,6 @@
-﻿namespace DirectoryService.Contracts.Positions.Dtos;
+﻿using DirectoryService.Contracts.Departments.Dtos;
+
+namespace DirectoryService.Contracts.Positions.Dtos;
 
 public record PositionDetailDto
 {
@@ -8,7 +10,7 @@ public record PositionDetailDto
 
     public string Description { get; private set; } = string.Empty;
 
-    public List<DepartmentPositionDto> Departments { get; init; } = [];
+    public List<DepartmentShortDto> Departments { get; init; } = [];
 
     public int CountDepartments => Departments.Count;
 

@@ -20,14 +20,14 @@ export const DepartmentListPageSize = ({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
-  stateId: DepartmentListId;
+  stateId?: DepartmentListId;
 }) => {
   const pageSize = useDepartmentPageSize(stateId);
 
   return (
     <Select
       value={pageSize.toString()}
-      onValueChange={(value) => setDepartmentPageSize(stateId, parseInt(value))}
+      onValueChange={(value) => setDepartmentPageSize(parseInt(value), stateId)}
     >
       <SelectTrigger {...props}>
         <p>Количество элементов:</p>

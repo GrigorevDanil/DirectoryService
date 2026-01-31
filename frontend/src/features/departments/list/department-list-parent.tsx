@@ -1,48 +1,70 @@
 "use client";
 
+import { Button } from "@/shared/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/shared/components/ui/dialog";
+import { useState } from "react";
 import {
   DepartmentListId,
-  DepartmentParentState,
   setDepartmentParent,
   useDepartmentParent,
 } from "@/entities/departments/model/department-list-store";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/shared/components/ui/select";
-import * as SelectPrimitive from "@radix-ui/react-select";
+import { DepartmentSelected } from "@/widgets/departments/select/department-selected";
+import { DepartmentSelect } from "@/widgets/departments/select/department-select";
 
-export const DepartmentListParent = ({
+export function DepartmentListParent({
   stateId,
-  ...props
-}: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
-  size?: "sm" | "default";
-  stateId: DepartmentListId;
-}) => {
-  const parentState = useDepartmentParent(stateId);
+}: {
+  stateId?: DepartmentListId;
+}) {
+  const parent = useDepartmentParent(stateId);
+
+  const selectedDepartments = parent ? [parent] : [];
+
+  const [open, setOpen] = useState(false);
+
+  const handleRemove = () => setDepartmentParent(null, stateId);
 
   return (
-    <Select
-      value={parentState}
-      onValueChange={(value) =>
-        setDepartmentParent(stateId, value as DepartmentParentState)
-      }
-    >
-      <SelectTrigger {...props}>
-        <p>Подразделения:</p>
-        <SelectValue />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectItem value="all">Все</SelectItem>
-          <SelectItem value="parent">Родители</SelectItem>
-          <SelectItem value="child">Дочерние</SelectItem>
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <>
+      <DepartmentSelected
+        selectedDepartments={selectedDepartments}
+        onRemove={handleRemove}
+      />
+
+      <Dialog open={open} onOpenChange={(flag) => setOpen(flag)}>
+        <DialogTrigger asChild>
+          <Button>Выбрать родителя</Button>
+        </DialogTrigger>
+        <DialogContent className="h-[70vh] flex flex-col w-fit max-w-162.5">
+          <DialogHeader>
+            <DialogTitle>Выбор родителя</DialogTitle>
+          </DialogHeader>
+
+          <DepartmentSelect
+            className="flex-1 min-h-0"
+            selectedDepartments={selectedDepartments}
+            onChangeChecked={(departments) =>
+              setDepartmentParent(departments[0], stateId)
+            }
+            stateId="select-departments"
+            multiselect={false}
+          />
+
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Отмена</Button>
+            </DialogClose>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
-};
+}

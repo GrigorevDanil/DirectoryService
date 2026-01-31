@@ -11,12 +11,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/shared/components/ui/card";
-import { Separator } from "@/shared/components/ui/separator";
 import { ArrowLeft, Calendar, FileText, Building } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { PositionUpdateDialog } from "@/features/positions/position-update-dialog";
 import { PositionUpdateDepartments } from "@/features/positions/position-update-departments";
 import { PositionDeleteDialog } from "@/features/positions/position-delete-dialog";
+import { CardInfo, CardInfoItemProps } from "@/widgets/card-info";
 
 export const PositionDetailPage = ({ id }: { id: PositionId }) => {
   const router = useRouter();
@@ -37,6 +37,28 @@ export const PositionDetailPage = ({ id }: { id: PositionId }) => {
       </div>
     );
   }
+
+  const info: CardInfoItemProps[] = [
+    {
+      icon: Calendar,
+      title: "Создан:",
+      value: new Date(position.createdAt).toLocaleDateString(),
+    },
+    {
+      icon: Calendar,
+      title: "Обновлен:",
+      value: new Date(position.createdAt).toLocaleDateString(),
+    },
+    ...(position.deletedAt
+      ? [
+          {
+            icon: Calendar,
+            title: "Удален:",
+            value: new Date(position.deletedAt).toLocaleDateString(),
+          },
+        ]
+      : []),
+  ];
 
   return (
     <div className="flex flex-col gap-6 p-2 mx-auto">
@@ -92,49 +114,7 @@ export const PositionDetailPage = ({ id }: { id: PositionId }) => {
           </Card>
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle>Информация</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4" />
-                <span>Создана:</span>
-              </div>
-              <p className="font-medium text-sm">
-                {new Date(position.createdAt).toLocaleDateString()}
-              </p>
-            </div>
-
-            <Separator />
-
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <Calendar className="h-4 w-4" />
-                <span>Обновлена:</span>
-              </div>
-              <p className="font-medium text-sm">
-                {new Date(position.updatedAt).toLocaleDateString()}
-              </p>
-            </div>
-
-            {position.deletedAt && (
-              <>
-                <Separator />
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Calendar className="h-4 w-4" />
-                    <span>Удалена:</span>
-                  </div>
-                  <p className="font-medium text-sm">
-                    {new Date(position.deletedAt).toLocaleDateString()}
-                  </p>
-                </div>
-              </>
-            )}
-          </CardContent>
-        </Card>
+        <CardInfo items={info} />
       </div>
     </div>
   );

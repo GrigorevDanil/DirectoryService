@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  LocationListId,
   setLocationSortDirection,
   useLocationSortDirection,
 } from "@/entities/locations/model/location-list-store";
@@ -16,17 +17,19 @@ import {
 import * as SelectPrimitive from "@radix-ui/react-select";
 
 export const LocationListSortDirection = ({
+  stateId,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
+  stateId?: LocationListId;
 }) => {
-  const sortDirection = useLocationSortDirection();
+  const sortDirection = useLocationSortDirection(stateId);
 
   return (
     <Select
       value={sortDirection}
       onValueChange={(value) =>
-        setLocationSortDirection(value as SortDirection)
+        setLocationSortDirection(value as SortDirection, stateId)
       }
     >
       <SelectTrigger {...props}>

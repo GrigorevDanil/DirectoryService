@@ -1,4 +1,5 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
 using SharedService.SharedKernel;
@@ -12,13 +13,9 @@ public interface IDepartmentRepository
 
     Task<UnitResult<Error>> MarkPathsAsDeleted(Path departmentPath, CancellationToken cancellationToken = default);
 
-    Task<Result<Department, Error>> GetActiveDepartmentByIdAsync(DepartmentId id, CancellationToken cancellationToken = default);
-
     Task<UnitResult<Errors>> CheckExistingAndActiveIds(Guid[] ids, CancellationToken cancellationToken = default);
 
     Task DeleteLocationsById(DepartmentId id, CancellationToken cancellationToken = default);
-
-    Task<Result<Department, Error>> GetActiveDepartmentByIdAsyncWithLock(DepartmentId id, CancellationToken cancellationToken = default);
 
     Task<UnitResult<Error>> LockDescending(Path path, CancellationToken cancellationToken = default);
 
@@ -35,4 +32,10 @@ public interface IDepartmentRepository
     Task<UnitResult<Error>> DeleteDepartmentPositionsAsync(CancellationToken cancellationToken = default);
 
     Task<UnitResult<Error>> UpdatePathsBeforeDeleteDepartments(CancellationToken cancellationToken = default);
+
+    Task<Result<Department, Error>> GetByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken = default);
+
+    Task<Result<Department, Error>> GetWithLockByAsync(Expression<Func<Department, bool>> predicate, CancellationToken cancellationToken = default);
+
+    Task<UnitResult<Error>> UpdatePathsBeforeChangeIdentifier(DepartmentId id, Identifier identifier, CancellationToken cancellationToken = default);
 }

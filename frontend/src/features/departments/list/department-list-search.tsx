@@ -16,7 +16,7 @@ export const DepartmentListSearch = ({
   stateId,
   ...props
 }: React.ComponentProps<"input"> & {
-  stateId: DepartmentListId;
+  stateId?: DepartmentListId;
 }) => {
   const search = useDepartmentSearch(stateId);
 
@@ -26,7 +26,7 @@ export const DepartmentListSearch = ({
         placeholder="Поиск..."
         value={search}
         onChange={(e) => {
-          setDepartmentSearch(stateId, e.target.value);
+          setDepartmentSearch(e.target.value, stateId);
         }}
         {...props}
       />

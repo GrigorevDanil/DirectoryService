@@ -21,7 +21,7 @@ export const DepartmentListActive = ({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
-  stateId: DepartmentListId;
+  stateId?: DepartmentListId;
 }) => {
   const activeState = useDepartmentActive(stateId);
 
@@ -29,7 +29,7 @@ export const DepartmentListActive = ({
     <Select
       value={activeState}
       onValueChange={(value) =>
-        setDepartmentActive(stateId, value as ActiveState)
+        setDepartmentActive(value as ActiveState, stateId)
       }
     >
       <SelectTrigger {...props}>

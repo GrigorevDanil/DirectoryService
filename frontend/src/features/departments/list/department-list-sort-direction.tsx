@@ -21,7 +21,7 @@ export const DepartmentListSortDirection = ({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
-  stateId: DepartmentListId;
+  stateId?: DepartmentListId;
 }) => {
   const sortDirection = useDepartmentSortDirection(stateId);
 
@@ -29,7 +29,7 @@ export const DepartmentListSortDirection = ({
     <Select
       value={sortDirection}
       onValueChange={(value) =>
-        setDepartmentSortDirection(stateId, value as SortDirection)
+        setDepartmentSortDirection(value as SortDirection, stateId)
       }
     >
       <SelectTrigger {...props}>

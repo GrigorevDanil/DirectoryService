@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  PositionListId,
   setPositionSearch,
   usePositionSearch,
 } from "@/entities/positions/model/position-list-store";
@@ -12,9 +13,12 @@ import {
 import { Search } from "lucide-react";
 
 export const PositionListSearch = ({
+  stateId,
   ...props
-}: React.ComponentProps<"input">) => {
-  const search = usePositionSearch();
+}: React.ComponentProps<"input"> & {
+  stateId?: PositionListId;
+}) => {
+  const search = usePositionSearch(stateId);
 
   return (
     <InputGroup>
@@ -22,7 +26,7 @@ export const PositionListSearch = ({
         placeholder="Поиск..."
         value={search}
         onChange={(e) => {
-          setPositionSearch(e.target.value);
+          setPositionSearch(e.target.value, stateId);
         }}
         {...props}
       />

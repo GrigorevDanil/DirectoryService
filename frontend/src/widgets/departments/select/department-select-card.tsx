@@ -9,19 +9,19 @@ import {
   FieldTitle,
 } from "@/shared/components/ui/field";
 
-interface DepartmentMultiSelectCardProps extends React.ComponentProps<"div"> {
+interface DepartmentSelectCardProps extends React.ComponentProps<"div"> {
   department: DepartmentShortDto;
   checked: boolean;
   onCheckedChange: (selected: boolean, department: DepartmentShortDto) => void;
 }
 
-export function DepartmentMultiSelectCard({
+export function DepartmentSelectCard({
   department,
   checked,
   onCheckedChange,
   className,
   ...props
-}: DepartmentMultiSelectCardProps) {
+}: DepartmentSelectCardProps) {
   const handleCheckedChange = (checked: boolean) => {
     onCheckedChange(checked, department);
   };
@@ -35,6 +35,7 @@ export function DepartmentMultiSelectCard({
           checked={checked}
           onCheckedChange={handleCheckedChange}
         />
+
         <FieldContent>
           <FieldTitle>{department.name}</FieldTitle>
           <FieldDescription>{department.identifier}</FieldDescription>

@@ -1,4 +1,6 @@
-﻿using CSharpFunctionalExtensions;
+﻿using System.Data.Common;
+using System.Linq.Expressions;
+using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Application.Departments;
 using DirectoryService.Domain.Departments;
@@ -66,16 +68,6 @@ public class DepartmentsRepository : IDepartmentRepository
         return UnitResult.Success<Error>();
     }
 
-    public async Task<Result<Department, Error>> GetActiveDepartmentByIdAsync(DepartmentId id, CancellationToken cancellationToken = default)
-    {
-        var department = await _dbContext.Departments.FirstOrDefaultAsync(x => x.Id == id && x.IsActive == true, cancellationToken);
-
-        if (department is null)
-            return GeneralErrors.NotFound(id.Value);
-
-        return department;
-    }
-
     public async Task<UnitResult<Errors>> CheckExistingAndActiveIds(Guid[] ids, CancellationToken cancellationToken = default)
     {
         var departmentIds = DepartmentId.Of(ids);
@@ -100,20 +92,6 @@ public class DepartmentsRepository : IDepartmentRepository
         await _dbContext.DepartmentLocations
             .Where(x => x.DepartmentId == id)
             .ExecuteDeleteAsync(cancellationToken);
-    }
-
-    public async Task<Result<Department, Error>> GetActiveDepartmentByIdAsyncWithLock(
-        DepartmentId id,
-        CancellationToken cancellationToken = default)
-    {
-        var department = await _dbContext.Departments
-            .FromSql($"SELECT d.* FROM departments d WHERE d.id = {id.Value} AND d.is_active = TRUE FOR UPDATE")
-            .FirstOrDefaultAsync(cancellationToken);
-
-        if (department is null)
-            return GeneralErrors.NotFound(id.Value);
-
-        return department;
     }
 
     public async Task<UnitResult<Error>> LockDescending(Path path, CancellationToken cancellationToken = default)
@@ -332,6 +310,75 @@ public class DepartmentsRepository : IDepartmentRepository
         try
         {
             await dbConnection.ExecuteAsync(sql);
+        }
+        catch (Exception ex)
+        {
+            return GeneralErrors.Failure(ex.Message);
+        }
+
+        return UnitResult.Success<Error>();
+    }
+
+    public async Task<Result<Department, Error>> GetByAsync(
+        Expression<Func<Department, bool>> predicate,
+        CancellationToken cancellationToken = default)
+    {
+        Department? department = await _dbContext.Departments.FirstOrDefaultAsync(predicate, cancellationToken);
+
+        if (department is null)
+            return GeneralErrors.NotFound();
+
+        return department;
+    }
+
+    public async Task<Result<Department, Error>> GetWithLockByAsync(
+        Expression<Func<Department, bool>> predicate,
+        CancellationToken cancellationToken = default)
+    {
+        Department? department = await _dbContext.Departments
+            .FromSql($"SELECT d.* FROM departments d FOR UPDATE")
+            .FirstOrDefaultAsync(predicate, cancellationToken);
+
+        if (department is null)
+            return GeneralErrors.NotFound();
+
+        return department;
+    }
+
+    public async Task<UnitResult<Error>> UpdatePathsBeforeChangeIdentifier(DepartmentId id, Identifier identifier, CancellationToken cancellationToken = default)
+    {
+        const string sql = """
+                        UPDATE departments d
+                        SET 
+                            identifier = CASE 
+                                WHEN d.id = td.id THEN :Identifier
+                                ELSE d.identifier 
+                            END,
+                            path = text2ltree(
+                                replace(
+                                    d.path::text, 
+                                    td.old_identifier, 
+                                    :Identifier
+                                )
+                            )
+                        FROM (
+                            SELECT id, identifier as old_identifier, path
+                            FROM departments 
+                            WHERE id = :DepartmentId
+                        ) AS td
+                        WHERE d.path <@ td.path 
+                           OR td.path <@ d.path;
+                        """;
+
+        DbConnection dbConnection = _dbContext.Database.GetDbConnection();
+
+        try
+        {
+            await dbConnection.ExecuteAsync(sql, new
+            {
+                DepartmentId = id.Value,
+                Identifier = identifier.Value
+            });
         }
         catch (Exception ex)
         {

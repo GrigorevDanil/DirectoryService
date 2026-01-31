@@ -5,6 +5,7 @@ import { SortDirection } from "@/shared/api/sort-direction";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
+export type LocationListId = string;
 export type LocationSortBy = "name" | "createdAt";
 
 interface LocationListState {
@@ -16,6 +17,10 @@ interface LocationListState {
   selectedDepartments: DepartmentShortDto[];
 }
 
+type LocationListStates = Record<LocationListId, LocationListState | undefined>;
+
+const DEFAULT_STATE_ID = "__default__";
+
 const initialState: LocationListState = {
   search: "",
   isActive: "all",
@@ -25,58 +30,135 @@ const initialState: LocationListState = {
   selectedDepartments: [],
 };
 
-const useLocationListStore = create<LocationListState>()(
+const initialStates: LocationListStates = {};
+
+const resolveStateId = (stateId?: LocationListId) =>
+  stateId ?? DEFAULT_STATE_ID;
+
+const getOrCreate = (
+  state: LocationListStates,
+  stateId?: LocationListId,
+): LocationListState => {
+  const id = resolveStateId(stateId);
+
+  if (!state[id]) {
+    state[id] = { ...initialState };
+  }
+
+  return state[id];
+};
+
+const useLocationListStore = create<LocationListStates>()(
   persist(
     () => ({
-      ...initialState,
+      ...initialStates,
     }),
     {
       name: "location-list-storage",
       storage: createJSONStorage(() => localStorage),
+      partialize: (state) =>
+        Object.fromEntries(
+          Object.entries(state).filter(([key]) => key === DEFAULT_STATE_ID),
+        ),
     },
   ),
 );
 
-export const useLocationSearch = () =>
-  useLocationListStore((state) => state.search);
+export const useLocationSearch = (stateId?: LocationListId) =>
+  useLocationListStore((states) => getOrCreate(states, stateId).search);
 
-export const setLocationSearch = (search: string) =>
-  useLocationListStore.setState({ search });
+export const setLocationSearch = (search: string, stateId?: LocationListId) =>
+  useLocationListStore.setState((states) => ({
+    [resolveStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      search,
+    },
+  }));
 
-export const useLocationActive = () =>
-  useLocationListStore((state) => state.isActive);
+export const useLocationActive = (stateId?: LocationListId) =>
+  useLocationListStore((states) => getOrCreate(states, stateId).isActive);
 
-export const setLocationActive = (isActive: ActiveState) =>
-  useLocationListStore.setState({ isActive });
+export const setLocationActive = (
+  isActive: ActiveState,
+  stateId?: LocationListId,
+) =>
+  useLocationListStore.setState((states) => ({
+    [resolveStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      isActive,
+    },
+  }));
 
-export const useLocationSortBy = () =>
-  useLocationListStore((state) => state.sortBy);
+export const useLocationSortBy = (stateId?: LocationListId) =>
+  useLocationListStore((states) => getOrCreate(states, stateId).sortBy);
 
-export const setLocationSortBy = (sortBy: LocationSortBy) =>
-  useLocationListStore.setState({ sortBy });
+export const setLocationSortBy = (
+  sortBy: LocationSortBy,
+  stateId?: LocationListId,
+) =>
+  useLocationListStore.setState((states) => ({
+    [resolveStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      sortBy,
+    },
+  }));
 
-export const useLocationSortDirection = () =>
-  useLocationListStore((state) => state.sortDirection);
+export const useLocationSortDirection = (stateId?: LocationListId) =>
+  useLocationListStore((states) => getOrCreate(states, stateId).sortDirection);
 
-export const setLocationSortDirection = (sortDirection: SortDirection) =>
-  useLocationListStore.setState({ sortDirection });
+export const setLocationSortDirection = (
+  sortDirection: SortDirection,
+  stateId?: LocationListId,
+) =>
+  useLocationListStore.setState((states) => ({
+    [resolveStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      sortDirection,
+    },
+  }));
 
-export const useLocationPageSize = () =>
-  useLocationListStore((state) => state.pageSize);
+export const useLocationPageSize = (stateId?: LocationListId) =>
+  useLocationListStore((states) => getOrCreate(states, stateId).pageSize);
 
-export const setLocationPageSize = (pageSize: number) =>
-  useLocationListStore.setState({ pageSize });
+export const setLocationPageSize = (
+  pageSize: number,
+  stateId?: LocationListId,
+) =>
+  useLocationListStore.setState((states) => ({
+    [resolveStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      pageSize,
+    },
+  }));
 
-export const useLocationSelectedDepartments = () =>
-  useLocationListStore((state) => state.selectedDepartments);
+export const useLocationSelectedDepartments = (stateId?: LocationListId) =>
+  useLocationListStore(
+    (states) => getOrCreate(states, stateId).selectedDepartments,
+  );
 
 export const setLocationSelectedDepartments = (
   selectedDepartments: DepartmentShortDto[],
-) => useLocationListStore.setState({ selectedDepartments });
-
-export const removeSelectedDepartmentFromLocationList = (id: DepartmentId) =>
-  useLocationListStore.setState((state) => ({
-    selectedDepartments: state.selectedDepartments.filter(
-      (dep) => dep.id !== id,
-    ),
+  stateId?: LocationListId,
+) =>
+  useLocationListStore.setState((states) => ({
+    [resolveStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      selectedDepartments,
+    },
   }));
+
+export const removeSelectedDepartmentFromLocationList = (
+  id: DepartmentId,
+  stateId?: LocationListId,
+) =>
+  useLocationListStore.setState((states) => {
+    const state = getOrCreate(states, stateId);
+    return {
+      [resolveStateId(stateId)]: {
+        ...state,
+        selectedDepartments: state.selectedDepartments.filter(
+          (dep) => dep.id !== id,
+        ),
+      },
+    };
+  });

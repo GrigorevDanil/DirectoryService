@@ -11,24 +11,29 @@ import {
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
 import { useState } from "react";
-import { DepartmentMultiSelect } from "@/widgets/departments/multi-select";
-import { DepartmentMultiSelectSelected } from "@/widgets/departments/multi-select/department-multi-select-selected";
 import {
+  PositionListId,
   removeSelectedDepartmentFromPositionList,
   setPositionSelectedDepartments,
   usePositionSelectedDepartments,
 } from "@/entities/positions/model/position-list-store";
+import { DepartmentSelected } from "@/widgets/departments/select/department-selected";
+import { DepartmentSelect } from "@/widgets/departments/select/department-select";
 
-export function PositionListSelectDepartments() {
-  const selectedDepartments = usePositionSelectedDepartments();
+export function PositionListSelectDepartments({
+  stateId,
+}: {
+  stateId?: PositionListId;
+}) {
+  const selectedDepartments = usePositionSelectedDepartments(stateId);
 
   const [open, setOpen] = useState(false);
 
   return (
     <>
-      <DepartmentMultiSelectSelected
+      <DepartmentSelected
         selectedDepartments={selectedDepartments}
-        onRemove={removeSelectedDepartmentFromPositionList}
+        onRemove={(id) => removeSelectedDepartmentFromPositionList(id, stateId)}
       />
 
       <Dialog open={open} onOpenChange={(flag) => setOpen(flag)}>
@@ -40,11 +45,13 @@ export function PositionListSelectDepartments() {
             <DialogTitle>Выбор подразделений</DialogTitle>
           </DialogHeader>
 
-          <DepartmentMultiSelect
+          <DepartmentSelect
             className="flex-1 min-h-0"
             selectedDepartments={selectedDepartments}
-            onChangeChecked={setPositionSelectedDepartments}
-            stateId="multi-select"
+            onChangeChecked={(deps) =>
+              setPositionSelectedDepartments(deps, stateId)
+            }
+            stateId="multi-select-positions"
           />
 
           <DialogFooter>

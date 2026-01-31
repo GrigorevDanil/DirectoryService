@@ -5,7 +5,7 @@ import { DepartmentId, DepartmentShortDto } from "@/entities/departments/types";
 import { Spinner } from "@/shared/components/ui/spinner";
 import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
 import { Error } from "@/widgets/error";
-import { DepartmentMultiSelectCard } from "./department-multi-select-card";
+import { DepartmentSelectCard } from "./department-select-card";
 import { DepartmentListId } from "@/entities/departments/model/department-list-store";
 import { DepartmentListSearch } from "@/features/departments/list/department-list-search";
 import { DepartmentListSortBy } from "@/features/departments/list/department-list-sort-by";
@@ -13,29 +13,34 @@ import { DepartmentListSortDirection } from "@/features/departments/list/departm
 import { DepartmentListActive } from "@/features/departments/list/department-list-active";
 import { DepartmentListPageSize } from "@/features/departments/list/department-list-page-size";
 import { ListLayout } from "@/shared/components/ui/list-layout";
-import { DepartmentListParent } from "@/features/departments/list/department-list-parent";
-import { DepartmentMultiSelectSelected } from "./department-multi-select-selected";
+import { DepartmentListIsParent } from "@/features/departments/list/department-list-is-parent";
+import { DepartmentSelected } from "./department-selected";
 import { GetDepartmentsRequest } from "@/entities/departments/api";
+import { useMemo } from "react";
 
 const { Header, Container, Content, Filters } = ListLayout;
 
-interface DepartmentMultiSelectProps extends React.ComponentProps<"div"> {
+interface DepartmentSelectProps extends React.ComponentProps<"div"> {
   selectedDepartments: DepartmentShortDto[];
   onChangeChecked: (selectedDepartments: DepartmentShortDto[]) => void;
   stateId: DepartmentListId;
   request?: GetDepartmentsRequest;
+  multiselect?: boolean;
+  excludeIds?: DepartmentId[];
 }
 
-export const DepartmentMultiSelect = ({
+export const DepartmentSelect = ({
   selectedDepartments,
   onChangeChecked,
   stateId,
   className,
   request,
+  multiselect = true,
+  excludeIds = [],
   ...props
-}: DepartmentMultiSelectProps) => {
+}: DepartmentSelectProps) => {
   const {
-    departments,
+    departments: fetchedDepartments,
     error,
     fetchNextPage,
     hasNextPage,
@@ -43,7 +48,16 @@ export const DepartmentMultiSelect = ({
     isFetchingNextPage,
     isPending,
     refetch,
-  } = useDepartmentList(stateId, request);
+  } = useDepartmentList({ stateId, request });
+
+  const departments = useMemo(() => {
+    if (excludeIds.length === 0) {
+      return fetchedDepartments;
+    }
+
+    const excludeSet = new Set(excludeIds);
+    return fetchedDepartments.filter((d) => !excludeSet.has(d.id));
+  }, [fetchedDepartments, excludeIds]);
 
   const intersectionRef = useIntersectionObserver({
     hasNextPage,
@@ -55,12 +69,21 @@ export const DepartmentMultiSelect = ({
     selected: boolean,
     department: DepartmentShortDto,
   ) => {
+    if (multiselect) {
+      if (selected) {
+        onChangeChecked([...selectedDepartments, department]);
+      } else {
+        onChangeChecked(
+          selectedDepartments.filter((dep) => dep.id !== department.id),
+        );
+      }
+      return;
+    }
+
     if (selected) {
-      onChangeChecked([...selectedDepartments, department]);
+      onChangeChecked([department]);
     } else {
-      onChangeChecked(
-        selectedDepartments.filter((dep) => dep.id !== department.id),
-      );
+      onChangeChecked([]);
     }
   };
 
@@ -73,6 +96,12 @@ export const DepartmentMultiSelect = ({
   const isSelected = (departmentId: DepartmentId) => {
     return selectedDepartments.some((dep) => dep.id === departmentId);
   };
+
+  const selectedResolved = useMemo(() => {
+    const byId = new Map(departments.map((d) => [d.id, d]));
+
+    return selectedDepartments.map((sel) => byId.get(sel.id) ?? sel);
+  }, [departments, selectedDepartments]);
 
   const renderContent = () => {
     if (isPending && departments.length === 0) {
@@ -98,7 +127,7 @@ export const DepartmentMultiSelect = ({
     return (
       <div className="flex flex-col gap-2 w-full">
         {departments.map((department) => (
-          <DepartmentMultiSelectCard
+          <DepartmentSelectCard
             key={department.id}
             department={department}
             checked={isSelected(department.id)}
@@ -114,8 +143,8 @@ export const DepartmentMultiSelect = ({
 
   return (
     <ListLayout className={className} {...props}>
-      <DepartmentMultiSelectSelected
-        selectedDepartments={selectedDepartments}
+      <DepartmentSelected
+        selectedDepartments={selectedResolved}
         onRemove={handleRemoveDepartment}
       />
       <Header>
@@ -126,11 +155,13 @@ export const DepartmentMultiSelect = ({
         <Filters>
           <h3 className="font-medium text-sm mb-3">Фильтры</h3>
           <div className="space-y-3">
-            <DepartmentListSortBy stateId={stateId} />
-            <DepartmentListSortDirection stateId={stateId} />
+            {!request?.sortBy && <DepartmentListSortBy stateId={stateId} />}
+            {!request?.sortDirection && (
+              <DepartmentListSortDirection stateId={stateId} />
+            )}
             {!request?.isActive && <DepartmentListActive stateId={stateId} />}
-            <DepartmentListParent stateId={stateId} />
-            <DepartmentListPageSize stateId={stateId} />
+            {!request?.isParent && <DepartmentListIsParent stateId={stateId} />}
+            {!request?.pageSize && <DepartmentListPageSize stateId={stateId} />}
           </div>
         </Filters>
       </Container>

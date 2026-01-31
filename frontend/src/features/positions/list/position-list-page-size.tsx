@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  PositionListId,
   setPositionPageSize,
   usePositionPageSize,
 } from "@/entities/positions/model/position-list-store";
@@ -15,16 +16,18 @@ import {
 import * as SelectPrimitive from "@radix-ui/react-select";
 
 export const PositionListPageSize = ({
+  stateId,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
+  stateId?: PositionListId;
 }) => {
-  const pageSize = usePositionPageSize();
+  const pageSize = usePositionPageSize(stateId);
 
   return (
     <Select
       value={pageSize.toString()}
-      onValueChange={(value) => setPositionPageSize(parseInt(value))}
+      onValueChange={(value) => setPositionPageSize(parseInt(value), stateId)}
     >
       <SelectTrigger {...props}>
         <p>Количество элементов:</p>

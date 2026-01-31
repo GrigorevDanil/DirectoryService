@@ -1,7 +1,9 @@
 import z from "zod";
 
+export type LocationId = string;
+
 export interface LocationDto {
-  id: string;
+  id: LocationId;
   name: string;
   timezone: string;
   address: AddressDto;
@@ -20,22 +22,22 @@ export const locationNameValidation = z
   .string()
   .min(
     LOCATION_NAME_MIN_LENGTH,
-    `Название должно содержать минимум ${LOCATION_NAME_MIN_LENGTH} символа`
+    `Название должно содержать минимум ${LOCATION_NAME_MIN_LENGTH} символа`,
   )
   .max(
     LOCATION_NAME_MAX_LENGTH,
-    `Название не должно превышать ${LOCATION_NAME_MAX_LENGTH} символов`
+    `Название не должно превышать ${LOCATION_NAME_MAX_LENGTH} символов`,
   );
 
 export const timezoneValidation = z
   .string()
   .min(
     TIMEZONE_MIN_LENGTH,
-    `Часовой пояс должен содержать минимум ${TIMEZONE_MIN_LENGTH} символа`
+    `Часовой пояс должен содержать минимум ${TIMEZONE_MIN_LENGTH} символа`,
   )
   .max(
     LOCATION_NAME_MAX_LENGTH,
-    `Часовой пояс не должен превышать ${LOCATION_NAME_MAX_LENGTH} символов`
+    `Часовой пояс не должен превышать ${LOCATION_NAME_MAX_LENGTH} символов`,
   );
 
 export interface AddressDto {
@@ -68,11 +70,11 @@ export const addressValidation = z.object({
     .string()
     .min(
       COUNTRY_MIN_LENGTH,
-      `Страна должна содержать минимум ${COUNTRY_MIN_LENGTH} символа`
+      `Страна должна содержать минимум ${COUNTRY_MIN_LENGTH} символа`,
     )
     .max(
       COUNTRY_MAX_LENGTH,
-      `Название страны не должно превышать ${COUNTRY_MAX_LENGTH} символов`
+      `Название страны не должно превышать ${COUNTRY_MAX_LENGTH} символов`,
     )
     .nonempty("Страна обязательна для заполнения"),
 
@@ -80,7 +82,7 @@ export const addressValidation = z.object({
     .string()
     .length(
       POSTAL_CODE_LENGTH,
-      `Почтовый индекс должен содержать ровно ${POSTAL_CODE_LENGTH} символов`
+      `Почтовый индекс должен содержать ровно ${POSTAL_CODE_LENGTH} символов`,
     )
     .nonempty("Почтовый индекс обязателен"),
 
@@ -88,11 +90,11 @@ export const addressValidation = z.object({
     .string()
     .min(
       REGION_MIN_LENGTH,
-      `Регион должен содержать минимум ${REGION_MIN_LENGTH} символа`
+      `Регион должен содержать минимум ${REGION_MIN_LENGTH} символа`,
     )
     .max(
       REGION_MAX_LENGTH,
-      `Название региона не должно превышать ${REGION_MAX_LENGTH} символов`
+      `Название региона не должно превышать ${REGION_MAX_LENGTH} символов`,
     )
     .nonempty("Регион обязателен для заполнения"),
 
@@ -100,11 +102,11 @@ export const addressValidation = z.object({
     .string()
     .min(
       CITY_MIN_LENGTH,
-      `Город должен содержать минимум ${CITY_MIN_LENGTH} символа`
+      `Город должен содержать минимум ${CITY_MIN_LENGTH} символа`,
     )
     .max(
       CITY_MAX_LENGTH,
-      `Название города не должно превышать ${CITY_MAX_LENGTH} символов`
+      `Название города не должно превышать ${CITY_MAX_LENGTH} символов`,
     )
     .nonempty("Город обязателен для заполнения"),
 
@@ -112,11 +114,11 @@ export const addressValidation = z.object({
     .string()
     .min(
       STREET_MIN_LENGTH,
-      `Улица должна содержать минимум ${STREET_MIN_LENGTH} символа`
+      `Улица должна содержать минимум ${STREET_MIN_LENGTH} символа`,
     )
     .max(
       STREET_MAX_LENGTH,
-      `Название улицы не должно превышать ${STREET_MAX_LENGTH} символов`
+      `Название улицы не должно превышать ${STREET_MAX_LENGTH} символов`,
     )
     .nonempty("Улица обязательна для заполнения"),
 
@@ -125,7 +127,15 @@ export const addressValidation = z.object({
     .min(1, "Номер дома обязателен")
     .max(
       HOUSE_NUMBER_MAX_LENGTH,
-      `Номер дома не должен превышать ${HOUSE_NUMBER_MAX_LENGTH} символов`
+      `Номер дома не должен превышать ${HOUSE_NUMBER_MAX_LENGTH} символов`,
     )
     .nonempty("Номер дома обязателен"),
 });
+
+export const locationIdsValidation = z
+  .array(z.string())
+  .min(1, "Выберите хотя бы одно подразделение")
+  .refine(
+    (arr) => new Set(arr.map((id) => id)).size === arr.length,
+    "Локации не должны повторяться",
+  );

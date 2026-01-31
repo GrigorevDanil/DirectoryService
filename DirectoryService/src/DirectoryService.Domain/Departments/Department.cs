@@ -131,6 +131,25 @@ public sealed class Department : BaseEntity<DepartmentId>, ISoftDeletable
     }
 
     /// <summary>
+    /// Переименовать короткое название подразделения.
+    /// </summary>
+    /// <param name="identifier">Новое короткое название подразделения.</param>
+    /// <returns>Результат выполнения переименования.</returns>
+    public UnitResult<Error> ChangeIdentifier(string identifier)
+    {
+        Result<Identifier, Error> identifierResult = Identifier.Of(identifier);
+
+        if (identifierResult.IsFailure)
+            return identifierResult.Error;
+
+        Identifier = identifierResult.Value;
+
+        UpdatedAt = DateTime.UtcNow;
+
+        return Result.Success<Error>();
+    }
+
+    /// <summary>
     /// Добавляет дочерний подраздел к родительскому подразделу.
     /// </summary>
     /// <param name="department">Дочерний подраздел.</param>
