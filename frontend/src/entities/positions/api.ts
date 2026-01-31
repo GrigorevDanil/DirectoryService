@@ -50,10 +50,10 @@ export const positionsApi = {
         request.sortDirection,
         request.pageSize,
       ],
-      queryFn: async ({ pageParam }) => {
+      queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<PositionDto>>
-        >("/positions", { params: { ...request, page: pageParam } });
+        >("/positions", { params: { ...request, page: pageParam }, signal });
 
         return response.data;
       },
@@ -62,9 +62,10 @@ export const positionsApi = {
   getPositionQueryOptions: (id: PositionId) =>
     queryOptions({
       queryKey: [positionsApi.baseKey, id],
-      queryFn: async () => {
+      queryFn: async ({ signal }) => {
         const response = await httpClient.get<Envelope<PositionDetailDto>>(
           "/positions/" + id,
+          { signal },
         );
 
         return response.data;

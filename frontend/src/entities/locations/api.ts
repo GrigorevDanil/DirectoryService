@@ -51,10 +51,10 @@ export const locationsApi = {
         request.sortDirection,
         request.pageSize,
       ],
-      queryFn: async ({ pageParam }) => {
+      queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<LocationDto>>
-        >("/locations", { params: { ...request, page: pageParam } });
+        >("/locations", { params: { ...request, page: pageParam }, signal });
 
         return response.data;
       },
@@ -72,10 +72,10 @@ export const locationsApi = {
         request.page,
         request.pageSize,
       ],
-      queryFn: async () => {
+      queryFn: async ({ signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<LocationDto>>
-        >("/locations", { params: request });
+        >("/locations", { params: request, signal });
 
         return response.data;
       },

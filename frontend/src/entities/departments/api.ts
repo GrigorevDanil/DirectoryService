@@ -53,10 +53,13 @@ export const departmentsApi = {
         request.sortDirection,
         request.pageSize,
       ],
-      queryFn: async ({ pageParam }) => {
+      queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<DepartmentShortDto>>
-        >("/departments", { params: { ...request, page: pageParam } });
+        >("/departments", {
+          params: { ...request, page: pageParam },
+          signal,
+        });
 
         return response.data;
       },
@@ -67,10 +70,13 @@ export const departmentsApi = {
   ) =>
     infiniteQueryOptions({
       queryKey: [departmentsApi.baseKey, request.prefetch, request.pageSize],
-      queryFn: async ({ pageParam }) => {
+      queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<DepartmentDto>>
-        >("/departments/roots", { params: { ...request, page: pageParam } });
+        >("/departments/roots", {
+          params: { ...request, page: pageParam },
+          signal,
+        });
 
         return response.data;
       },
@@ -81,11 +87,12 @@ export const departmentsApi = {
   ) =>
     infiniteQueryOptions({
       queryKey: [departmentsApi.baseKey, request.parentId, request.pageSize],
-      queryFn: async ({ pageParam }) => {
+      queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<DepartmentDto>>
         >("/departments/" + request.parentId + "/children", {
           params: { ...request, page: pageParam },
+          signal,
         });
 
         return response.data;
@@ -95,9 +102,10 @@ export const departmentsApi = {
   getDepartmentQueryOptions: (id: DepartmentId) =>
     queryOptions({
       queryKey: [departmentsApi.baseKey, id],
-      queryFn: async () => {
+      queryFn: async ({ signal }) => {
         const response = await httpClient.get<Envelope<DepartmentDto>>(
           "/departments/" + id,
+          { signal },
         );
 
         return response.data;
