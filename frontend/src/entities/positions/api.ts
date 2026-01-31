@@ -59,7 +59,7 @@ export const positionsApi = {
       },
       ...envelopeInfinityQueryOptions<PositionDto>(request),
     }),
-  getPositionQueryOptions: (id: DepartmentId) =>
+  getPositionQueryOptions: (id: PositionId) =>
     queryOptions({
       queryKey: [positionsApi.baseKey, id],
       queryFn: async () => {

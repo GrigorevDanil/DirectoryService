@@ -56,7 +56,8 @@ public class GetRootDepartmentsHandler : IQueryHandler<GetRootDepartmentsQuery, 
                                   d.depth,
                                   d.is_active,
                                   d.created_at,
-                                  d.updated_at
+                                  d.updated_at,
+                                  d.deleted_at
                            FROM departments d
                            WHERE d.parent_id IS NULL
                            ORDER BY d.created_at
@@ -92,7 +93,8 @@ public class GetRootDepartmentsHandler : IQueryHandler<GetRootDepartmentsQuery, 
                                       d.depth,
                                       d.is_active,
                                       d.created_at,
-                                      d.updated_at
+                                      d.updated_at,
+                                      d.deleted_at
                                FROM departments d
                                WHERE d.parent_id = r.id AND d.is_active = true
                                ORDER BY d.created_at

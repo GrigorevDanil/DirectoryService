@@ -4,17 +4,17 @@ import { Button } from "@/shared/components/ui/button";
 import { cn } from "@/shared/lib/utils";
 import { X } from "lucide-react";
 
-interface DepartmentMultiSelectSelectedProps extends React.ComponentProps<"div"> {
+interface DepartmentSelectedProps extends React.ComponentProps<"div"> {
   selectedDepartments: DepartmentShortDto[];
   onRemove: (id: DepartmentId) => void;
 }
 
-export const DepartmentMultiSelectSelected = ({
+export const DepartmentSelected = ({
   selectedDepartments,
   onRemove,
   className,
   ...props
-}: DepartmentMultiSelectSelectedProps) => {
+}: DepartmentSelectedProps) => {
   return (
     <div className={cn("flex gap-2 flex-wrap", className)} {...props}>
       {selectedDepartments.map((dep) => (

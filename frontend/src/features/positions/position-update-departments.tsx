@@ -1,6 +1,10 @@
 "use client";
 
-import { DepartmentShortDto } from "@/entities/departments/types";
+import {
+  DepartmentId,
+  departmentIdsValidator,
+  DepartmentShortDto,
+} from "@/entities/departments/types";
 import { usePositionAddDepartment } from "@/entities/positions/hooks/use-position-add-department";
 import { usePositionRemoveDepartment } from "@/entities/positions/hooks/use-position-remove-department";
 import { PositionId } from "@/entities/positions/types";
@@ -13,42 +17,29 @@ import {
 import { Button } from "@/shared/components/ui/button";
 import { Field, FieldError, FieldSet } from "@/shared/components/ui/field";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { DepartmentMultiSelect } from "@/widgets/departments/multi-select";
+import { DepartmentSelect } from "@/widgets/departments/select/department-select";
 import { useState } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
 const initialFormState = {
-  departments: [],
+  departmentIds: [],
 };
 
 const formDataSchema = z.object({
-  departments: z
-    .array(
-      z.object({
-        id: z.string(),
-        name: z.string(),
-        identifier: z.string(),
-        isActive: z.boolean(),
-      }),
-    )
-    .min(1, "Выберите хотя бы одно подразделение")
-    .refine(
-      (arr) => new Set(arr.map((dept) => dept.id)).size === arr.length,
-      "Подразделения не должны повторяться",
-    ),
+  departmentIds: departmentIdsValidator,
 });
 
 type FormData = z.infer<typeof formDataSchema>;
 
 interface PositionUpdateDepartmentsProps extends React.ComponentProps<"form"> {
   positionId: PositionId;
-  departments: DepartmentShortDto[];
+  departmentIds: DepartmentId[];
 }
 
 export const PositionUpdateDepartments = ({
   positionId,
-  departments: initialDepartments,
+  departmentIds: initialDepartmentIds,
   ...props
 }: PositionUpdateDepartmentsProps) => {
   const {
@@ -68,7 +59,7 @@ export const PositionUpdateDepartments = ({
 
   const formData = {
     ...initialFormState,
-    ...{ departments: initialDepartments },
+    ...{ departmentIds: initialDepartmentIds },
     ...userFormData,
   };
 
@@ -105,15 +96,12 @@ export const PositionUpdateDepartments = ({
       return;
     }
 
-    const currentDepartmentIds = formData.departments.map((dep) => dep.id);
-    const initialDepartmentIds = initialDepartments.map((dep) => dep.id);
-
-    const departmentsToAdd = currentDepartmentIds.filter(
+    const departmentsToAdd = formData.departmentIds.filter(
       (id) => !initialDepartmentIds.includes(id),
     );
 
     const departmentsToRemove = initialDepartmentIds.filter(
-      (id) => !currentDepartmentIds.includes(id),
+      (id) => !formData.departmentIds.includes(id),
     );
 
     try {
@@ -139,28 +127,30 @@ export const PositionUpdateDepartments = ({
 
   const handleReset = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setUserFormData({ departments: initialDepartments });
+    setUserFormData(initialFormState);
   };
 
   return (
     <form onSubmit={handleSubmit} onReset={handleReset} {...props}>
       <FieldSet>
         <Field>
-          <DepartmentMultiSelect
+          <DepartmentSelect
             className="max-h-[50vh]"
             id="departmentIds"
             stateId={"multi-select-position-" + positionId}
-            selectedDepartments={formData.departments}
+            selectedDepartments={formData.departmentIds.map(
+              (id) => ({ id }) as DepartmentShortDto,
+            )}
             onChangeChecked={(deps) =>
               setUserFormData((l) => ({
                 ...l,
-                departments: deps,
+                departmentIds: deps.map((x) => x.id),
               }))
             }
-            aria-invalid={!!errors?.departments}
+            aria-invalid={!!errors?.departmentIds}
             request={{ isActive: true }}
           />
-          <FieldError errors={errors?.departments?.errors} />
+          <FieldError errors={errors?.departmentIds?.errors} />
         </Field>
       </FieldSet>
       {!!apiGeneralErrors && (

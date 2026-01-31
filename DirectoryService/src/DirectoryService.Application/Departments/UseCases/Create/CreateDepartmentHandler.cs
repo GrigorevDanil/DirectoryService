@@ -24,7 +24,7 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, 
 
     private readonly IValidator<CreateDepartmentCommand> _validator;
 
-    private readonly ILogger _logger;
+    private readonly ILogger<CreateDepartmentHandler> _logger;
 
     private readonly ITransactionManager _transactionManager;
 
@@ -86,7 +86,7 @@ public class CreateDepartmentHandler : ICommandHandler<CreateDepartmentCommand, 
         {
             var parentId = DepartmentId.Of(command.Request.ParentId.GetValueOrDefault());
 
-            var getParentDepartmentResult = await _departmentRepository.GetActiveDepartmentByIdAsync(parentId, cancellationToken);
+            var getParentDepartmentResult = await _departmentRepository.GetByAsync(x => x.Id == parentId && x.IsActive == true, cancellationToken);
 
             if (getParentDepartmentResult.IsFailure)
                 return getParentDepartmentResult.Error.ToErrors();

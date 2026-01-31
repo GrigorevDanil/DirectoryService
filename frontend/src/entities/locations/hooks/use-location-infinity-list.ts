@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
-import { locationsApi } from "../api";
+import { GetLocationsRequest, locationsApi } from "../api";
 import {
+  LocationListId,
   useLocationActive,
   useLocationPageSize,
   useLocationSearch,
@@ -10,14 +11,22 @@ import {
 } from "../model/location-list-store";
 import { useDebounce } from "use-debounce";
 
-export const useLocationInfinityList = () => {
-  const search = useLocationSearch();
+interface UseLocationInfinityListProps {
+  stateId?: LocationListId;
+  request?: GetLocationsRequest;
+}
+
+export const useLocationInfinityList = ({
+  request,
+  stateId,
+}: UseLocationInfinityListProps) => {
+  const search = useLocationSearch(stateId);
   const [debouncedSearch] = useDebounce(search, 300);
-  const activeState = useLocationActive();
-  const sortBy = useLocationSortBy();
-  const sortDirection = useLocationSortDirection();
-  const pageSize = useLocationPageSize();
-  const selectedDepartments = useLocationSelectedDepartments();
+  const activeState = useLocationActive(stateId);
+  const sortBy = useLocationSortBy(stateId);
+  const sortDirection = useLocationSortDirection(stateId);
+  const pageSize = useLocationPageSize(stateId);
+  const selectedDepartments = useLocationSelectedDepartments(stateId);
 
   const isActive = activeState === "all" ? undefined : activeState === "active";
 
@@ -38,6 +47,7 @@ export const useLocationInfinityList = () => {
       sortDirection,
       pageSize,
       departmentIds: selectedDepartments.map((x) => x.id),
+      ...request,
     }),
   });
 
