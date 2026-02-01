@@ -1,5 +1,6 @@
 ﻿using System.Data.Common;
 using Dapper;
+using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Positions.Dtos;
 using SharedService.Core.Database;
 using SharedService.Core.Handlers;
@@ -20,7 +21,7 @@ public class GetDetailPositionHandler : IQueryHandler<GetDetailPositionQuery, Po
         CancellationToken cancellationToken = new CancellationToken())
     {
         string sql = $"""
-                     SELECT p.*, d.id, d.name, d.identifier, d.is_active, d.created_at, d.updated_at, d.deleted_at
+                     SELECT p.*, d.id, d.name, d.identifier, d.path, d.is_active, d.created_at, d.updated_at, d.deleted_at
                      FROM positions p
                      JOIN department_positions dp ON  dp.position_id = p.id
                      JOIN departments d ON  d.id = dp.department_id
@@ -29,20 +30,20 @@ public class GetDetailPositionHandler : IQueryHandler<GetDetailPositionQuery, Po
 
         DbConnection dbConnection = _dbConnectionFactory.GetDbConnection();
 
-        List<DepartmentPositionDto> departmentPositionDtos = [];
+        List<DepartmentShortDto> departmentDtos = [];
 
-        IEnumerable<PositionDetailDto> res = await dbConnection.QueryAsync<PositionDetailDto, DepartmentPositionDto, PositionDetailDto>(
+        IEnumerable<PositionDetailDto> res = await dbConnection.QueryAsync<PositionDetailDto, DepartmentShortDto, PositionDetailDto>(
             sql,
             splitOn: "id",
             map: (p, dp) =>
             {
-                departmentPositionDtos.Add(dp);
+                departmentDtos.Add(dp);
                 return p;
             });
 
         PositionDetailDto? positionDetailDto = res.FirstOrDefault();
 
-        positionDetailDto?.Departments.AddRange(departmentPositionDtos);
+        positionDetailDto?.Departments.AddRange(departmentDtos);
 
         return positionDetailDto;
     }

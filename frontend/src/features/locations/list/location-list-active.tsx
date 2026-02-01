@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  LocationListId,
   setLocationActive,
   useLocationActive,
 } from "@/entities/locations/model/location-list-store";
@@ -16,16 +17,20 @@ import {
 import * as SelectPrimitive from "@radix-ui/react-select";
 
 export const LocationListActive = ({
+  stateId,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
+  stateId?: LocationListId;
 }) => {
-  const activeState = useLocationActive();
+  const activeState = useLocationActive(stateId);
 
   return (
     <Select
       value={activeState}
-      onValueChange={(value) => setLocationActive(value as ActiveState)}
+      onValueChange={(value) =>
+        setLocationActive(value as ActiveState, stateId)
+      }
     >
       <SelectTrigger {...props}>
         <p>Состояние активности:</p>

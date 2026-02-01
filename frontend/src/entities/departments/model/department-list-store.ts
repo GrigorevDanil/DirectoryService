@@ -3,6 +3,9 @@ import { DEFAULT_PAGE_SIZE } from "@/shared/api/constants";
 import { SortDirection } from "@/shared/api/sort-direction";
 import { create } from "zustand";
 import { DepartmentSortBy } from "../api";
+import { createJSONStorage, persist } from "zustand/middleware";
+import { LocationDto, LocationId } from "@/entities/locations/types";
+import { DepartmentShortDto } from "../types";
 
 export type DepartmentListId = string;
 
@@ -15,12 +18,16 @@ interface DepartmentListState {
   sortBy: DepartmentSortBy;
   sortDirection: SortDirection;
   pageSize: number;
+  selectedLocations: LocationDto[];
+  parent: DepartmentShortDto | null;
 }
 
 type DepartmentListStates = Record<
   DepartmentListId,
   DepartmentListState | undefined
 >;
+
+const DEFAULT_STATE_ID = "__default__";
 
 const initialState: DepartmentListState = {
   search: "",
@@ -29,106 +36,172 @@ const initialState: DepartmentListState = {
   sortBy: "name",
   sortDirection: "asc",
   pageSize: DEFAULT_PAGE_SIZE,
+  selectedLocations: [],
+  parent: null,
 };
 
 const initialStates: DepartmentListStates = {};
 
+const resolveStateId = (stateId?: DepartmentListId) =>
+  stateId ?? DEFAULT_STATE_ID;
+
 const getOrCreate = (
   state: DepartmentListStates,
-  id: DepartmentListId,
+  stateId?: DepartmentListId,
 ): DepartmentListState => {
+  const id = resolveStateId(stateId);
+
   if (!state[id]) {
     state[id] = { ...initialState };
   }
-  return state[id]!;
+
+  return state[id];
 };
 
-const useDepartmentListStore = create<DepartmentListStates>()(() => ({
-  ...initialStates,
-}));
+const useDepartmentListStore = create<DepartmentListStates>()(
+  persist(
+    () => ({
+      ...initialStates,
+    }),
+    {
+      name: "department-list-storage",
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) =>
+        Object.fromEntries(
+          Object.entries(state).filter(([key]) => key === DEFAULT_STATE_ID),
+        ),
+    },
+  ),
+);
 
-export const useDepartmentSearch = (stateId: DepartmentListId) =>
+export const useDepartmentSearch = (stateId?: DepartmentListId) =>
   useDepartmentListStore((states) => getOrCreate(states, stateId).search);
 
 export const setDepartmentSearch = (
-  stateId: DepartmentListId,
   search: string,
+  stateId?: DepartmentListId,
 ) =>
   useDepartmentListStore.setState((states) => ({
-    [stateId]: {
+    [resolveStateId(stateId)]: {
       ...getOrCreate(states, stateId),
       search,
     },
   }));
 
-export const useDepartmentActive = (stateId: DepartmentListId) =>
+export const useDepartmentActive = (stateId?: DepartmentListId) =>
   useDepartmentListStore((states) => getOrCreate(states, stateId).isActive);
 
 export const setDepartmentActive = (
-  stateId: DepartmentListId,
   isActive: ActiveState,
+  stateId?: DepartmentListId,
 ) =>
   useDepartmentListStore.setState((states) => ({
-    [stateId]: {
+    [resolveStateId(stateId)]: {
       ...getOrCreate(states, stateId),
       isActive,
     },
   }));
 
-export const useDepartmentParent = (stateId: DepartmentListId) =>
+export const useDepartmentIsParent = (stateId?: DepartmentListId) =>
   useDepartmentListStore((states) => getOrCreate(states, stateId).isParent);
 
-export const setDepartmentParent = (
-  stateId: DepartmentListId,
+export const setDepartmentIsParent = (
   isParent: DepartmentParentState,
+  stateId?: DepartmentListId,
 ) =>
   useDepartmentListStore.setState((states) => ({
-    [stateId]: {
+    [resolveStateId(stateId)]: {
       ...getOrCreate(states, stateId),
       isParent,
     },
   }));
 
-export const useDepartmentSortBy = (stateId: DepartmentListId) =>
+export const useDepartmentSortBy = (stateId?: DepartmentListId) =>
   useDepartmentListStore((states) => getOrCreate(states, stateId).sortBy);
 
 export const setDepartmentSortBy = (
-  stateId: DepartmentListId,
   sortBy: DepartmentSortBy,
+  stateId?: DepartmentListId,
 ) =>
   useDepartmentListStore.setState((states) => ({
-    [stateId]: {
+    [resolveStateId(stateId)]: {
       ...getOrCreate(states, stateId),
       sortBy,
     },
   }));
 
-export const useDepartmentSortDirection = (stateId: DepartmentListId) =>
+export const useDepartmentSortDirection = (stateId?: DepartmentListId) =>
   useDepartmentListStore(
     (states) => getOrCreate(states, stateId).sortDirection,
   );
 
 export const setDepartmentSortDirection = (
-  stateId: DepartmentListId,
   sortDirection: SortDirection,
+  stateId?: DepartmentListId,
 ) =>
   useDepartmentListStore.setState((states) => ({
-    [stateId]: {
+    [resolveStateId(stateId)]: {
       ...getOrCreate(states, stateId),
       sortDirection,
     },
   }));
 
-export const useDepartmentPageSize = (stateId: DepartmentListId) =>
+export const useDepartmentPageSize = (stateId?: DepartmentListId) =>
   useDepartmentListStore((states) => getOrCreate(states, stateId).pageSize);
 
 export const setDepartmentPageSize = (
-  stateId: DepartmentListId,
   pageSize: number,
+  stateId?: DepartmentListId,
 ) =>
   useDepartmentListStore.setState((states) => ({
-    [stateId]: {
+    [resolveStateId(stateId)]: {
       ...getOrCreate(states, stateId),
       pageSize,
+    },
+  }));
+
+export const useDepartmentSelectedLocations = (stateId?: DepartmentListId) =>
+  useDepartmentListStore(
+    (states) => getOrCreate(states, stateId).selectedLocations,
+  );
+
+export const setDepartmentSelectedLocations = (
+  selectedLocations: LocationDto[],
+  stateId?: DepartmentListId,
+) =>
+  useDepartmentListStore.setState((states) => ({
+    [resolveStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      selectedLocations,
+    },
+  }));
+
+export const removeSelectedLocationFromDepartmentList = (
+  id: LocationId,
+  stateId?: DepartmentListId,
+) =>
+  useDepartmentListStore.setState((states) => {
+    const state = getOrCreate(states, stateId);
+    return {
+      [resolveStateId(stateId)]: {
+        ...state,
+        selectedLocations: state.selectedLocations.filter(
+          (loc) => loc.id !== id,
+        ),
+      },
+    };
+  });
+
+export const useDepartmentParent = (stateId?: DepartmentListId) =>
+  useDepartmentListStore((states) => getOrCreate(states, stateId).parent);
+
+export const setDepartmentParent = (
+  parent: DepartmentShortDto | null,
+  stateId?: DepartmentListId,
+) =>
+  useDepartmentListStore.setState((states) => ({
+    [resolveStateId(stateId)]: {
+      ...getOrCreate(states, stateId),
+      parent,
     },
   }));

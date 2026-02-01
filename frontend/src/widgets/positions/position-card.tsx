@@ -48,9 +48,11 @@ export const PositionCard = ({ position }: { position: PositionDto }) => {
           <span>
             Обновлено: {new Date(position.updatedAt).toLocaleDateString()}
           </span>
-          <span>
-            Удалено: {new Date(position.deletedAt).toLocaleDateString()}
-          </span>
+          {position.deletedAt && (
+            <span>
+              Удалено: {new Date(position.deletedAt).toLocaleDateString()}
+            </span>
+          )}
         </div>
         <PositionDeleteDialog id={position.id} name={position.name} />
       </CardFooter>

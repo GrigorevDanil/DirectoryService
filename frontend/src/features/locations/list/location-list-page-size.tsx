@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  LocationListId,
   setLocationPageSize,
   useLocationPageSize,
 } from "@/entities/locations/model/location-list-store";
@@ -15,16 +16,18 @@ import {
 import * as SelectPrimitive from "@radix-ui/react-select";
 
 export const LocationListPageSize = ({
+  stateId,
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
+  stateId?: LocationListId;
 }) => {
-  const pageSize = useLocationPageSize();
+  const pageSize = useLocationPageSize(stateId);
 
   return (
     <Select
       value={pageSize.toString()}
-      onValueChange={(value) => setLocationPageSize(parseInt(value))}
+      onValueChange={(value) => setLocationPageSize(parseInt(value), stateId)}
     >
       <SelectTrigger {...props}>
         <p>Количество элементов:</p>

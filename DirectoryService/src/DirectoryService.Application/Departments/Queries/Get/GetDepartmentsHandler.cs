@@ -43,7 +43,7 @@ public class GetDepartmentsHandler : IQueryHandler<GetDepartmentsQuery, Paginati
             conditionals.Add(" CONCAT(d.name, d.identifier) ILIKE '%' || @Search || '%' ");
         }
 
-        if (query.Request.IsActive != null)
+        if (query.Request.IsActive is not null)
         {
             parameters.Add("IsActive", query.Request.IsActive, DbType.Boolean);
             conditionals.Add(" d.is_active = @IsActive ");
@@ -54,6 +54,12 @@ public class GetDepartmentsHandler : IQueryHandler<GetDepartmentsQuery, Paginati
             conditionals.Add(
                 " (SELECT COUNT(*) FROM departments WHERE parent_id = d.id) " +
                 (query.Request.IsParent.Value ? " > 0 " : " = 0 "));
+        }
+
+        if (query.Request.ParentId is not null)
+        {
+            parameters.Add("ParentId", query.Request.ParentId, DbType.Guid);
+            conditionals.Add(" d.parent_id = @ParentId ");
         }
 
         parameters.Add("PageSize", query.Request.PageSize, DbType.Int32);

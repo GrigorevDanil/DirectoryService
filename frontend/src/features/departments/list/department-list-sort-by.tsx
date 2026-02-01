@@ -21,7 +21,7 @@ export const DepartmentListSortBy = ({
   ...props
 }: React.ComponentProps<typeof SelectPrimitive.Trigger> & {
   size?: "sm" | "default";
-  stateId: DepartmentListId;
+  stateId?: DepartmentListId;
 }) => {
   const sortBy = useDepartmentSortBy(stateId);
 
@@ -29,7 +29,7 @@ export const DepartmentListSortBy = ({
     <Select
       value={sortBy}
       onValueChange={(value) =>
-        setDepartmentSortBy(stateId, value as DepartmentSortBy)
+        setDepartmentSortBy(value as DepartmentSortBy, stateId)
       }
     >
       <SelectTrigger {...props}>

@@ -55,7 +55,7 @@ public class MoveDepartmentHandler : ICommandHandler<MoveDepartmentCommand, Guid
 
         using var transactionScope = beginTransactionResult.Value;
 
-        var getDepartmentResult = await _departmentRepository.GetActiveDepartmentByIdAsyncWithLock(departmentId, cancellationToken);
+        var getDepartmentResult = await _departmentRepository.GetWithLockByAsync(x => x.Id == departmentId && x.IsActive == true, cancellationToken);
 
         if (getDepartmentResult.IsFailure)
         {
@@ -86,7 +86,7 @@ public class MoveDepartmentHandler : ICommandHandler<MoveDepartmentCommand, Guid
         {
             var parentId = DepartmentId.Of(command.Request.ParentId.GetValueOrDefault());
 
-            var getParentResult = await _departmentRepository.GetActiveDepartmentByIdAsyncWithLock(parentId, cancellationToken);
+            var getParentResult = await _departmentRepository.GetWithLockByAsync(x => x.Id == parentId && x.IsActive == true, cancellationToken);
 
             if (getParentResult.IsFailure)
                 return getParentResult.Error.ToErrors();
