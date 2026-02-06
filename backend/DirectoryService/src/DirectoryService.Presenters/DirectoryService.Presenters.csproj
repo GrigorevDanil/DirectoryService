@@ -1,0 +1,19 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+    <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+      <DocumentationFile></DocumentationFile>
+      <DebugSymbols>false</DebugSymbols>
+    </PropertyGroup>
+  
+    <ItemGroup>
+      <ProjectReference Include="..\DirectoryService.Application\DirectoryService.Application.csproj" />
+      <ProjectReference Include="..\DirectoryService.Domain\DirectoryService.Domain.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Asp.Versioning.Mvc" />
+      <PackageReference Include="Microsoft.AspNetCore.Mvc.Core" />
+      <PackageReference Include="Microsoft.Extensions.Caching.Memory" />
+      <PackageReference Include="SharedService.Framework" />
+    </ItemGroup>
+
+</Project>
