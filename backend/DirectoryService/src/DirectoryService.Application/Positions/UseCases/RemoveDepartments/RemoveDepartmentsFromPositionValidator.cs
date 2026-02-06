@@ -2,7 +2,7 @@
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
-namespace DirectoryService.Application.Positions.UseCases.RemoveDepartment;
+namespace DirectoryService.Application.Positions.UseCases.RemoveDepartments;
 
 public class RemoveDepartmentsFromPositionValidator : AbstractValidator<RemoveDepartmentsFromPositionCommand>
 {

@@ -1,14 +1,11 @@
-﻿using Asp.Versioning;
-using DirectoryService.Application;
+﻿using DirectoryService.Application;
 using DirectoryService.Infrastructure;
-using Microsoft.AspNetCore.HttpOverrides;
-using Microsoft.Extensions.Primitives;
-using Microsoft.OpenApi;
 using Serilog;
 using SharedService.Framework.Endpoints;
 using SharedService.Framework.Logging;
 using SharedService.Framework.Middlewares;
 using SharedService.Framework.Swagger;
+using SharedService.Framework.Versioning;
 
 namespace DirectoryService.API;
 
@@ -16,23 +13,7 @@ public static class Registration
 {
     public static IServiceCollection AddConfiguration(this IServiceCollection services, IConfiguration configuration)
     {
-        services.AddApiVersioning(options =>
-            {
-                options.DefaultApiVersion = new ApiVersion(1);
-                options.AssumeDefaultVersionWhenUnspecified = true;
-
-                options.ApiVersionReader = ApiVersionReader.Combine(
-                    new UrlSegmentApiVersionReader(),
-                    new QueryStringApiVersionReader("api-version"),
-                    new HeaderApiVersionReader("x-api-version"));
-
-                options.ReportApiVersions = true;
-            })
-            .AddApiExplorer(options =>
-            {
-                options.GroupNameFormat = "'v'VVV";
-                options.SubstituteApiVersionInUrl = true;
-            });
+        services.AddVersioning();
 
         services.AddCors();
 
@@ -44,8 +25,9 @@ public static class Registration
 
         services
             .AddSerilogLogging(configuration, "DirectoryService")
-            .AddCustomSwagger(configuration)
             .AddEndpoints(typeof(Registration).Assembly);
+
+        services.AddCustomOpenApi(configuration);
 
         return services;
     }
@@ -54,7 +36,7 @@ public static class Registration
     {
         app.UseCors(builder =>
         {
-            builder.WithOrigins("http://localhost:3000")
+            builder.WithOrigins("http://localhost:3000", "http://localhost")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
@@ -64,9 +46,9 @@ public static class Registration
         app.UseRequestCorrelationId();
         app.UseSerilogRequestLogging();
 
-        app.UseSwagger();
+        app.MapOpenApi();
 
-        app.UseSwaggerUI();
+        app.UseCustomSwaggerUI(app.Configuration);
 
         app.MapControllers();
 

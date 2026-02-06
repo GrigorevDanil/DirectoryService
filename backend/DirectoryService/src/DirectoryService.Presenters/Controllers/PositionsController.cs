@@ -2,10 +2,10 @@
 using Asp.Versioning;
 using DirectoryService.Application.Positions.Queries.Get;
 using DirectoryService.Application.Positions.Queries.GetDetail;
-using DirectoryService.Application.Positions.UseCases.AddDepartment;
+using DirectoryService.Application.Positions.UseCases.AddDepartments;
 using DirectoryService.Application.Positions.UseCases.Create;
 using DirectoryService.Application.Positions.UseCases.Delete;
-using DirectoryService.Application.Positions.UseCases.RemoveDepartment;
+using DirectoryService.Application.Positions.UseCases.RemoveDepartments;
 using DirectoryService.Application.Positions.UseCases.Update;
 using DirectoryService.Contracts.Positions.Dtos;
 using DirectoryService.Contracts.Positions.Requests;

@@ -2,7 +2,7 @@
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
-namespace DirectoryService.Application.Positions.UseCases.AddDepartment;
+namespace DirectoryService.Application.Positions.UseCases.AddDepartments;
 
 public class AddDepartmentsToPositionValidator : AbstractValidator<AddDepartmentsToPositionCommand>
 {

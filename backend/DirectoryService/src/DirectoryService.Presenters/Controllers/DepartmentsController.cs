@@ -11,7 +11,6 @@ using DirectoryService.Application.Departments.UseCases.Delete;
 using DirectoryService.Application.Departments.UseCases.Move;
 using DirectoryService.Application.Departments.UseCases.SetLocations;
 using DirectoryService.Application.Departments.UseCases.Update;
-using DirectoryService.Application.Positions.Queries.GetDetail;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Departments.Requests;
 using Microsoft.AspNetCore.Http;
@@ -22,8 +21,9 @@ using SharedService.SharedKernel;
 namespace DirectoryService.Presenters.Controllers;
 
 [ApiController]
-[Route("api/v{version:apiVersion}/departments")]
 [ApiVersion("1")]
+[Route("api/v{version:apiVersion}/departments")]
+
 [Tags("Department - Работа с подразделениями")]
 public class DepartmentsController : ControllerBase
 {

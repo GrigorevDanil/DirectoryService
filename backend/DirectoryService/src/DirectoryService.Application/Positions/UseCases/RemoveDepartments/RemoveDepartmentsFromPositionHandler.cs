@@ -1,6 +1,5 @@
 ﻿using CSharpFunctionalExtensions;
 using DirectoryService.Application.Departments;
-using DirectoryService.Domain.Departments;
 using DirectoryService.Domain.Departments.ValueObjects;
 using DirectoryService.Domain.Positions;
 using DirectoryService.Domain.Positions.ValueObjects;
@@ -12,7 +11,7 @@ using SharedService.Core.Handlers;
 using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 
-namespace DirectoryService.Application.Positions.UseCases.RemoveDepartment;
+namespace DirectoryService.Application.Positions.UseCases.RemoveDepartments;
 
 public class RemoveDepartmentsFromPositionHandler : ICommandHandler<RemoveDepartmentsFromPositionCommand, Guid>
 {

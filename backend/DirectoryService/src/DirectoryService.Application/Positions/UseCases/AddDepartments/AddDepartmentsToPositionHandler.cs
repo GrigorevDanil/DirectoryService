@@ -13,7 +13,7 @@ using SharedService.Core.Validation;
 using SharedService.SharedKernel;
 using ValidationResult = FluentValidation.Results.ValidationResult;
 
-namespace DirectoryService.Application.Positions.UseCases.AddDepartment;
+namespace DirectoryService.Application.Positions.UseCases.AddDepartments;
 
 public class AddDepartmentsToPositionHandler : ICommandHandler<AddDepartmentsToPositionCommand, Guid>
 {
