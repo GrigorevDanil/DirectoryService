@@ -8,6 +8,7 @@
         <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" />
         <PackageReference Include="Serilog" />
+        <PackageReference Include="SharedService.Framework" />
         <PackageReference Include="Swashbuckle.AspNetCore.SwaggerUI" />
     </ItemGroup>
 

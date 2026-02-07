@@ -48,7 +48,7 @@ public static class Registration
 
         app.MapOpenApi();
 
-        app.UseCustomSwaggerUI(app.Configuration);
+        app.UseCustomSwaggerUI();
 
         app.MapControllers();
 

@@ -1,18 +1,55 @@
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+using System.Globalization;
+using Gateway.Api;
+using Microsoft.Extensions.Options;
+using Serilog;
+using SharedService.Framework.Logging;
 
-builder.Services.AddReverseProxy()
-    .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console(formatProvider: CultureInfo.InvariantCulture)
+    .CreateLogger();
 
-WebApplication app = builder.Build();
-
-app.UseSwaggerUI(options =>
+try
 {
-    options.SwaggerEndpoint("http://localhost:5048/openapi/v1.json", "Directory Service API V1");
-    options.SwaggerEndpoint("http://localhost:5048/openapi/v2.json", "Directory Service API V2");
+    Log.Information("Starting gateway");
 
-    options.SwaggerEndpoint("http://localhost:5201/openapi/v1.json", "File Service API V1");
-});
+    WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
-app.MapReverseProxy();
+    string envName = builder.Environment.EnvironmentName;
 
-app.Run();
+    builder.Configuration.AddJsonFile($"appsettings.{envName}.json", true, true);
+
+    builder.Configuration.AddEnvironmentVariables();
+
+    builder.Services.AddSerilogLogging(builder.Configuration, "Gateway");
+
+    builder.Services.AddReverseProxy()
+        .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
+
+    builder.Services.Configure<SwaggerConfig>(
+        builder.Configuration.GetSection("SwaggerConfig"));
+
+    WebApplication app = builder.Build();
+
+    app.UseSwaggerUI(options =>
+    {
+        SwaggerConfig config = app.Services.GetRequiredService<IOptions<SwaggerConfig>>().Value;
+
+        foreach (SwaggerEndpoint endpoint in config.Endpoints)
+        {
+            options.SwaggerEndpoint(endpoint.Url, endpoint.Name);
+        }
+    });
+
+    app.MapReverseProxy();
+
+    await app.RunAsync();
+}
+catch (Exception ex)
+{
+    Log.Fatal(ex, "Application terminated unexpectedly");
+}
+finally
+{
+    await Log.CloseAndFlushAsync();
+}
