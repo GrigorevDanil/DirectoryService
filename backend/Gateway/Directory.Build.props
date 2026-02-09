@@ -17,7 +17,7 @@
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
     <EnableNETAnalyzers>true</EnableNETAnalyzers>
     <EnableStyleCopAnalyzers>true</EnableStyleCopAnalyzers>
-    <WarningsNotAsErrors>NU1510</WarningsNotAsErrors>
+    <NoWarn>NU1510</NoWarn>
   </PropertyGroup>
 
 </Project>

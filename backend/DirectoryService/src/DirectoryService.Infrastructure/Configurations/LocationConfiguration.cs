@@ -42,32 +42,32 @@ public class LocationConfiguration : IEntityTypeConfiguration<Location>
             ab.ToJson("address");
 
             ab.Property(a => a.Country)
-                .HasColumnName("country")
+                .HasJsonPropertyName("country")
                 .HasMaxLength(Address.MAX_LENGTH_COUNTRY)
                 .IsRequired();
 
             ab.Property(a => a.PostalCode)
-                .HasColumnName("postal_code")
+                .HasJsonPropertyName("postal_code")
                 .HasMaxLength(Address.LENGTH_POSTAL_CODE)
                 .IsRequired();
 
             ab.Property(a => a.Region)
-                .HasColumnName("region")
+                .HasJsonPropertyName("region")
                 .HasMaxLength(Address.MAX_LENGTH_REGION)
                 .IsRequired();
 
             ab.Property(a => a.City)
-                .HasColumnName("city")
+                .HasJsonPropertyName("city")
                 .HasMaxLength(Address.MAX_LENGTH_CITY)
                 .IsRequired();
 
             ab.Property(a => a.Street)
-                .HasColumnName("street")
+                .HasJsonPropertyName("street")
                 .HasMaxLength(Address.MAX_LENGTH_STREET)
                 .IsRequired();
 
             ab.Property(a => a.HouseNumber)
-                .HasColumnName("house_number")
+                .HasJsonPropertyName("house_number")
                 .HasMaxLength(Address.MAX_LENGTH_HOUSE_NUMBER)
                 .IsRequired();
         });

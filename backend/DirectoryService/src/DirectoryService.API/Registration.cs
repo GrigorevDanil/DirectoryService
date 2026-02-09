@@ -36,7 +36,7 @@ public static class Registration
     {
         app.UseCors(builder =>
         {
-            builder.WithOrigins("http://localhost:3000", "http://localhost")
+            builder.WithOrigins("http://localhost:3000", "http://localhost", "http://gateway")
                 .AllowCredentials()
                 .AllowAnyHeader()
                 .AllowAnyMethod();
