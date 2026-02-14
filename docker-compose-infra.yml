@@ -1,0 +1,58 @@
+services:
+  gateway:
+    container_name: gateway
+    build:
+      context: ./backend
+      dockerfile: Gateway/Dockerfile
+    ports:
+      - "80:80"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Docker
+      - ASPNETCORE_URLS=http://+:80
+    restart: always
+    networks:
+      - directory-network
+  
+  redis:
+    container_name: redis
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    restart: always
+    networks:
+      - directory-network
+    
+  seq:
+    container_name: seq
+    image: datalust/seq
+    environment:
+      ACCEPT_EULA: "Y"
+      SEQ_FIRSTRUN_NOAUTHENTICATION: "true"
+    ports:
+      - "5341:5341"
+      - "8081:80"
+    networks:
+      - directory-network
+    
+  minio:
+    container_name: minio
+    image: minio/minio:latest
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    environment:
+      MINIO_ROOT_USER: admin
+      MINIO_ROOT_PASSWORD: adminadmin
+    command: server --console-address ":9001" /data
+    restart: always
+    networks:
+      - directory-network
+
+networks:
+  directory-network:
+    external: true
+
+volumes:
+  redis-data:

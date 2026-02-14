@@ -17,8 +17,9 @@ import {
   setLocationSelectedDepartments,
   useLocationSelectedDepartments,
 } from "@/entities/locations/model/location-list-store";
-import { DepartmentSelected } from "@/widgets/departments/select/department-selected";
 import { DepartmentSelect } from "@/widgets/departments/select/department-select";
+import { DepartmentSelected } from "@/widgets/departments/select/department-selected";
+import { DepartmentId } from "@/entities/departments/types";
 
 export function LocationListSelectDepartments({
   stateId,
@@ -29,13 +30,16 @@ export function LocationListSelectDepartments({
 
   const [open, setOpen] = useState(false);
 
+  const handleRemove = (departmentId: DepartmentId) => {
+    removeSelectedDepartmentFromLocationList(departmentId, stateId);
+  };
+
   return (
     <>
       <DepartmentSelected
         selectedDepartments={selectedDepartments}
-        onRemove={(id) => removeSelectedDepartmentFromLocationList(id, stateId)}
+        onRemove={handleRemove}
       />
-
       <Dialog open={open} onOpenChange={(flag) => setOpen(flag)}>
         <DialogTrigger asChild>
           <Button>Выбрать подразделения</Button>
@@ -52,7 +56,6 @@ export function LocationListSelectDepartments({
               setLocationSelectedDepartments(selectedDepartments, stateId)
             }
             stateId="multi-select-locations"
-            multiselect={false}
           />
 
           <DialogFooter>

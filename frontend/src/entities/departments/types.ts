@@ -17,6 +17,7 @@ export interface DepartmentShortDto {
 
 export interface DepartmentDto {
   id: DepartmentId;
+  videoUrl: string | null;
   name: string;
   identifier: string;
   parentId: DepartmentId;

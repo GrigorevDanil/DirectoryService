@@ -5,7 +5,6 @@ import { Error } from "../error";
 import { cn } from "@/shared/lib/utils";
 import { LocationCard } from "./location-card";
 import { useLocationInfinityList } from "@/entities/locations/hooks/use-location-infinity-list";
-import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
 
 export const LocationInfinityList = ({
   className,
@@ -14,19 +13,12 @@ export const LocationInfinityList = ({
   const {
     isPending,
     isFetching,
-    isFetchingNextPage,
     locations,
     error,
     refetch,
-    fetchNextPage,
-    hasNextPage,
-  } = useLocationInfinityList({});
-
-  const intersectionRef = useIntersectionObserver({
-    hasNextPage,
-    fetchNextPage,
+    cursorRef,
     isFetchingNextPage,
-  });
+  } = useLocationInfinityList({});
 
   if (isPending && locations.length === 0) {
     return <Spinner />;
@@ -53,7 +45,7 @@ export const LocationInfinityList = ({
       </div>
 
       <div
-        ref={intersectionRef}
+        ref={cursorRef}
         className="col-span-full flex justify-center py-8"
       >
         {isFetchingNextPage && <Spinner />}

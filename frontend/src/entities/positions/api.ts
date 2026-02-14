@@ -1,4 +1,4 @@
-import { httpClient } from "@/shared/api/http-client";
+import { API_V1, httpClient } from "@/shared/api/http-client";
 import {
   Envelope,
   envelopeInfinityQueryOptions,
@@ -50,10 +50,13 @@ export const positionsApi = {
         request.sortDirection,
         request.pageSize,
       ],
-      queryFn: async ({ pageParam }) => {
+      queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<PositionDto>>
-        >("/positions", { params: { ...request, page: pageParam } });
+        >(API_V1 + "/positions", {
+          params: { ...request, page: pageParam },
+          signal,
+        });
 
         return response.data;
       },
@@ -62,9 +65,10 @@ export const positionsApi = {
   getPositionQueryOptions: (id: PositionId) =>
     queryOptions({
       queryKey: [positionsApi.baseKey, id],
-      queryFn: async () => {
+      queryFn: async ({ signal }) => {
         const response = await httpClient.get<Envelope<PositionDetailDto>>(
-          "/positions/" + id,
+          API_V1 + "/positions/" + id,
+          { signal },
         );
 
         return response.data;
@@ -74,7 +78,7 @@ export const positionsApi = {
     request: PositionCreateRequest,
   ): Promise<Envelope<string>> => {
     const response = await httpClient.post<Envelope<string>>(
-      "/positions",
+      API_V1 + "/positions",
       request,
     );
 
@@ -84,7 +88,7 @@ export const positionsApi = {
     request: PositionUpdateRequest & { id: PositionId },
   ): Promise<Envelope<string>> => {
     const response = await httpClient.put<Envelope<string>>(
-      "/positions/" + request.id,
+      API_V1 + "/positions/" + request.id,
       request,
     );
 
@@ -92,7 +96,7 @@ export const positionsApi = {
   },
   positionDelete: async (id: PositionId): Promise<Envelope<string>> => {
     const response = await httpClient.delete<Envelope<string>>(
-      "/positions/" + id,
+      API_V1 + "/positions/" + id,
     );
 
     return response.data;
@@ -101,7 +105,7 @@ export const positionsApi = {
     request: AddDepartmentToPositionRequest & { id: PositionId },
   ): Promise<Envelope<string>> => {
     const response = await httpClient.post<Envelope<string>>(
-      "/positions/" + request.id + "/department",
+      API_V1 + "/positions/" + request.id + "/department",
       request,
     );
 
@@ -111,7 +115,7 @@ export const positionsApi = {
     request: RemoveDepartmentFromPositionRequest & { id: PositionId },
   ): Promise<Envelope<string>> => {
     const response = await httpClient.delete<Envelope<string>>(
-      "/positions/" + request.id + "/department",
+      API_V1 + "/positions/" + request.id + "/department",
       { data: request },
     );
 

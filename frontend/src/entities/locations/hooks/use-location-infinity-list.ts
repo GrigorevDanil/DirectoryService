@@ -10,6 +10,7 @@ import {
   useLocationSortDirection,
 } from "../model/location-list-store";
 import { useDebounce } from "use-debounce";
+import { useCursorRef } from "@/shared/hooks/use-cursor-ref";
 
 interface UseLocationInfinityListProps {
   stateId?: LocationListId;
@@ -26,7 +27,7 @@ export const useLocationInfinityList = ({
   const sortBy = useLocationSortBy(stateId);
   const sortDirection = useLocationSortDirection(stateId);
   const pageSize = useLocationPageSize(stateId);
-  const selectedDepartments = useLocationSelectedDepartments(stateId);
+  const departments = useLocationSelectedDepartments(stateId);
 
   const isActive = activeState === "all" ? undefined : activeState === "active";
 
@@ -46,9 +47,15 @@ export const useLocationInfinityList = ({
       sortBy,
       sortDirection,
       pageSize,
-      departmentIds: selectedDepartments.map((x) => x.id),
+      departmentIds: departments.map((dep) => dep.id),
       ...request,
     }),
+  });
+
+  const cursorRef = useCursorRef({
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
   });
 
   return {
@@ -56,9 +63,8 @@ export const useLocationInfinityList = ({
     isPending,
     error,
     refetch,
-    fetchNextPage,
-    hasNextPage,
-    isFetching,
     isFetchingNextPage,
+    isFetching,
+    cursorRef,
   };
 };

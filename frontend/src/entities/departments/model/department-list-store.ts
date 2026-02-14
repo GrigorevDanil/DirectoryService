@@ -1,11 +1,11 @@
 import { ActiveState } from "@/shared/api/active-state";
-import { DEFAULT_PAGE_SIZE } from "@/shared/api/constants";
 import { SortDirection } from "@/shared/api/sort-direction";
 import { create } from "zustand";
 import { DepartmentSortBy } from "../api";
 import { createJSONStorage, persist } from "zustand/middleware";
 import { LocationDto, LocationId } from "@/entities/locations/types";
 import { DepartmentShortDto } from "../types";
+import { DEFAULT_PAGE_SIZE } from "@/shared/api/pagination-request";
 
 export type DepartmentListId = string;
 

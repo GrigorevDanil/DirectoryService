@@ -7,7 +7,6 @@ import {
 } from "@/entities/departments/model/department-tree-store";
 import { DepartmentId } from "@/entities/departments/types";
 import { TreeProvider, TreeView } from "@/shared/components/ui/tree";
-import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
 import { DepartmentNode } from "./department-node";
 import { useDepartmentChildren } from "@/entities/departments/hooks/use-department-children";
 import { Spinner } from "@/shared/components/ui/spinner";
@@ -24,19 +23,12 @@ export const DepartmentTreeRoots = () => {
   const {
     departments,
     hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
     isPending,
     error,
     isFetching,
     refetch,
+    cursorRef,
   } = useDepartmentRoots();
-
-  const intersectionRef = useIntersectionObserver({
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  });
 
   if (isPending && departments.length === 0) {
     return (
@@ -82,7 +74,7 @@ export const DepartmentTreeRoots = () => {
           );
         })}
 
-        {hasNextPage && <div ref={intersectionRef} className="h-4" />}
+        {hasNextPage && <div ref={cursorRef} className="h-4" />}
       </TreeView>
     </TreeProvider>
   );
@@ -98,19 +90,12 @@ export const DepartmentTreeChildren = ({
   const {
     departments,
     hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
+    cursorRef,
     isPending,
     error,
     isFetching,
     refetch,
   } = useDepartmentChildren(parentId, { enabled: true });
-
-  const intersectionRef = useIntersectionObserver({
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  });
 
   if (isPending && departments.length === 0) {
     return (
@@ -156,7 +141,7 @@ export const DepartmentTreeChildren = ({
           );
         })}
 
-        {hasNextPage && <div ref={intersectionRef} className="h-4" />}
+        {hasNextPage && <div ref={cursorRef} className="h-4" />}
       </TreeView>
     </TreeProvider>
   );

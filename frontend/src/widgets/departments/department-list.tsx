@@ -2,7 +2,6 @@
 
 import { useDepartmentList } from "@/entities/departments/hooks/use-department-list";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
 import { Error } from "../error";
 import { DepartmentShortCard } from "./department-short-card";
 import { GetDepartmentsRequest } from "@/entities/departments/api";
@@ -17,19 +16,12 @@ export const DepartmentList = ({ request, stateId }: DepartmentListProps) => {
   const {
     departments,
     error,
-    fetchNextPage,
-    hasNextPage,
+    cursorRef,
     isFetching,
     isFetchingNextPage,
     isPending,
     refetch,
   } = useDepartmentList({ request, stateId });
-
-  const intersectionRef = useIntersectionObserver({
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  });
 
   if (isPending && departments.length === 0) {
     return (
@@ -56,7 +48,7 @@ export const DepartmentList = ({ request, stateId }: DepartmentListProps) => {
       {departments.map((department) => (
         <DepartmentShortCard key={department.id} department={department} />
       ))}
-      <div ref={intersectionRef} className="flex justify-center">
+      <div ref={cursorRef} className="flex justify-center">
         {isFetchingNextPage && <Spinner />}
       </div>
     </div>

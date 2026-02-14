@@ -1,6 +1,6 @@
 import { InfiniteData } from "@tanstack/react-query";
 import { ApiError } from "./errors";
-import { DEFAULT_PAGE_SIZE } from "./constants";
+import { DEFAULT_PAGE_SIZE } from "./pagination-request";
 
 export interface PaginationEnvelope<TResult = unknown> {
   items: TResult[];

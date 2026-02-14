@@ -5,7 +5,6 @@ import { Error } from "../error";
 import { cn } from "@/shared/lib/utils";
 import { usePositionList } from "@/entities/positions/hooks/use-position-list";
 import { PositionCard } from "./position-card";
-import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
 import { PositionListId } from "@/entities/positions/model/position-list-store";
 import { GetPositionsRequest } from "@/entities/positions/api";
 
@@ -25,15 +24,8 @@ export const PositionList = ({
     positions,
     error,
     refetch,
-    fetchNextPage,
-    hasNextPage,
+    cursorRef,
   } = usePositionList({ stateId, request });
-
-  const intersectionRef = useIntersectionObserver({
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  });
 
   if (isPending && positions.length === 0) {
     return <Spinner />;
@@ -59,10 +51,7 @@ export const PositionList = ({
         ))}
       </div>
 
-      <div
-        ref={intersectionRef}
-        className="col-span-full flex justify-center py-8"
-      >
+      <div ref={cursorRef} className="col-span-full flex justify-center py-8">
         {isFetchingNextPage && <Spinner />}
       </div>
     </div>

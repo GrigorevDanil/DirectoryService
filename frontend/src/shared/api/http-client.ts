@@ -2,8 +2,10 @@ import axios, { isAxiosError } from "axios";
 import { Envelope } from "./envelops";
 import { EnvelopeError } from "./errors";
 
+export const API_V1 = "/v1";
+
 export const httpClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_DIRECTORY_SERVICE_URL,
+  baseURL: process.env.NEXT_PUBLIC_API_URL,
   headers: {
     "Content-Type": "application/json",
   },

@@ -2,7 +2,7 @@
 
 import { LocationDto } from "@/entities/locations/types";
 import { LocationDeleteDialog } from "@/features/locations/location-delete-dialog";
-import { LocationUpdateDialog } from "@/features/locations/location-update-dialog";
+import { LocationUpdateDialog } from "@/widgets/locations/location-update-dialog";
 import { Badge } from "@/shared/components/ui/badge";
 import {
   Card,
