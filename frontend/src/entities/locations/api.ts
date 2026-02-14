@@ -1,4 +1,4 @@
-import { httpClient } from "@/shared/api/http-client";
+import { API_V1, httpClient } from "@/shared/api/http-client";
 import { AddressDto, LocationDto } from "./types";
 import {
   Envelope,
@@ -54,7 +54,10 @@ export const locationsApi = {
       queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<LocationDto>>
-        >("/locations", { params: { ...request, page: pageParam }, signal });
+        >(API_V1 + "/locations", {
+          params: { ...request, page: pageParam },
+          signal,
+        });
 
         return response.data;
       },
@@ -75,7 +78,7 @@ export const locationsApi = {
       queryFn: async ({ signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<LocationDto>>
-        >("/locations", { params: request, signal });
+        >(API_V1 + "/locations", { params: request, signal });
 
         return response.data;
       },
@@ -84,7 +87,7 @@ export const locationsApi = {
     request: LocationCreateRequest,
   ): Promise<Envelope<string>> => {
     const response = await httpClient.post<Envelope<string>>(
-      "/locations",
+      API_V1 + "/locations",
       request,
     );
 
@@ -94,7 +97,7 @@ export const locationsApi = {
     request: LocationUpdateRequest & { id: string },
   ): Promise<Envelope<string>> => {
     const response = await httpClient.put<Envelope<string>>(
-      "/locations/" + request.id,
+      API_V1 + "/locations/" + request.id,
       request,
     );
 
@@ -102,7 +105,7 @@ export const locationsApi = {
   },
   locationDelete: async (id: string): Promise<Envelope<string>> => {
     const response = await httpClient.delete<Envelope<string>>(
-      "/locations/" + id,
+      API_V1 + "/locations/" + id,
     );
 
     return response.data;

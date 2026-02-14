@@ -10,6 +10,7 @@ import {
   usePositionSortDirection,
 } from "../model/position-list-store";
 import { GetPositionsRequest, positionsApi } from "../api";
+import { useCursorRef } from "@/shared/hooks/use-cursor-ref";
 
 export const usePositionList = ({
   stateId,
@@ -49,14 +50,19 @@ export const usePositionList = ({
     }),
   });
 
+  const cursorRef = useCursorRef({
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  });
+
   return {
     positions: data?.result?.items || [],
     isPending,
     error,
     refetch,
-    fetchNextPage,
-    hasNextPage,
     isFetching,
     isFetchingNextPage,
+    cursorRef,
   };
 };

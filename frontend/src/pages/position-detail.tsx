@@ -13,7 +13,7 @@ import {
 } from "@/shared/components/ui/card";
 import { ArrowLeft, Calendar, FileText, Building } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { PositionUpdateDialog } from "@/features/positions/position-update-dialog";
+import { PositionUpdateDialog } from "@/widgets/positions/position-update-dialog";
 import { PositionUpdateDepartments } from "@/features/positions/position-update-departments";
 import { PositionDeleteDialog } from "@/features/positions/position-delete-dialog";
 import { CardInfo, CardInfoItemProps } from "@/widgets/card-info";
@@ -108,7 +108,7 @@ export const PositionDetailPage = ({ id }: { id: PositionId }) => {
             <CardContent>
               <PositionUpdateDepartments
                 positionId={position.id}
-                departments={position.departments}
+                departmentIds={position.departments.map((x) => x.id)}
               />
             </CardContent>
           </Card>

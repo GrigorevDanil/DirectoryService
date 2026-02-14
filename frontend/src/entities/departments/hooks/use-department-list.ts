@@ -12,6 +12,7 @@ import {
   useDepartmentParent,
 } from "../model/department-list-store";
 import { departmentsApi, GetDepartmentsRequest } from "../api";
+import { useCursorRef } from "@/shared/hooks/use-cursor-ref";
 
 interface UseDepartmentListProps {
   stateId?: DepartmentListId;
@@ -59,6 +60,12 @@ export const useDepartmentList = ({
     }),
   });
 
+  const cursorRef = useCursorRef({
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  });
+
   return {
     departments: data?.result?.items || [],
     isPending,
@@ -68,5 +75,6 @@ export const useDepartmentList = ({
     hasNextPage,
     isFetching,
     isFetchingNextPage,
+    cursorRef,
   };
 };

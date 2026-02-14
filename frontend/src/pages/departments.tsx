@@ -1,4 +1,4 @@
-import { DepartmentCreateDialog } from "@/features/departments/department-create-dialog";
+import { DepartmentCreateDialog } from "@/widgets/departments/department-create-dialog";
 import { DepartmentViewVariant } from "@/features/departments/view/department-view-variant";
 import { ListLayout } from "@/shared/components/ui/list-layout";
 import { DepartmentView } from "@/widgets/departments/view/department-view";

@@ -9,6 +9,7 @@
       <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis"/>
       <PackageReference Include="Microsoft.Extensions.Hosting" />
       <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
+      <PackageReference Include="sharedservice.core" />
     </ItemGroup>
 
 </Project>

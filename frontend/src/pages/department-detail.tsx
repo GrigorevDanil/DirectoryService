@@ -29,8 +29,8 @@ import { DepartmentView } from "@/widgets/departments/view/department-view";
 import { DepartmentViewVariant } from "@/features/departments/view/department-view-variant";
 import { DepartmentDeleteDialog } from "@/features/departments/department-delete-dialog";
 import { CardInfo, CardInfoItemProps } from "@/widgets/card-info";
-import { DepartmentUpdateDialog } from "@/features/departments/department-update-dialog";
-import { DepartmentMoveDialog } from "@/features/departments/department-move-dialog";
+import { DepartmentUpdateDialog } from "@/widgets/departments/department-update-dialog";
+import { DepartmentMoveDialog } from "@/widgets/departments/department-move-dialog";
 import { DepartmentUpdateLocations } from "@/features/departments/department-update-locations";
 import { PositionList } from "@/widgets/positions/position-list";
 import { PositionListSearch } from "@/features/positions/list/position-list-search";
@@ -38,6 +38,8 @@ import { PositionListSortBy } from "@/features/positions/list/position-list-sort
 import { PositionListSortDirection } from "@/features/positions/list/position-list-sort-direction";
 import { PositionListActive } from "@/features/positions/list/position-list-active";
 import { PositionListPageSize } from "@/features/positions/list/position-list-page-size";
+import { DepartmentVideoUpload } from "@/features/departments/department-video-upload";
+import { VideoPlayer } from "@/widgets/video-player";
 
 const { Container, Content, Header, Filters } = ListLayout;
 
@@ -100,6 +102,8 @@ export const DepartmentDetailPage = ({ id }: { id: DepartmentId }) => {
       : []),
   ];
 
+  console.log(department);
+
   return (
     <div className="flex flex-col gap-6 p-2 mx-auto">
       <div className="flex items-center justify-between">
@@ -125,6 +129,15 @@ export const DepartmentDetailPage = ({ id }: { id: DepartmentId }) => {
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
+          {department.videoUrl ? (
+            <VideoPlayer className="h-1/4" url={department.videoUrl} />
+          ) : (
+            <DepartmentVideoUpload
+              className="w-full h-1/4"
+              departmentId={department.id}
+            />
+          )}
+
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">

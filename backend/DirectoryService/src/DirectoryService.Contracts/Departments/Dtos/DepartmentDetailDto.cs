@@ -7,6 +7,8 @@ public record DepartmentDetailDto
 {
     public Guid Id { get; init; }
 
+    public string? VideoUrl { get; set; }
+
     public string Name { get; init; } = string.Empty;
 
     public string Identifier { get; init; } = string.Empty;

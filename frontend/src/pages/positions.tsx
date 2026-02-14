@@ -6,7 +6,7 @@ import { PositionListSearch } from "@/features/positions/list/position-list-sear
 import { PositionListSelectDepartments } from "@/features/positions/list/position-list-select-departments";
 import { PositionListSortBy } from "@/features/positions/list/position-list-sort-by";
 import { PositionListSortDirection } from "@/features/positions/list/position-list-sort-direction";
-import { PositionCreateDialog } from "@/features/positions/position-create-dialog";
+import { PositionCreateDialog } from "@/widgets/positions/position-create-dialog";
 import { ListLayout } from "@/shared/components/ui/list-layout";
 import { PositionList } from "@/widgets/positions/position-list";
 

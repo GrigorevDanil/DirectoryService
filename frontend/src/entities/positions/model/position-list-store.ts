@@ -1,6 +1,6 @@
 import { DepartmentId, DepartmentShortDto } from "@/entities/departments/types";
 import { ActiveState } from "@/shared/api/active-state";
-import { DEFAULT_PAGE_SIZE } from "@/shared/api/constants";
+import { DEFAULT_PAGE_SIZE } from "@/shared/api/pagination-request";
 import { SortDirection } from "@/shared/api/sort-direction";
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";

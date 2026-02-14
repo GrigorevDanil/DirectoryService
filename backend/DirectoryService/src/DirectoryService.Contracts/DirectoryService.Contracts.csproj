@@ -1,5 +1,5 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
-    <PackageReference Include="SharedService.Core" />
+    <PackageReference Include="sharedservice.sharedkernel" />
   </ItemGroup>
 </Project>

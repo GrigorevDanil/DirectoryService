@@ -1,6 +1,7 @@
 import { useInfiniteQuery } from "@tanstack/react-query";
 import { departmentsApi } from "../api";
 import { DepartmentId } from "../types";
+import { useCursorRef } from "@/shared/hooks/use-cursor-ref";
 
 export const useDepartmentChildren = (
   parentId: DepartmentId,
@@ -21,15 +22,20 @@ export const useDepartmentChildren = (
     ...options,
   });
 
+  const cursorRef = useCursorRef({
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  });
+
   return {
     departments: data?.result?.items || [],
     isPending,
     error,
     refetch,
-    fetchNextPage,
     hasNextPage,
     isFetching,
-    isFetchingNextPage,
     isLoading,
+    cursorRef,
   };
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { LocationCreateDialog } from "@/features/locations/location-create-dialog";
+import { LocationCreateDialog } from "@/widgets/locations/location-create-dialog";
 import { LocationListActive } from "@/features/locations/list/location-list-active";
 import { LocationListPageSize } from "@/features/locations/list/location-list-page-size";
 import { LocationListSearch } from "@/features/locations/list/location-list-search";

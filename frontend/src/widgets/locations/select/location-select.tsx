@@ -1,7 +1,6 @@
 "use client";
 
 import { Spinner } from "@/shared/components/ui/spinner";
-import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
 import { Error } from "@/widgets/error";
 import { ListLayout } from "@/shared/components/ui/list-layout";
 import { GetLocationsRequest } from "@/entities/locations/api";
@@ -41,12 +40,11 @@ export const LocationSelect = ({
   const {
     locations: fetchedLocations,
     error,
-    fetchNextPage,
-    hasNextPage,
     isFetching,
     isFetchingNextPage,
     isPending,
     refetch,
+    cursorRef,
   } = useLocationInfinityList({ stateId, request });
 
   const locations = useMemo(() => {
@@ -57,12 +55,6 @@ export const LocationSelect = ({
     const excludeSet = new Set(excludeIds);
     return fetchedLocations.filter((d) => !excludeSet.has(d.id));
   }, [fetchedLocations, excludeIds]);
-
-  const intersectionRef = useIntersectionObserver({
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  });
 
   const handleCheckedChange = (selected: boolean, location: LocationDto) => {
     if (multiselect) {
@@ -127,7 +119,7 @@ export const LocationSelect = ({
             onCheckedChange={handleCheckedChange}
           />
         ))}
-        <div ref={intersectionRef} className="flex justify-center">
+        <div ref={cursorRef} className="flex justify-center">
           {isFetchingNextPage && <Spinner />}
         </div>
       </div>

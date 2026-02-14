@@ -1,28 +1,34 @@
 ﻿using System.Data.Common;
+using CSharpFunctionalExtensions;
 using Dapper;
 using DirectoryService.Contracts.Departments.Dtos;
 using DirectoryService.Contracts.Locations.Dtos;
 using DirectoryService.Contracts.Positions.Dtos;
+using FileService.Contracts.HttpCommunication;
+using FileService.Contracts.MediaAssets.Dtos;
 using SharedService.Core.Database;
 using SharedService.Core.Handlers;
+using SharedService.SharedKernel;
 
 namespace DirectoryService.Application.Departments.Queries.GetDetail;
 
-public class GetDetailDepartmentHandler : IQueryHandler<GetDetailDepartmentQuery, DepartmentDetailDto?>
+public class GetDetailDepartmentHandler : IQueryHandlerWithResult<GetDetailDepartmentQuery, DepartmentDetailDto?>
 {
     private readonly IDbConnectionFactory _dbConnectionFactory;
+    private readonly IFileCommunicationService _fileCommunicationService;
 
-    public GetDetailDepartmentHandler(IDbConnectionFactory dbConnectionFactory)
+    public GetDetailDepartmentHandler(IDbConnectionFactory dbConnectionFactory, IFileCommunicationService fileCommunicationService)
     {
         _dbConnectionFactory = dbConnectionFactory;
+        _fileCommunicationService = fileCommunicationService;
     }
 
-    public async Task<DepartmentDetailDto?> Handle(
+    public async Task<Result<DepartmentDetailDto?, Errors>> Handle(
         GetDetailDepartmentQuery query,
         CancellationToken cancellationToken = new CancellationToken())
     {
         string sql = $"""
-                      SELECT d.*, l.*, p.*
+                      SELECT d.*, d.video_id, l.*, p.*
                       FROM departments d
                       LEFT JOIN department_locations dl ON  dl.department_id = d.id
                       LEFT JOIN locations l ON  l.id = dl.location_id
@@ -37,17 +43,32 @@ public class GetDetailDepartmentHandler : IQueryHandler<GetDetailDepartmentQuery
 
         List<PositionDto> positionDtos = [];
 
-        IEnumerable<DepartmentDetailDto> res = await dbConnection.QueryAsync<DepartmentDetailDto, LocationDto, PositionDto, DepartmentDetailDto>(
+        Guid videoId = Guid.Empty;
+
+        IEnumerable<DepartmentDetailDto> res = await dbConnection.QueryAsync<DepartmentDetailDto, Guid?, LocationDto, PositionDto, DepartmentDetailDto>(
             sql,
-            splitOn: "id,id",
-            map: (d, l, p) =>
+            splitOn: "video_id,id,id",
+            map: (d, vId, l, p) =>
             {
                 locationDtos.Add(l);
                 positionDtos.Add(p);
+                videoId = vId ?? Guid.Empty;
                 return d;
             });
 
         DepartmentDetailDto? departmentDetailDto = res.FirstOrDefault();
+
+        if (videoId != Guid.Empty)
+        {
+            Result<MediaAssetDto?, Errors> getMediaResult = await _fileCommunicationService.GetMediaAsset(videoId, cancellationToken);
+
+            if (getMediaResult.IsFailure)
+                return getMediaResult.Error;
+
+            MediaAssetDto? mediaAsset = getMediaResult.Value;
+
+            departmentDetailDto?.VideoUrl = mediaAsset?.DownloadUrl;
+        }
 
         departmentDetailDto?.Locations.AddRange(locationDtos);
 

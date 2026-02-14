@@ -9,7 +9,6 @@ import {
   TreeIcon,
   TreeNodeContent,
 } from "@/shared/components/ui/tree";
-import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
 import { Layers } from "lucide-react";
 import { DepartmentShortCard } from "../department-short-card";
 
@@ -29,25 +28,14 @@ export const DepartmentNode = ({
 
   const shouldFetchChildren = isExpanded && department.hasMoreChildren;
 
-  const {
-    departments,
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-    isLoading,
-  } = useDepartmentChildren(department.id, {
-    enabled: shouldFetchChildren,
-  });
+  const { departments, hasNextPage, cursorRef, isLoading } =
+    useDepartmentChildren(department.id, {
+      enabled: shouldFetchChildren,
+    });
   const allChildren = [...department.children, ...(departments ?? [])];
 
   const hasChildren =
     department.children.length > 0 || department.hasMoreChildren;
-
-  const intersectionRef = useIntersectionObserver({
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  });
 
   const renderIcon = () => {
     if (isLoading) return <Spinner />;
@@ -88,7 +76,7 @@ export const DepartmentNode = ({
           );
         })}
 
-        {hasNextPage && <div ref={intersectionRef} className="h-4" />}
+        {hasNextPage && <div ref={cursorRef} className="h-4" />}
       </TreeNodeContent>
     </TreeNode>
   );

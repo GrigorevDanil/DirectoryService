@@ -3,7 +3,6 @@
 import { useDepartmentList } from "@/entities/departments/hooks/use-department-list";
 import { DepartmentId, DepartmentShortDto } from "@/entities/departments/types";
 import { Spinner } from "@/shared/components/ui/spinner";
-import { useIntersectionObserver } from "@/shared/hooks/use-intersection-observer";
 import { Error } from "@/widgets/error";
 import { DepartmentSelectCard } from "./department-select-card";
 import { DepartmentListId } from "@/entities/departments/model/department-list-store";
@@ -42,28 +41,16 @@ export const DepartmentSelect = ({
   const {
     departments: fetchedDepartments,
     error,
-    fetchNextPage,
-    hasNextPage,
     isFetching,
     isFetchingNextPage,
     isPending,
     refetch,
+    cursorRef,
   } = useDepartmentList({ stateId, request });
 
   const departments = useMemo(() => {
-    if (excludeIds.length === 0) {
-      return fetchedDepartments;
-    }
-
-    const excludeSet = new Set(excludeIds);
-    return fetchedDepartments.filter((d) => !excludeSet.has(d.id));
+    return fetchedDepartments.filter((dep) => !excludeIds.includes(dep.id));
   }, [fetchedDepartments, excludeIds]);
-
-  const intersectionRef = useIntersectionObserver({
-    hasNextPage,
-    fetchNextPage,
-    isFetchingNextPage,
-  });
 
   const handleCheckedChange = (
     selected: boolean,
@@ -87,21 +74,13 @@ export const DepartmentSelect = ({
     }
   };
 
-  const handleRemoveDepartment = (departmentId: DepartmentId) => {
-    onChangeChecked(
-      selectedDepartments.filter((dep) => dep.id !== departmentId),
-    );
+  const handleRemoveDepartment = (id: DepartmentId) => {
+    onChangeChecked(selectedDepartments.filter((dep) => dep.id !== id));
   };
 
   const isSelected = (departmentId: DepartmentId) => {
     return selectedDepartments.some((dep) => dep.id === departmentId);
   };
-
-  const selectedResolved = useMemo(() => {
-    const byId = new Map(departments.map((d) => [d.id, d]));
-
-    return selectedDepartments.map((sel) => byId.get(sel.id) ?? sel);
-  }, [departments, selectedDepartments]);
 
   const renderContent = () => {
     if (isPending && departments.length === 0) {
@@ -134,7 +113,7 @@ export const DepartmentSelect = ({
             onCheckedChange={handleCheckedChange}
           />
         ))}
-        <div ref={intersectionRef} className="flex justify-center">
+        <div ref={cursorRef} className="flex justify-center">
           {isFetchingNextPage && <Spinner />}
         </div>
       </div>
@@ -144,7 +123,7 @@ export const DepartmentSelect = ({
   return (
     <ListLayout className={className} {...props}>
       <DepartmentSelected
-        selectedDepartments={selectedResolved}
+        selectedDepartments={selectedDepartments}
         onRemove={handleRemoveDepartment}
       />
       <Header>

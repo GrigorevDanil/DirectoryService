@@ -1,16 +1,16 @@
 import { useCallback, useRef } from "react";
 
-interface UseIntersectionObserverProps {
+interface UseCursorRefProps {
   hasNextPage: boolean;
   isFetchingNextPage: boolean;
   fetchNextPage: () => void;
 }
 
-export const useIntersectionObserver = ({
+export const useCursorRef = ({
   hasNextPage,
   isFetchingNextPage,
   fetchNextPage,
-}: UseIntersectionObserverProps) => {
+}: UseCursorRefProps) => {
   const observerRef = useRef<IntersectionObserver>(null);
 
   return useCallback(

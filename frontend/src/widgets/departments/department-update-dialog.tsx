@@ -1,5 +1,6 @@
 "use client";
 
+import { DepartmentId } from "@/entities/departments/types";
 import { Button } from "@/shared/components/ui/button";
 import {
   Dialog,
@@ -11,10 +12,18 @@ import {
   DialogTrigger,
 } from "@/shared/components/ui/dialog";
 import { useState } from "react";
-import { LocationUpdateForm } from "./location-update-form";
-import { LocationDto } from "@/entities/locations/types";
+import { DepartmentUpdateForm } from "../../features/departments/department-update-form";
 
-export function LocationUpdateDialog({ location }: { location: LocationDto }) {
+export function DepartmentUpdateDialog({
+  deparment,
+}: {
+  deparment: {
+    id: DepartmentId;
+    name: string;
+    identifier: string;
+    isActive: boolean;
+  };
+}) {
   const [open, setOpen] = useState(false);
 
   const handleSuccess = () => {
@@ -23,16 +32,19 @@ export function LocationUpdateDialog({ location }: { location: LocationDto }) {
 
   return (
     <Dialog open={open} onOpenChange={(flag) => setOpen(flag)}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild disabled={!deparment.isActive}>
         <Button>Изменить</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-175 flex max-h-[90vh] flex-col">
         <DialogHeader>
-          <DialogTitle>Обновление локации</DialogTitle>
+          <DialogTitle>Обновление подразделения</DialogTitle>
         </DialogHeader>
 
         <div className="flex-1 overflow-y-auto px-2">
-          <LocationUpdateForm onSuccess={handleSuccess} location={location} />
+          <DepartmentUpdateForm
+            onSuccess={handleSuccess}
+            deparment={deparment}
+          />
         </div>
 
         <DialogFooter>

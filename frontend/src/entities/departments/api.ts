@@ -1,4 +1,4 @@
-import { httpClient } from "@/shared/api/http-client";
+import { API_V1, httpClient } from "@/shared/api/http-client";
 import {
   Envelope,
   envelopeInfinityQueryOptions,
@@ -56,7 +56,7 @@ export const departmentsApi = {
       queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<DepartmentShortDto>>
-        >("/departments", {
+        >(API_V1 + "/departments", {
           params: { ...request, page: pageParam },
           signal,
         });
@@ -73,7 +73,7 @@ export const departmentsApi = {
       queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<DepartmentDto>>
-        >("/departments/roots", {
+        >(API_V1 + "/departments/roots", {
           params: { ...request, page: pageParam },
           signal,
         });
@@ -90,7 +90,7 @@ export const departmentsApi = {
       queryFn: async ({ pageParam, signal }) => {
         const response = await httpClient.get<
           Envelope<PaginationEnvelope<DepartmentDto>>
-        >("/departments/" + request.parentId + "/children", {
+        >(API_V1 + "/departments/" + request.parentId + "/children", {
           params: { ...request, page: pageParam },
           signal,
         });
@@ -104,7 +104,7 @@ export const departmentsApi = {
       queryKey: [departmentsApi.baseKey, id],
       queryFn: async ({ signal }) => {
         const response = await httpClient.get<Envelope<DepartmentDto>>(
-          "/departments/" + id,
+          API_V1 + "/departments/" + id,
           { signal },
         );
 
@@ -115,7 +115,7 @@ export const departmentsApi = {
     request: DepartmentCreateRequest,
   ): Promise<Envelope<DepartmentId>> => {
     const response = await httpClient.post<Envelope<DepartmentId>>(
-      "/departments",
+      API_V1 + "/departments",
       request,
     );
 
@@ -125,7 +125,7 @@ export const departmentsApi = {
     request: DepartmentUpdateRequest & { id: DepartmentId },
   ): Promise<Envelope<DepartmentId>> => {
     const response = await httpClient.put<Envelope<DepartmentId>>(
-      "/departments/" + request.id,
+      API_V1 + "/departments/" + request.id,
       request,
     );
 
@@ -135,7 +135,7 @@ export const departmentsApi = {
     id: DepartmentId,
   ): Promise<Envelope<DepartmentId>> => {
     const response = await httpClient.delete<Envelope<DepartmentId>>(
-      "/departments/" + id,
+      API_V1 + "/departments/" + id,
     );
 
     return response.data;
@@ -144,7 +144,7 @@ export const departmentsApi = {
     request: { parentId: DepartmentId | null } & { id: DepartmentId },
   ): Promise<Envelope<DepartmentId>> => {
     const response = await httpClient.patch<Envelope<DepartmentId>>(
-      "/departments/" + request.id + "/parent",
+      API_V1 + "/departments/" + request.id + "/parent",
       request,
     );
 
@@ -154,7 +154,17 @@ export const departmentsApi = {
     request: { locationIds: LocationId[] } & { id: DepartmentId },
   ): Promise<Envelope<DepartmentId>> => {
     const response = await httpClient.patch<Envelope<DepartmentId>>(
-      "/departments/" + request.id + "/locations",
+      API_V1 + "/departments/" + request.id + "/locations",
+      request,
+    );
+
+    return response.data;
+  },
+  departmentAttachVideo: async (
+    request: { videoId: string } & { id: DepartmentId },
+  ): Promise<Envelope<DepartmentId>> => {
+    const response = await httpClient.patch<Envelope<DepartmentId>>(
+      API_V1 + "/departments/" + request.id + "/video",
       request,
     );
 
